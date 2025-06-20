@@ -1,42 +1,43 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import AppMenuItem from './AppMenuItem.vue';
+import { authService } from '@/services/auth';
 
 const model = ref([
     {
         items: [
-            { label: 'Mi billetera', icon: 'pi pi-wallet', to: '/' } // billetera
+            { label: 'Mi billetera', icon: 'pi pi-wallet', to: '/' }
         ]
     },
     {
         items: [
-            { label: 'Buscar hipotecas', icon: 'pi pi-search', to: '/uikit/table' } // buscar
+            { label: 'Buscar hipotecas', icon: 'pi pi-search', to: '/uikit/table' }
         ]
     },
     {
         items: [
-            { label: 'Online', icon: 'pi pi-globe', to: '/uikit/input' } // online/global
+            { label: 'Subastas online', icon: 'pi pi-globe', to: '/uikit/input' }
         ]
     },
     {
         items: [
-            { label: 'Mi dashboard', icon: 'pi pi-chart-line', to: '/uikit/formlayout' } // dashboard
+            { label: 'Mi dashboard', icon: 'pi pi-chart-line', to: '/uikit/formlayout' }
         ]
     },
     {
         items: [
             {
                 label: 'Información bancaria',
-                icon: 'pi pi-bank', // banco
+                icon: 'pi pi-bank',
                 items: [
                     {
                         label: 'Cuentas',
-                        icon: 'pi pi-credit-card', // cuenta/tarjeta
+                        icon: 'pi pi-credit-card',
                         to: '/auth/login'
                     },
                     {
                         label: 'Estados de cuenta',
-                        icon: 'pi pi-file', // documento/estado
+                        icon: 'pi pi-file',
                         to: '/auth/error'
                     }
                 ]
@@ -45,67 +46,23 @@ const model = ref([
     }
 ]);
 
-// Datos del usuario autenticado
 const customer = ref(null);
-const userName = ref('Usuario');
-const userPhone = ref('999999999');
 
-// Función para cargar datos del usuario
-const loadCustomerData = () => {
-    try {
-        // Obtener datos del localStorage directamente
-        const customerData = localStorage.getItem('customer_data');
-        
-        if (customerData) {
-            customer.value = JSON.parse(customerData);
-            
-            // Asignar nombre del usuario usando los campos del modelo Customer
-            if (customer.value.name) {
-                userName.value = customer.value.name;
-            } else if (customer.value.alias) {
-                userName.value = customer.value.alias;
-            } else if (customer.value.first_last_name || customer.value.second_last_name) {
-                // Construir nombre completo con apellidos
-                const fullName = [
-                    customer.value.first_last_name || '',
-                    customer.value.second_last_name || ''
-                ].filter(name => name.trim()).join(' ');
-                userName.value = fullName || 'Usuario';
-            } else {
-                userName.value = 'Usuario';
-            }
-            
-            // Asignar teléfono del usuario
-            userPhone.value = customer.value.telephone || '999999999';
-        }
-    } catch (error) {
-        console.error('Error al cargar datos del usuario:', error);
-        // Mantener valores por defecto en caso de error
-        userName.value = 'Usuario';
-        userPhone.value = '999999999';
-    }
-};
-
-// Cargar datos del usuario al montar el componente
 onMounted(() => {
-    // Verificar que hay token antes de cargar
-    const token = localStorage.getItem('api_token');
-    if (!token) {
-        console.warn('No se encontró token de autenticación');
-        return;
-    }
-    
-    loadCustomerData();
+    customer.value = authService.getCustomer();
 });
 </script>
 
 <template>
     <ul class="layout-menu">
+        <!-- LOGO -->
         <div class="layout-topbar-logo-container">
             <router-link to="/" class="layout-topbar-logo">
-                <h1>zuma</h1>
+                <h1>Zuma</h1>
             </router-link>
         </div>
+
+        <!-- PERFIL -->
         <div class="flex flex-col items-center justify-center text-center mb-8 mt-4 py-20">
             <div class="relative w-[125px] h-[125px]">
                 <!-- SVG de fondo -->
@@ -114,6 +71,7 @@ onMounted(() => {
                         d="M34.2105 0H100.789C119.605 0 135 15.3947 135 34.2105V100.789C135 119.605 119.605 135 100.789 135H34.2105C15.3947 135 0 119.605 0 100.789V34.2105C0 15.3947 15.3947 0 34.2105 0Z"
                         fill="#EFEBE4" />
                 </svg>
+
                 <svg class="absolute top-4 left-0" xmlns="http://www.w3.org/2000/svg" width="140" height="105"
                     viewBox="0 0 135 135" fill="none">
                     <path
@@ -188,13 +146,22 @@ onMounted(() => {
                 </svg>
             </div>
             <br>
-            <div class="text-xl font-bold mb-3">{{ userName }}</div>
-            <div class="text-lg font-semibold">{{ userPhone }}</div>
+            <!-- DATOS DEL CUSTOMER AUTENTICADO -->
+            <div v-if="customer">
+                <div class="text-xl font-bold mb-3">
+                    {{ customer.name }} {{ customer.first_last_name }}
+                </div>
+                <div class="text-lg font-semibold">
+                    {{ customer.document }}
+                </div>
+            </div>
+            <div v-else class="text-gray-500 text-sm italic">Cargando datos...</div>
         </div>
 
-        <template v-for="(item, i) in model" :key="item">
-            <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
-            <li v-if="item.separator" class="menu-separator"></li>
+        <!-- MENÚ -->
+        <template v-for="(item, i) in model" :key="i">
+            <app-menu-item v-if="!item.separator" :item="item" :index="i" />
+            <li v-else class="menu-separator"></li>
         </template>
     </ul>
 </template>

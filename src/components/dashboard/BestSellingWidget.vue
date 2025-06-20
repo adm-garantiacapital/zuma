@@ -93,22 +93,20 @@ const submitBid = async () => {
 
     try {
         submittingBid.value = true;
-        await auctionService.placeBid(selectedAuction.value.id, {
-            monto: bidAmount.value
+
+        await auctionService.placeBid({
+            property_id: selectedAuction.value.id,
+            monto_invertido: parseFloat(bidAmount.value)
         });
 
         bidDialog.value = false;
         loadAuctions(currentPage.value);
 
     } catch (error) {
-        console.error('Error placing bid:', error);
+        console.error('Error al hacer la oferta:', error.response?.data || error.message);
     } finally {
         submittingBid.value = false;
     }
-};
-
-const viewDetails = (auctionId) => {
-    console.log('View details for auction:', auctionId);
 };
 
 const formatCurrency = (amount) => {
