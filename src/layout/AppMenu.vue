@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import AppMenuItem from './AppMenuItem.vue';
 
 const model = ref([
@@ -44,7 +44,61 @@ const model = ref([
         ]
     }
 ]);
+
+// Datos del usuario autenticado
+const customer = ref(null);
+const userName = ref('Usuario');
+const userPhone = ref('999999999');
+
+// Función para cargar datos del usuario
+const loadCustomerData = () => {
+    try {
+        // Obtener datos del localStorage directamente
+        const customerData = localStorage.getItem('customer_data');
+        
+        if (customerData) {
+            customer.value = JSON.parse(customerData);
+            
+            // Asignar nombre del usuario usando los campos del modelo Customer
+            if (customer.value.name) {
+                userName.value = customer.value.name;
+            } else if (customer.value.alias) {
+                userName.value = customer.value.alias;
+            } else if (customer.value.first_last_name || customer.value.second_last_name) {
+                // Construir nombre completo con apellidos
+                const fullName = [
+                    customer.value.first_last_name || '',
+                    customer.value.second_last_name || ''
+                ].filter(name => name.trim()).join(' ');
+                userName.value = fullName || 'Usuario';
+            } else {
+                userName.value = 'Usuario';
+            }
+            
+            // Asignar teléfono del usuario
+            userPhone.value = customer.value.telephone || '999999999';
+        }
+    } catch (error) {
+        console.error('Error al cargar datos del usuario:', error);
+        // Mantener valores por defecto en caso de error
+        userName.value = 'Usuario';
+        userPhone.value = '999999999';
+    }
+};
+
+// Cargar datos del usuario al montar el componente
+onMounted(() => {
+    // Verificar que hay token antes de cargar
+    const token = localStorage.getItem('api_token');
+    if (!token) {
+        console.warn('No se encontró token de autenticación');
+        return;
+    }
+    
+    loadCustomerData();
+});
 </script>
+
 <template>
     <ul class="layout-menu">
         <div class="layout-topbar-logo-container">
@@ -134,8 +188,8 @@ const model = ref([
                 </svg>
             </div>
             <br>
-            <div class="text-xl font-bold mb-3">Jeferson Grabiel</div>
-            <div class="text-lg font-semibold">999999999</div>
+            <div class="text-xl font-bold mb-3">{{ userName }}</div>
+            <div class="text-lg font-semibold">{{ userPhone }}</div>
         </div>
 
         <template v-for="(item, i) in model" :key="item">

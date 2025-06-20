@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  cliente:
+    build:
+      context: .
+    container_name: cliente_sakai
+    ports:
+      - "5174:5174"
+    networks:
+      - laravel_red_2025
+
+networks:
+  laravel_red_2025:
+    external: true
