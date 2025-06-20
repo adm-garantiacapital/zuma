@@ -1,13 +1,19 @@
-# Imagen base oficial de Node
+# Dockerfile
 FROM node:22
 
 WORKDIR /app
 
 COPY . .
 
-RUN npm install && npm run build
+# Paso 1: definir build ARG
+ARG VITE_API_URL
 
-# Usar "serve" para servir app
+# Paso 2: exponerlo como env var
+ENV VITE_API_URL=${VITE_API_URL}
+
+RUN npm install
+RUN npm run build
+
 RUN npm install -g serve
 
 EXPOSE 5174
