@@ -1,0 +1,11 @@
+services:
+  cliente:
+    build:
+      context: .
+      args:
+        VITE_API_URL: https://admin-main-och2pp.laravel.cloud/api
+    container_name: cliente_sakai
+    ports:
+      - "5174:5174"
+    networks:
+      - laravel_red_2025
