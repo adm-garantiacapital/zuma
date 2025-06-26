@@ -35,9 +35,4 @@ export const propertyService = {
   createInvestment(property_id, data) {
     return apiClient.post(`/online/inversiones/1`, data);
   },
-
-  // ✅ Nuevo método
-  showPropertyCustomer(id) {
-    return apiClient.get(`/property/${id}/show`);
-  }
 };
