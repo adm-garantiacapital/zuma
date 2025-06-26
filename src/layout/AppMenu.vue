@@ -12,12 +12,12 @@ const model = ref([
     },
     {
         items: [
-            { label: 'Buscar hipotecas', icon: 'pi pi-search', to: '/uikit/table' }
+            { label: 'Buscar hipotecas', icon: 'pi pi-search', to: '/Search' }
         ]
     },
     {
         items: [
-            { label: 'Online', icon: 'pi pi-globe', to: '/uikit/input' }
+            { label: 'Online', icon: 'pi pi-globe', to: '/Online' }
         ]
     },
     {
