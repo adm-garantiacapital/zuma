@@ -52,7 +52,6 @@
 <script setup>
 import { ref, watch, defineExpose } from 'vue'
 import { simulationService } from '@/services/simulationService.js'
-import { Button } from 'primevue/button'
 
 const visible = ref(false)
 const propertyId = ref(null)
