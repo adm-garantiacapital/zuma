@@ -5,6 +5,6 @@ export const simulationService = {
     return apiClient.post('/simulation/generate', data, { params });
   },
   getAvailableTerms(property_id) {
-    return apiClient.get(`/property/${property_id}/plazos`);
+    return apiClient.get(`/property/${property_id}/show`);
   }
 };
