@@ -6,7 +6,7 @@ export const propertyService = {
       page: page.toString(),
       ...filters
     });
-    return apiClient.get(`/property?${params}`);
+    return apiClient.get(`/property/active/sow?${params}`);
   },
 
   getProperty(id) {
