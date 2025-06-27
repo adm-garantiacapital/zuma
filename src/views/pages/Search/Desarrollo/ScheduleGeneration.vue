@@ -11,11 +11,17 @@
         <Column field="plazo_meses" header="Plazo (meses)" sortable style="min-width: 12rem"/>
         <Column field="cuota_mensual" header="Cuota mensual (S/)" sortable style="min-width: 12rem"/>
         <Column field="total_pagado" header="Total a pagar (S/)" sortable style="min-width: 12rem"/>
-        <Column header="Acción">
+        <Column header="">
           <template #body="slotProps">
-            <Button label="Ver cronograma" icon="pi pi-eye" size="small"
-              :severity="form.plazo_id === slotProps.data.deadline_id ? 'primary' : 'secondary'"
-              @click="selectPlazo(slotProps.data.deadline_id)" />
+            <div class="flex gap-2">
+              <Button label="Ver cronograma" icon="pi pi-eye" size="small"
+                :severity="form.plazo_id === slotProps.data.deadline_id ? 'primary' : 'secondary'"
+                @click="selectPlazo(slotProps.data.deadline_id)" />
+
+              <Button label="Exportar" icon="pi pi-file-excel" size="small" severity="success"
+                :disabled="selectedPlazo?.deadline_id !== slotProps.data.deadline_id"
+                @click="exportPreviewToExcel(slotProps.data)" />
+            </div>
           </template>
         </Column>
       </DataTable>
@@ -183,6 +189,35 @@ const handleExportToExcel = async () => {
 
   } catch (e) {
     console.error("Error obteniendo datos para exportar:", e)
+  }
+}
+const exportPreviewToExcel = async (plazoData) => {
+  try {
+    exportLoading.value = true
+
+    const payload = {
+      property_id: propertyId.value,
+      deadline_id: plazoData.deadline_id
+    }
+
+    const response = await simulationService.generate(payload, {
+      page: 1,
+      per_page: 9999 // puedes ajustar si sabes el total exacto
+    })
+
+    const allData = response.data.data.cronograma_final.pagos
+    const result = await exportCronogramaToExcel(allData, plazoData.plazo_meses)
+
+    if (result.success) {
+      console.log(`Archivo exportado: ${result.fileName}`)
+    } else {
+      console.error('Error en la exportación:', result.error)
+    }
+
+  } catch (e) {
+    console.error('Error exportando cronograma desde vista previa:', e)
+  } finally {
+    exportLoading.value = false
   }
 }
 
