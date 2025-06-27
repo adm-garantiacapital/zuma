@@ -49,7 +49,7 @@
         </Column>
         <Column field="detalles" header="">
             <template #body="slotProps">
-                <Button label="Cronograma" outlined class="p-button-sm"
+                <Button label="Simular" outlined class="p-button-sm"
                     @click="() => scheduleRef.open(slotProps.data.id)" />
             </template>
         </Column>

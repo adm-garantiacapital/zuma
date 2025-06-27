@@ -1,39 +1,39 @@
 <template>
-  <Dialog v-model:visible="visible" maximizable modal header="Cronograma final de pagos"
-    :style="{ width: '70rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-
-    <!-- Botones de selección de plazo -->
-    <div class="mb-4">
-      <label class="block font-semibold mb-2">Selecciona un plazo:</label>
-      <div class="flex flex-wrap gap-3">
-        <Button
-          v-for="plazo in scheduleDataPreview"
-          :key="plazo.deadline_id"
-          :label="`${plazo.plazo_meses} meses - S/ ${plazo.cuota_mensual}`"
-          :outlined="form.plazo_id !== plazo.deadline_id"
-          :severity="form.plazo_id === plazo.deadline_id ? 'primary' : 'secondary'"
-          @click="selectPlazo(plazo.deadline_id)"
-          class="w-full md:w-auto"
-        />
-      </div>
+  <Dialog v-model:visible="visible" maximizable modal header="Cronograma final de pagos" :style="{ width: '70rem' }"
+    :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+    <!-- Tabla de selección de plazos -->
+    <div v-if="!scheduleData" class="mb-5">
+      <DataTable :value="scheduleDataPreview" responsiveLayout="scroll" class="p-datatable-sm" dataKey="deadline_id"
+        selectionMode="single"  :selection="{ deadline_id: form.plazo_id }">
+            <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
+        <Column field="plazo_meses" header="Plazo (meses)" sortable style="min-width: 12rem"/>
+        <Column field="cuota_mensual" header="Cuota mensual (S/)" sortable style="min-width: 12rem"/>
+        <Column field="total_pagado" header="Total a pagar (S/)" sortable style="min-width: 12rem"/>
+        <Column header="">
+          <template #body="slotProps">
+            <Button label="Ver cronograma" icon="pi pi-eye" size="small"
+              :severity="form.plazo_id === slotProps.data.deadline_id ? 'primary' : 'secondary'"
+              @click="selectPlazo(slotProps.data.deadline_id)" />
+          </template>
+        </Column>
+      </DataTable>
     </div>
 
-    <!-- Tabla de cuotas -->
-    <div v-if="scheduleData">
+    <!-- Tabla de cuotas del cronograma -->
+    <div v-else>
+      <div class="flex justify-between items-center mb-3">
+        <span class="text-lg font-semibold">Cronograma de pagos</span>
+        <Button label="Cambiar plazo" icon="pi pi-arrow-left" severity="secondary" size="small"
+          @click="volverASeleccion" />
+      </div>
+
       <DataTable v-model:selection="selectedCuotas" :value="scheduleData.cronograma_final.pagos" dataKey="cuota"
-        :paginator="true" :rows="rows" :totalRecords="totalRecords" :lazy="true"
-        :first="(currentPage - 1) * rows" @page="onPage" :filters="filters"
+        :paginator="true" :rows="rows" :totalRecords="totalRecords" :lazy="true" :first="(currentPage - 1) * rows"
+        @page="onPage" :filters="filters"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReportTemplate RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
-        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} cuotas"
-        responsiveLayout="scroll" class="p-datatable-sm" :loading="loading">
-
-        <template #header>
-          <div class="flex justify-between items-center">
-            <span class="text-lg font-semibold">Cronograma de pagos</span>
-          </div>
-        </template>
-
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} cuotas" responsiveLayout="scroll"
+        class="p-datatable-sm" :loading="loading">
         <Column field="cuota" header="Cuota" sortable />
         <Column field="vcmto" header="Vencimiento" sortable />
         <Column field="saldo_inicial" header="Saldo Inicial" sortable />
@@ -47,8 +47,6 @@
     </div>
   </Dialog>
 </template>
-
-
 <script setup>
 import { ref, watch, defineExpose } from 'vue'
 import { simulationService } from '@/services/simulationService.js'
@@ -57,9 +55,8 @@ const visible = ref(false)
 const propertyId = ref(null)
 
 const form = ref({ plazo_id: null })
-
-const scheduleDataPreview = ref([]) // Cuadro de amortización (opciones de plazo)
-const scheduleData = ref(null) // Resultado completo con pagos
+const scheduleDataPreview = ref([]) // Opciones de plazo
+const scheduleData = ref(null) // Cronograma final con pagos
 const selectedCuotas = ref([])
 const rows = ref(10)
 const currentPage = ref(1)
@@ -83,20 +80,13 @@ const open = async (id) => {
   }
 }
 
-// Seleccionar un plazo (cuando se hace clic en un botón)
+// Selección de plazo y generación de cronograma
 const selectPlazo = (id) => {
   form.value.plazo_id = id
+  currentPage.value = 1
+  generateSchedule()
 }
 
-// Observar el cambio de plazo seleccionado
-watch(() => form.value.plazo_id, () => {
-  if (form.value.plazo_id) {
-    currentPage.value = 1
-    generateSchedule()
-  }
-})
-
-// Llamar API para generar cronograma
 const generateSchedule = async () => {
   if (!form.value.plazo_id || !propertyId.value) return
 
@@ -120,6 +110,12 @@ const generateSchedule = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// Volver a vista de selección de plazo
+const volverASeleccion = () => {
+  scheduleData.value = null
+  form.value.plazo_id = null
 }
 
 // Paginación
