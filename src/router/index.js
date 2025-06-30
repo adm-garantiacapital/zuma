@@ -27,6 +27,18 @@ const router = createRouter({
                     component: () => import('@/views/pages/OnlineAuctions/indexOnlineAuctions.vue'),
                     meta: { requiresAuth: true }
                 },
+                {
+                    path: '/Cuenta-Bancaria',
+                    name: 'cuenta-bancaria',
+                    component: () => import('@/views/pages/CuentasBancaria/indexCuentasBancarias.vue'),
+                    meta: { requiresAuth: true }
+                },
+                {
+                    path: '/Estado-Cuenta',
+                    name: 'estado-cuenta',
+                    component: () => import('@/views/pages/EstadoCuenta/indexEstadoCuenta.vue'),
+                    meta: { requiresAuth: true }
+                }
             ]
         },
         {

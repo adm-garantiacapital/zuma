@@ -34,12 +34,12 @@ const model = ref([
                     {
                         label: 'Cuentas',
                         icon: 'pi pi-credit-card',
-                        to: '/auth/login'
+                        to: '/Cuenta-Bancaria'
                     },
                     {
                         label: 'Estados de cuenta',
                         icon: 'pi pi-file',
-                        to: '/auth/error'
+                        to: '/Estado-Cuenta'
                     }
                 ]
             }

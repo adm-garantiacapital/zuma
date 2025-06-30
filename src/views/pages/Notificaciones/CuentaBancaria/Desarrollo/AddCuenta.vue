@@ -64,8 +64,8 @@
         <!-- Footer -->
         <template #footer>
             <div class="flex justify-end gap-3">
-                <Button label="Cancelar" icon="pi pi-times" @click="closeDialog" text severity="secondary" />
-                <Button label="Agregar Cuenta" icon="pi pi-check" @click="agregarCuenta" :loading="loading" />
+                <Button label="Cancelar" icon="pi pi-times" @click="closeDialog" text severity="secondary" rounded/>
+                <Button label="Agregar Cuenta" icon="pi pi-check" @click="agregarCuenta" :loading="loading" severity="contrast" rounded/>
             </div>
         </template>
     </Dialog>
@@ -107,8 +107,7 @@ import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
-import Dropdown from 'primevue/dropdown';
-
+import { bankAccountService } from '@/services/bankAccountService.js';
 // Toast service
 const toast = useToast();
 
@@ -158,9 +157,8 @@ const bancos = ref([
 ]);
 
 const tiposCuenta = ref([
-    { name: 'Cuenta de Ahorros', code: 'AHORROS' },
+    { name: 'Cuenta de Ahorros', code: 'AHORRO' },
     { name: 'Cuenta Corriente', code: 'CORRIENTE' },
-    { name: 'Cuenta CTS', code: 'CTS' }
 ]);
 
 const monedas = ref([
@@ -270,8 +268,9 @@ const agregarCuenta = async () => {
             alias: form.alias
         };
 
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        console.log('Datos enviados:', payload);
+        // Enviar solicitud a la API usando el servicio
+        const response = await bankAccountService.createBankAccount(payload);
+        console.log('Respuesta:', response.data);
         
         // Mostrar dialog de confirmación
         showConfirmDialog.value = true;
