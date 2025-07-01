@@ -26,7 +26,41 @@
           optionValue="value"
           placeholder="Seleccionar cuenta" 
           class="w-full"
-        />
+          :optionDisabled="isOptionDisabled"
+        >
+          <!-- Renderizado de cada opción -->
+          <template #option="slotProps">
+            <div class="flex justify-between items-center" :class="{ 'opacity-50 cursor-not-allowed': slotProps.option.status === 'invalid' }">
+              <div>
+                <div class="font-medium">
+                  {{ slotProps.option.bank }}
+                </div>
+                <div class="text-xs text-gray-500 space-y-1">
+                  <div>Alias: {{ slotProps.option.alias }}</div>
+                  <div>Moneda: {{ slotProps.option.currency }}</div>
+                  <div>Tipo: {{ slotProps.option.type }}</div>
+                </div>
+              </div>
+              <div class="flex flex-col items-end space-y-1">
+                <Tag 
+                  :value="getStatusLabel(slotProps.option.status)"
+                  :severity="slotProps.option.status === 'valid' ? 'success' : 'danger'"
+                />
+                <span v-if="slotProps.option.status === 'invalid'" class="text-xs text-red-500">
+                  No seleccionable
+                </span>
+              </div>
+            </div>
+          </template>
+
+          <!-- Cómo se ve la opción seleccionada -->
+          <template #value="slotProps">
+            <div v-if="slotProps.value">
+              {{ getSelectedBankName(slotProps.value) }}
+            </div>
+            <span v-else class="text-gray-400">Seleccionar cuenta</span>
+          </template>
+        </Dropdown>
       </div>
 
       <!-- Mi billetera -->
@@ -41,7 +75,27 @@
           optionValue="value"
           placeholder="Selecciona tu billetera" 
           class="w-full"
-        />
+        >
+          <!-- Renderizado de cada opción de billetera -->
+          <template #option="slotProps">
+            <div class="flex justify-between items-center">
+              <div class="font-medium">
+                {{ slotProps.option.name }}
+              </div>
+              <div class="text-sm font-semibold" :class="slotProps.option.currency === 'USD' ? 'text-green-600' : 'text-blue-600'">
+                {{ slotProps.option.currency }}
+              </div>
+            </div>
+          </template>
+
+          <!-- Cómo se ve la opción seleccionada -->
+          <template #value="slotProps">
+            <div v-if="slotProps.value">
+              {{ getSelectedWalletName(slotProps.value) }}
+            </div>
+            <span v-else class="text-gray-400">Selecciona tu billetera</span>
+          </template>
+        </Dropdown>
       </div>
 
       <!-- Monto -->
@@ -62,9 +116,6 @@
           <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
             {{ selectedWallet ? getCurrencySymbol(selectedWallet) : 'S/.' }}
           </div>
-        </div>
-        <div v-if="selectedWallet" class="text-xs text-gray-500 mt-1">
-          Saldo disponible: {{ getAvailableBalance(selectedWallet) }}
         </div>
       </div>
 
@@ -163,7 +214,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { bankAccountService } from '@/services/bankAccountService'
+import { createWithdraw } from '@/services/movementsservice'
 
 const props = defineProps({
   visible: Boolean
@@ -171,34 +224,22 @@ const props = defineProps({
 
 const emit = defineEmits(['update:visible'])
 
-// Opciones de bancos
-const bankOptions = ref([
-  { name: 'BCP - Banco de Crédito del Perú', value: 'bcp' },
-  { name: 'BBVA - Banco Continental', value: 'bbva' },
-  { name: 'Scotiabank Perú', value: 'scotiabank' },
-  { name: 'Interbank', value: 'interbank' },
-  { name: 'BanBif', value: 'banbif' },
-  { name: 'Banco Pichincha', value: 'pichincha' }
-])
+const bankOptions = ref([])
 
-// Opciones de billeteras (simuladas)
 const walletOptions = ref([
-  { name: 'Billetera Principal - S/. 1,250.00', value: 'main_pen', currency: 'PEN', balance: 1250.00 },
-  { name: 'Billetera USD - $ 350.00', value: 'usd_wallet', currency: 'USD', balance: 350.00 },
-  { name: 'Billetera Ahorro - S/. 500.00', value: 'savings_pen', currency: 'PEN', balance: 500.00 }
+  { name: 'PEN', value: 'pen_wallet', currency: 'PEN' },
+  { name: 'USD', value: 'usd_wallet', currency: 'USD' }
 ])
 
-// Opciones de motivos de retiro
 const reasonOptions = ref([
   { name: 'Gastos personales', value: 'personal' },
   { name: 'Pago de servicios', value: 'services' },
   { name: 'Inversión', value: 'investment' },
   { name: 'Emergencia médica', value: 'medical' },
   { name: 'Educación', value: 'education' },
-  { name: 'Otro', value: 'other' }
+  { name: 'Otros', value: 'other' }
 ])
 
-// Formulario
 const selectedBank = ref(null)
 const selectedWallet = ref(null)
 const amount = ref(null)
@@ -206,42 +247,47 @@ const withdrawalReason = ref(null)
 const agreeTerms = ref(false)
 const showConfirmation = ref(false)
 
-// Computed
 const isFormValid = computed(() => {
-  return selectedBank.value && 
-         selectedWallet.value && 
-         amount.value && 
-         amount.value > 0 && 
-         withdrawalReason.value && 
-         agreeTerms.value &&
-         amount.value <= getMaxAmount()
+  const selectedBankObj = bankOptions.value.find(b => b.value === selectedBank.value)
+  const selectedWalletObj = walletOptions.value.find(w => w.value === selectedWallet.value)
+
+  return selectedBank.value &&
+    selectedWallet.value &&
+    amount.value &&
+    amount.value > 0 &&
+    withdrawalReason.value &&
+    agreeTerms.value &&
+    selectedBankObj?.currency === selectedWalletObj?.currency
 })
 
-// Métodos
 const updateVisible = (value) => emit('update:visible', value)
+
+const isOptionDisabled = (option) => {
+  return option.status === 'invalid'
+}
+
+const getStatusLabel = (status) => {
+  return status === 'valid' ? 'Validada' : 'No validada'
+}
+
+const getSelectedBankName = (selectedValue) => {
+  const bank = bankOptions.value.find(option => option.value === selectedValue)
+  return bank ? bank.bank : ''
+}
+
+const getSelectedWalletName = (selectedValue) => {
+  const wallet = walletOptions.value.find(option => option.value === selectedValue)
+  return wallet ? wallet.name : ''
+}
 
 const getCurrencySymbol = (walletValue) => {
   const wallet = walletOptions.value.find(w => w.value === walletValue)
   return wallet?.currency === 'USD' ? '$' : 'S/.'
 }
 
-const getAvailableBalance = (walletValue) => {
-  const wallet = walletOptions.value.find(w => w.value === walletValue)
-  if (!wallet) return '0.00'
-  
-  const symbol = wallet.currency === 'USD' ? '$' : 'S/.'
-  return `${symbol} ${wallet.balance.toFixed(2)}`
-}
-
-const getMaxAmount = () => {
-  if (!selectedWallet.value) return 0
-  const wallet = walletOptions.value.find(w => w.value === selectedWallet.value)
-  return wallet?.balance || 0
-}
-
 const getBankName = (bankValue) => {
   const bank = bankOptions.value.find(b => b.value === bankValue)
-  return bank?.name || ''
+  return bank?.bank || ''
 }
 
 const getWalletName = (walletValue) => {
@@ -261,46 +307,41 @@ const formatAmount = (amount) => {
 }
 
 const openPrivacyPolicy = () => {
-  // Aquí podrías abrir un modal con la política de privacidad
-  // o redirigir a una página externa
   console.log('Abrir política de privacidad')
 }
 
 const handleSubmit = () => {
   if (!isFormValid.value) {
-    alert('Por favor, completa todos los campos obligatorios.')
-    return
-  }
-
-  // Validar que el monto no exceda el saldo disponible
-  if (amount.value > getMaxAmount()) {
-    alert('El monto no puede exceder el saldo disponible en tu billetera.')
+    alert('Por favor, completa todos los campos obligatorios o verifica que la moneda coincida entre la cuenta y la billetera.')
     return
   }
 
   showConfirmation.value = true
 }
 
-const confirmWithdrawal = () => {
+const confirmWithdrawal = async () => {
+  const selectedWalletObj = walletOptions.value.find(w => w.value === selectedWallet.value)
+  const selectedReasonObj = reasonOptions.value.find(r => r.value === withdrawalReason.value)
+
   const formData = {
-    selectedBank: selectedBank.value,
-    selectedWallet: selectedWallet.value,
+    acceptance: agreeTerms.value,
     amount: amount.value,
-    withdrawalReason: withdrawalReason.value,
-    agreeTerms: agreeTerms.value
+    bank: selectedBank.value,
+    currency: selectedWalletObj.currency,
+    purpouse: selectedReasonObj.name
   }
 
-  console.log('Datos del retiro:', formData)
-  
-  // Aquí enviarías los datos al servidor
-  // Por ejemplo: await submitWithdrawal(formData)
-  
-  showConfirmation.value = false
-  alert('Solicitud de retiro enviada correctamente')
-  updateVisible(false)
-  
-  // Limpiar formulario
-  resetForm()
+  try {
+    await createWithdraw(formData)
+    alert('Solicitud de retiro enviada correctamente')
+    updateVisible(false)
+    resetForm()
+  } catch (error) {
+    console.error('Error al enviar retiro:', error)
+    alert('Hubo un error al solicitar el retiro.')
+  } finally {
+    showConfirmation.value = false
+  }
 }
 
 const resetForm = () => {
@@ -310,4 +351,24 @@ const resetForm = () => {
   withdrawalReason.value = null
   agreeTerms.value = false
 }
+
+onMounted(async () => {
+  try {
+    const response = await bankAccountService.getBankAccounts()
+    const accounts = response.data.data
+
+    bankOptions.value = accounts.map(account => ({
+      name: `${account.bank} - ${account.alias} (${account.currency})`,
+      value: account.id,
+      status: account.status,
+      alias: account.alias,
+      bank: account.bank,
+      currency: account.currency,
+      type: account.type,
+      cci: account.cci
+    }))
+  } catch (error) {
+    console.error('Error al obtener cuentas bancarias:', error)
+  }
+})
 </script>

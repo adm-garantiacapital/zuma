@@ -1,7 +1,8 @@
-import apiClient from './api.js';
+// services/deadlinesService.js
+import { apiAdmin1 } from './api.js';
 
 export const deadlinesService = {
   getDeadlines() {
-    return apiClient.get('/deadlines');
+    return apiAdmin1.get('/deadlines');
   }
 };

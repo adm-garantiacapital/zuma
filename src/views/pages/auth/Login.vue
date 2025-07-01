@@ -2,8 +2,8 @@
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
 import { useToast } from 'primevue/usetoast';
+import { authService } from '@/services/auth.js'; // Asegúrate que la ruta es correcta
 
 const router = useRouter();
 const toast = useToast();
@@ -16,33 +16,19 @@ const loading = ref(false);
 const login = async () => {
     loading.value = true;
     try {
-        const response = await axios.post(
-            `${import.meta.env.VITE_API_URL}/login`,
-            {
-                document: document.value,
-                password: password.value,
-            }
-        );
-        
-        const token = response.data.api_token;
-        
-        // ✅ CAMBIO AQUÍ: Usar 'api_token' en lugar de 'token'
-        localStorage.setItem('api_token', token);
-        
-        // Opcional: Guardar también los datos del customer
-        if (response.data.customer) {
-            localStorage.setItem('customer', JSON.stringify(response.data.customer));
-        }
-        
+        const response = await authService.login('admin2', {
+            document: document.value,
+            password: password.value,
+        });
+
         toast.add({ 
             severity: 'success', 
             summary: 'Éxito', 
             detail: 'Sesión iniciada correctamente', 
             life: 3000 
         });
-        
+
         router.push('/');
-        
     } catch (error) {
         console.error('Login error:', error);
         toast.add({

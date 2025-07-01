@@ -1,39 +1,30 @@
-// services/auctionService.js
-import apiClient from './api.js';
+import { apiAdmin1 } from './api.js';
 
 export const auctionService = {
-  // Obtener subastas con filtros y paginación
   getAuctions(page = 1, filters = {}) {
     const params = new URLSearchParams({
       page: page.toString(),
       ...filters
     });
-    return apiClient.get(`/subastadas?${params}`);
-  },
 
-  // Obtener subasta individual
+    return apiAdmin1.get(`/subastadas?${params}`);
+  },
   getAuction(id) {
-    return apiClient.get(`/subastadas/${id}`);
+    return apiAdmin1.get(`/subastadas/${id}`);
   },
 
-  // Crear una nueva subasta
   createAuction(data) {
-    return apiClient.post('/subastadas', data);
+    return apiAdmin1.post('/subastadas', data);
   },
-
-  // Actualizar una subasta
   updateAuction(id, data) {
-    return apiClient.put(`/subastadas/${id}`, data);
+    return apiAdmin1.put(`/subastadas/${id}`, data);
   },
 
-  // Eliminar subasta
   deleteAuction(id) {
-    return apiClient.delete(`/subastadas/${id}`);
+    return apiAdmin1.delete(`/subastadas/${id}`);
   },
 
-  // Enviar una inversión (oferta) para una subasta
   placeBid(bidData) {
-    // ✅ Esta es la ruta real esperada por tu backend
-    return apiClient.post('/investments', bidData);
+    return apiAdmin1.post('/investments', bidData);
   }
 };

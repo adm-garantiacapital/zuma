@@ -1,4 +1,5 @@
-import apiClient from './api.js';
+// services/propertyService.js (Admin 1)
+import { apiAdmin1 } from './api.js';
 
 export const propertyService = {
   getProperties(page = 1, filters = {}) {
@@ -6,33 +7,33 @@ export const propertyService = {
       page: page.toString(),
       ...filters
     });
-    return apiClient.get(`/property/active/sow?${params}`);
+    return apiAdmin1.get(`/property/active/sow?${params}`);
   },
 
   getProperty(id) {
-    return apiClient.get(`/property/${id}`);
+    return apiAdmin1.get(`/property/${id}`);
   },
 
   createProperty(data) {
-    return apiClient.post('/property', data);
+    return apiAdmin1.post('/property', data);
   },
 
   updateProperty(id, data) {
-    return apiClient.put(`/property/${id}`, data);
+    return apiAdmin1.put(`/property/${id}`, data);
   },
 
   deleteProperty(id) {
-    return apiClient.delete(`/property/${id}`);
+    return apiAdmin1.delete(`/property/${id}`);
   },
 
   getPropertyInvestments(property_id, page = 1) {
     const params = new URLSearchParams({
       page: page.toString()
     });
-    return apiClient.get(`/online/inversiones/1?${params}`);
+    return apiAdmin1.get(`/online/inversiones/1?${params}`);
   },
 
   createInvestment(property_id, data) {
-    return apiClient.post(`/online/inversiones/1`, data);
+    return apiAdmin1.post(`/online/inversiones/1`, data);
   },
 };

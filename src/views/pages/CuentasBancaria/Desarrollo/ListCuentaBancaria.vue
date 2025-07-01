@@ -2,21 +2,7 @@
     <div class="py-6">
         <DataTable :value="bankAccounts" :loading="loading" stripedRows class="p-datatable-sm">
             <template #header>
-            <div class="flex flex-wrap gap-2 items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <h4 class="m-0">Propiedades</h4>
-                </div>
-
-                <div class="flex flex-wrap gap-2">
-                    <IconField>
-                        <InputIcon>
-                            <i class="pi pi-search" />
-                        </InputIcon>
-                        <InputText placeholder="Buscar..." />
-                    </IconField>
-                </div>
-            </div>
-        </template>
+            </template>
 
             <Column field="bank" header="Banco" sortable style="min-width: 15rem"></Column>
             <Column field="type" header="Tipo de cuenta" sortable style="min-width: 10rem"></Column>

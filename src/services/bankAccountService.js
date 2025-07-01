@@ -1,19 +1,19 @@
-import apiClient from './api.js';
+import { apiAdmin2 } from './api.js';
 
 export const bankAccountService = {
     getBankAccounts() {
-        return apiClient.get('/bank-accounts');
+        return apiAdmin2.get('/bank-accounts');
     },
 
     createBankAccount(data) {
-        return apiClient.post('/bank-accounts', data);
+        return apiAdmin2.post('/bank-accounts', data);
     },
 
     updateBankAccount(id, data) {
-        return apiClient.put(`/bank-accounts/${id}`, data);
+        return apiAdmin2.put(`/bank-accounts/${id}`, data);
     },
 
     deleteBankAccount(id) {
-        return apiClient.delete(`/bank-accounts/${id}`);
+        return apiAdmin2.delete(`/bank-accounts/${id}`);
     }
 };
