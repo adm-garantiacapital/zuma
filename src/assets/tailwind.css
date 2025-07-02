@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Serif+Display:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+    font-family: "Montserrat", sans-serif !important;
+}
+
+.font-monserrat {
+    font-family: "Montserrat", sans-serif;
+}
+
+.font-noto {
+    font-family: "Noto Serif Display", serif;
+}

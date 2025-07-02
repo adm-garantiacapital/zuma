@@ -38,6 +38,18 @@ const router = createRouter({
                     name: 'estado-cuenta',
                     component: () => import('@/views/pages/EstadoCuenta/indexEstadoCuenta.vue'),
                     meta: { requiresAuth: true }
+                },
+                {
+                    path: '/Perfil',
+                    name: 'perfil',
+                    component: () => import('@/views/pages/Profile/indexProfile.vue'),
+                    meta: { requiresAuth: true }
+                },
+                {
+                    path: '/Confirmar-Cuenta',
+                    name: 'confirmar-cuenta',
+                    component: () => import('@/views/pages/ConfigurarCuenta/index.vue'),
+                    meta: { requiresAuth: true }
                 }
             ]
         },

@@ -122,6 +122,10 @@
           </div>
         </div>
       </div>
+<div v-if="operationNumber || amount" class="text-xs text-gray-500 mt-2">
+  <div v-if="operationNumber">📄 Operación detectada: <strong>{{ operationNumber }}</strong></div>
+  <div v-if="amount">💰 Monto detectado: <strong>S/ {{ amount.toFixed(2) }}</strong></div>
+</div>
 
       <!-- Términos y condiciones -->
       <div class="text-xs text-gray-600 space-y-2">
@@ -171,7 +175,7 @@ import { ref, computed, onMounted } from 'vue'
 import { bankAccountService } from '@/services/bankAccountService'
 import { createDeposit } from '@/services/movementsservice'
 import { useToast } from 'primevue/usetoast'
-
+import { ocrService } from '@/services/ocrService'
 const props = defineProps({
   visible: Boolean
 })
@@ -241,34 +245,22 @@ const getSelectedBankName = (selectedValue) => {
   return bank ? bank.bank : ''
 }
 
-const handleFileUpload = (event) => {
+const handleFileUpload = async (event) => {
   const file = event.target.files[0]
   if (!file) return
 
-  // Validar tamaño (5MB max)
-  if (file.size > 5 * 1024 * 1024) {
-    alert('El archivo es demasiado grande. Máximo 5MB.')
-    return
-  }
+  try {
+    const response = await ocrService.extractText(file)
+    const ocrData = response.data.data?.[0]
 
-  // Validar tipo
-  const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
-  if (!validTypes.includes(file.type)) {
-    alert('Formato no válido. Solo se permiten JPG, PNG y PDF.')
-    return
-  }
-
-  voucherFile.value = file
-
-  // Crear preview
-  if (isImage(file)) {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      voucherPreview.value = e.target.result
+    if (ocrData) {
+      operationNumber.value = ocrData.codigo || ''
+      amount.value = parseFloat(ocrData.monto?.replace(/[^\d.]/g, '')) || null
     }
-    reader.readAsDataURL(file)
-  } else if (file.type === 'application/pdf') {
-    pdfUrl.value = URL.createObjectURL(file)
+
+    console.log('Texto OCR:', response.data.text)
+  } catch (error) {
+    console.error('Error OCR:', error)
   }
 }
 

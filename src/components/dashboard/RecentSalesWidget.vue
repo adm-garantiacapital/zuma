@@ -1,51 +1,130 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
-import { propertyService } from '@/services/propertyService.js'
+import { ref, watch, onMounted } from 'vue';
+import { propertyService } from '@/services/propertyService.js';
 
+// Props recibidos del componente padre
 const props = defineProps({
-  property_id: {
-    type: [String, Number],
-    required: true
-  }
-})
+    selectedPropertyId: {
+        type: [Number, String],
+        default: null
+    },
+    selectedAuction: {
+        type: Object,
+        default: null
+    }
+});
 
-const investments = ref([])
-const totalRecords = ref(0)
-const loading = ref(true)
-const currentPage = ref(1)
-const perPage = 10 // coincide con tu backend
+// Estado del componente
+const investments = ref([]);
+const loading = ref(false);
+const currentPage = ref(1);
+const totalPages = ref(1);
+const perPage = ref(15);
+const total = ref(0);
+const error = ref(null);
 
+// Dialog para crear nueva inversión
+const investmentDialog = ref(false);
+const newInvestment = ref({
+    monto_invertido: '',
+    notas: ''
+});
+const submittingInvestment = ref(false);
+
+// Cargar inversiones/participantes
 const loadInvestments = async (page = 1) => {
-  loading.value = true
-  try {
-    const response = await propertyService.getPropertyInvestments(props.property_id, page)
-    investments.value = response.data.data
-    totalRecords.value = response.data.meta.total
-  } catch (error) {
-    console.error('Error al cargar inversiones:', error)
-  } finally {
-    loading.value = false
-  }
-}
+    if (!props.selectedPropertyId) {
+        investments.value = [];
+        return;
+    }
 
-watch(() => props.property_id, () => {
-  currentPage.value = 1
-  loadInvestments(1)
-})
+    try {
+        loading.value = true;
+        error.value = null;
+        
+        const response = await propertyService.getPropertyInvestments(props.selectedPropertyId, page);
+        
+        // Adaptar estructura según tu API
+        if (response.data.data) {
+            investments.value = response.data.data;
+            currentPage.value = response.data.meta?.current_page || 1;
+            totalPages.value = response.data.meta?.last_page || 1;
+            perPage.value = response.data.meta?.per_page || 15;
+            total.value = response.data.meta?.total || 0;
+        } else {
+            investments.value = response.data || [];
+        }
+    } catch (err) {
+        console.error('Error loading investments:', err);
+        error.value = 'Error al cargar los participantes';
+        investments.value = [];
+    } finally {
+        loading.value = false;
+    }
+};
 
-watch(currentPage, (page) => {
-  loadInvestments(page)
-})
+// Crear nueva inversión
+const createNewInvestment = async () => {
+    if (!newInvestment.value.monto_invertido || !props.selectedPropertyId) {
+        return;
+    }
 
-onMounted(() => {
-  loadInvestments(currentPage.value)
-})
+    try {
+        submittingInvestment.value = true;
+
+        const investmentData = {
+            property_id: props.selectedPropertyId,
+            monto_invertido: parseFloat(newInvestment.value.monto_invertido),
+            notas: newInvestment.value.notas || ''
+        };
+
+        await propertyService.createInvestment(props.selectedPropertyId, investmentData);
+        
+        // Resetear formulario y cerrar dialog
+        newInvestment.value = { monto_invertido: '', notas: '' };
+        investmentDialog.value = false;
+        
+        // Recargar inversiones
+        loadInvestments(currentPage.value);
+        
+    } catch (err) {
+        console.error('Error creating investment:', err);
+        error.value = 'Error al crear la inversión';
+    } finally {
+        submittingInvestment.value = false;
+    }
+};
+
+// Formatear moneda
+const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('es-PE', {
+        style: 'currency',
+        currency: 'PEN'
+    }).format(amount);
+};
+
+// Formatear fecha
+const formatDate = (dateString) => {
+    if (!dateString) return 'No disponible';
+    return new Date(dateString).toLocaleString('es-PE', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+};
+
+// Obtener iniciales del nombre
+const getInitials = (name) => {
+    if (!name) return 'NN';
+    return name.split(' ').map(word => word.charAt(0)).join('').substring(0, 2).toUpperCase();
+};
+
+// Calcular total de inversiones
 </script>
 
 <template>
-  <div class="card">
-    <div class="font-semibold text-xl mb-4">Inversiones</div>
-
     <DataTable
       :value="investments"
       :rows="perPage"
@@ -57,6 +136,7 @@ onMounted(() => {
       :first="(currentPage - 1) * perPage"
       @page="(e) => currentPage.value = e.page + 1"
       responsiveLayout="scroll"
+      showGridlines
     >
       <!-- Columna: Inversor (con avatar) -->
       <Column header="Inversor" style="width: 30%">
@@ -90,5 +170,4 @@ onMounted(() => {
         </template>
       </Column>
     </DataTable>
-  </div>
 </template>

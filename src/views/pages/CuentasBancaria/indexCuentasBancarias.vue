@@ -1,11 +1,11 @@
 <template>
     <div>
+        <br>
         <Breadcrumb :home="home" :model="items" />
         <div class="card">
-            <p class="text-2xl font-bold">Mis cuentas bancarias</p>
             <AddCuentaBancaria @account-created="handleAccountCreated" />
             <ListCuentaBancaria ref="listCuentaBancariaRef" />
-            <h2 class="text-4xl font-bold text-gray-800 mb-2">Nuestras Hipotecas</h2>
+            <h3>Nuestras Hipotecas</h3>
             <p class="text-gray-600 text-lg">Encuentra la opción perfecta para tu hogar</p>
             <ListHipotecasCB />
         </div>

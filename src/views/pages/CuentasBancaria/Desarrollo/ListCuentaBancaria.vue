@@ -2,6 +2,11 @@
     <div class="py-6">
         <DataTable :value="bankAccounts" :loading="loading" stripedRows class="p-datatable-sm">
             <template #header>
+                <div class="flex flex-wrap gap-2 items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <h4 class="m-0">Mis cuentas bancaria</h4>
+                    </div>
+                </div>
             </template>
 
             <Column field="bank" header="Banco" sortable style="min-width: 15rem"></Column>
@@ -12,7 +17,7 @@
             <Column field="status" header="Estado" sortable style="min-width: 12rem">
                 <template #body="slotProps">
                     <Tag :value="slotProps.data.status"
-                         :severity="slotProps.data.status === 'valid' ? 'success' : 'warn'" />
+                        :severity="slotProps.data.status === 'valid' ? 'success' : 'warn'" />
                 </template>
             </Column>
             <Column header="">
@@ -23,13 +28,9 @@
         </DataTable>
 
         <!-- Componente para ver/editar detalles -->
-        <VerDetalleCuentaBancaria
-            :visible="showDetailDialog"
-            :accountData="selectedAccount"
-            @update:visible="updateDetailDialog"
-            @account-updated="handleAccountUpdated"
-            @account-deleted="handleAccountDeleted"
-        />
+        <VerDetalleCuentaBancaria :visible="showDetailDialog" :accountData="selectedAccount"
+            @update:visible="updateDetailDialog" @account-updated="handleAccountUpdated"
+            @account-deleted="handleAccountDeleted" />
     </div>
 </template>
 

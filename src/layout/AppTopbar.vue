@@ -7,24 +7,19 @@
 
           <OverlayBadge :value="notifications.length">
             <div class="relative">
-              <i
-  class="pi pi-bell text-2xl transition-all duration-300 group-hover:scale-110 align-middle"
-  :class="showNotifications ? 'text-[#FF4929]' : ''"
-/>
+              <i class="pi pi-bell text-2xl transition-all duration-300 group-hover:scale-110 align-middle"
+                :class="showNotifications ? 'text-[#FF4929]' : ''" />
 
               <div v-if="notifications.length > 0"
-                   class="absolute -top-1 -right-1 w-3 h-3 bg-[#FF4929] rounded-full animate-pulse"></div>
+                class="absolute -top-1 -right-1 w-3 h-3 bg-[#FF4929] rounded-full animate-pulse"></div>
             </div>
           </OverlayBadge>
         </button>
 
         <!-- Panel de notificaciones -->
-        <div
-          v-if="showNotifications"
-          ref="notificationsPanelRef"
+        <div v-if="showNotifications" ref="notificationsPanelRef"
           class="absolute right-0 mt-3 w-[420px] bg-white border-0 rounded-3xl shadow-[0_20px_70px_rgba(0,0,0,0.15)] z-50 backdrop-blur-sm overflow-hidden"
-          style="animation: slideDown 0.3s ease-out;"
-        >
+          style="animation: slideDown 0.3s ease-out;">
           <div class="px-6 py-5 border-b flex items-center justify-between">
             <div class="flex items-center gap-3">
               <div class="bg-[#F1F5F9] p-3 rounded-full">
@@ -41,46 +36,36 @@
           </div>
 
           <!-- Lista de notificaciones -->
-          <div
-            :class="{ 'max-h-[400px] overflow-y-auto': notifications.length >= 4 }"
-            class="p-4 space-y-3 bg-white"
-          >
-            <div
-              v-for="notification in notifications"
-              :key="notification.id"
-              class="bg-white border-l-4 p-4 rounded-xl shadow-sm transition hover:shadow-md"
-              :class="{
-                'border-blue-500': notification.type === 'personal',
-                'border-yellow-500': notification.type === 'cuenta',
-                'border-green-500': notification.type === 'deposito',
-                'border-gray-300': !['personal', 'cuenta', 'deposito'].includes(notification.type)
-              }"
-            >
-              <div class="flex items-start gap-4">
-                <div
-                  class="w-10 h-10 rounded-full flex items-center justify-center"
-                  :class="{
-                    'bg-blue-100 text-blue-600': notification.type === 'personal',
-                    'bg-yellow-100 text-yellow-600': notification.type === 'cuenta',
-                    'bg-green-100 text-green-600': notification.type === 'deposito',
-                    'bg-gray-100 text-gray-600': !['personal', 'cuenta', 'deposito'].includes(notification.type)
-                  }"
-                >
-                  <i :class="notification.icon + ' text-lg'" />
-                </div>
-                <div class="flex-1">
-                  <p class="text-sm text-gray-800 mb-2 leading-snug">{{ notification.text }}</p>
-                  <div class="flex justify-end">
-                    <button
-                      @click="completarNotificacion(notification.id)"
-                      class="text-xs font-semibold px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
-                    >
-                      {{ notification.action }}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div :class="{ 'max-h-[400px] overflow-y-auto': notifications.length >= 4 }" class="p-4 space-y-3 bg-white">
+            <div v-for="notification in notifications" :key="notification.id"
+  @click="irADetalleNotificacion(notification.type)"
+  class="bg-white border-l-4 p-4 rounded-xl shadow-sm transition hover:shadow-md cursor-pointer"
+  :class="{
+    'border-blue-500': notification.type === 'personal',
+    'border-yellow-500': notification.type === 'cuenta',
+    'border-green-500': notification.type === 'deposito',
+    'border-gray-300': !['personal', 'cuenta', 'deposito'].includes(notification.type)
+  }">
+  <div class="flex items-start gap-4">
+    <div class="w-10 h-10 rounded-full flex items-center justify-center" :class="{
+      'bg-blue-100 text-blue-600': notification.type === 'personal',
+      'bg-yellow-100 text-yellow-600': notification.type === 'cuenta',
+      'bg-green-100 text-green-600': notification.type === 'deposito',
+      'bg-gray-100 text-gray-600': !['personal', 'cuenta', 'deposito'].includes(notification.type)
+    }">
+      <i :class="notification.icon + ' text-lg'" />
+    </div>
+    <div class="flex-1">
+      <p class="text-sm text-gray-800 mb-2 leading-snug">{{ notification.text }}</p>
+      <div class="flex justify-end">
+        <button @click.stop="completarNotificacion(notification.id)"
+          class="text-xs font-semibold px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+          {{ notification.action }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
             <div v-if="notifications.length === 0" class="text-center py-10">
               <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
@@ -93,8 +78,7 @@
 
           <div class="p-4 border-t bg-gray-50">
             <button
-              class="w-full text-sm font-semibold text-gray-700 border border-gray-300 rounded-xl py-2 hover:bg-gray-100 transition"
-            >
+              class="w-full text-sm font-semibold text-gray-700 border border-gray-300 rounded-xl py-2 hover:bg-gray-100 transition">
               <i class="pi pi-external-link mr-2 text-sm" />
               Ver todas las notificaciones
             </button>
@@ -104,50 +88,33 @@
 
       <!-- MENÚ DE USUARIO -->
       <div class="relative user-menu-container">
-        <button 
-          @click="toggleUserMenu" 
-          class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
-        >
+        <button @click="toggleUserMenu"
+          class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors duration-200">
           <!-- Foto de perfil -->
           <div class="w-8 h-8 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
-            <img
-              v-if="profilePhoto"
-              :src="profilePhoto"
-              alt="Avatar"
-              class="w-full h-full object-cover"
-            />
-            <i
-              v-else
-              class="pi pi-user text-gray-600 text-sm flex items-center justify-center w-full h-full"
-            ></i>
+            <img v-if="profilePhoto" :src="profilePhoto" alt="Avatar" class="w-full h-full object-cover" />
+            <i v-else class="pi pi-user text-gray-600 text-sm flex items-center justify-center w-full h-full"></i>
           </div>
           <span class="text-sm font-medium text-gray-800">[ {{ fullName }} ]</span>
-          <i class="pi pi-chevron-down text-xs text-gray-600 transition-transform duration-200" 
-             :class="{ 'rotate-180': showUserMenu }"></i>
+          <i class="pi pi-chevron-down text-xs text-gray-600 transition-transform duration-200"
+            :class="{ 'rotate-180': showUserMenu }"></i>
         </button>
 
         <!-- Menú desplegable del usuario -->
-        <div
-          v-if="showUserMenu"
-          ref="userMenuRef"
+        <div v-if="showUserMenu" ref="userMenuRef"
           class="absolute right-0 mt-2 w-48 bg-white border-0 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] z-50 overflow-hidden"
-          style="animation: slideDown 0.2s ease-out;"
-        >
+          style="animation: slideDown 0.2s ease-out;">
           <div class="py-2">
-            <button
-              @click="goToProfile"
-              class="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-150"
-            >
+            <button @click="goToProfile"
+              class="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-150">
               <i class="pi pi-user text-gray-600"></i>
               <span class="text-sm font-medium text-gray-700">Mi Perfil</span>
             </button>
-            
+
             <div class="border-t border-gray-100 my-1"></div>
-            
-            <button
-              @click="logout"
-              class="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-red-50 transition-colors duration-150 text-red-600"
-            >
+
+            <button @click="logout"
+              class="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-red-50 transition-colors duration-150 text-red-600">
               <i class="pi pi-sign-out text-red-600"></i>
               <span class="text-sm font-medium">Cerrar Sesión</span>
             </button>
@@ -156,26 +123,20 @@
       </div>
 
       <!-- Botón menú adicional -->
-      <button
-        class="layout-topbar-menu-button layout-topbar-action"
-        v-styleclass="{
-          selector: '@next',
-          enterFromClass: 'hidden',
-          enterActiveClass: 'animate-scalein',
-          leaveToClass: 'hidden',
-          leaveActiveClass: 'animate-fadeout',
-          hideOnOutsideClick: true
-        }"
-      >
+      <button class="layout-topbar-menu-button layout-topbar-action" v-styleclass="{
+        selector: '@next',
+        enterFromClass: 'hidden',
+        enterActiveClass: 'animate-scalein',
+        leaveToClass: 'hidden',
+        leaveActiveClass: 'animate-fadeout',
+        hideOnOutsideClick: true
+      }">
         <i class="pi pi-ellipsis-v"></i>
       </button>
     </div>
   </div>
 
-  <AddCuenta
-    :visible="showAddCuentaDialog"
-    @update:visible="val => showAddCuentaDialog = val"
-  />
+  <AddCuenta :visible="showAddCuentaDialog" @update:visible="val => showAddCuentaDialog = val" />
 </template>
 
 <script setup>
@@ -183,7 +144,9 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 import OverlayBadge from 'primevue/overlaybadge';
 import AddCuenta from '@/views/pages/Notificaciones/CuentaBancaria/Desarrollo/AddCuenta.vue';
 import profileService from '@/services/profileService';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const showNotifications = ref(false);
 const showUserMenu = ref(false);
 const notificationsPanelRef = ref(null);
@@ -233,13 +196,6 @@ const completarNotificacion = (id) => {
   }
 };
 
-const goToProfile = () => {
-  showUserMenu.value = false;
-  // Aquí puedes agregar la navegación al perfil
-  console.log('Ir al perfil');
-  // Ejemplo: this.$router.push('/profile');
-};
-
 const logout = () => {
   showUserMenu.value = false;
   // Aquí puedes agregar la lógica de cerrar sesión
@@ -253,11 +209,11 @@ const logout = () => {
 const handleClickOutside = (event) => {
   const notificationsContainer = event.target.closest('.notifications-container');
   const userMenuContainer = event.target.closest('.user-menu-container');
-  
+
   if (!notificationsContainer) {
     showNotifications.value = false;
   }
-  
+
   if (!userMenuContainer) {
     showUserMenu.value = false;
   }
@@ -270,7 +226,7 @@ const loadProfile = async () => {
   try {
     const response = await profileService.getProfile();
     const user = response.data.data;
-    fullName.value = `${user.name} ${user.first_last_name} ${user.second_last_name}`;
+    fullName.value = `${user.alias}`;
   } catch (error) {
     console.error('Error cargando perfil:', error);
     // Fallback si hay error
@@ -286,7 +242,21 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside);
 });
+const goToProfile = () => {
+  showUserMenu.value = false;
+  router.push({ name: 'perfil' }); // ✅ Usa el name correcto (minúscula)
+};
+
+const irADetalleNotificacion = (type) => {
+  if (type === 'personal') {
+    router.push('/Confirmar-Cuenta');
+  } else if (type === 'cuenta') {
+    router.push('/Cuenta-Bancaria');
+  } else if (type === 'deposito') {
+    router.push('/Estado-Cuenta');
+  }
+};
+
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

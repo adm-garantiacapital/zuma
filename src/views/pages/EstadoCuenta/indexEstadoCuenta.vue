@@ -1,4 +1,5 @@
 <template>
+    <br>
     <Breadcrumb :home="home" :model="items" />
     <div class="card">
         <AddEstadoCuenta
@@ -12,6 +13,10 @@
             @balance-updated="handleBalanceUpdate"
             ref="listEstadoCuentaRef"
         />
+        <br>
+        <h3>Nuestras Hipotecas</h3>
+        <p class="text-gray-600 text-lg">Encuentra la opción perfecta para tu hogar</p>
+        <ListHipotecasCB/>
     </div>
 </template>
 
@@ -19,6 +24,7 @@
 import { ref } from 'vue'
 import AddEstadoCuenta from './Desarrollo/TypeMoneda.vue'
 import ListEstadoCuenta from './Desarrollo/ListEstadoCuenta.vue'
+import ListHipotecasCB from '../CuentasBancaria/Desarrollo/ListHipotecasCB.vue'
 
 // Referencias a los componentes hijos
 const addEstadoCuentaRef = ref()

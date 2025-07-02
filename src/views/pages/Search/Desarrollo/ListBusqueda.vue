@@ -1,59 +1,65 @@
 <template>
+    <br>
     <Breadcrumb :home="home" :model="items" />
-    <DataTable v-model:selection="selectedProducts" :value="products" dataKey="id" :paginator="true" :rows="rows"
-        :totalRecords="totalRecords" :lazy="true" :first="(currentPage - 1) * rows" @page="onPage" :filters="filters"
-        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReportTemplate RowsPerPageDropdown"
-        :rowsPerPageOptions="[5, 10, 25]"
-        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} propiedades" responsiveLayout="scroll"
-        class="p-datatable-sm" :loading="loading">
+    <Billetera />
+    <div class="py-4">
+        <DataTable v-model:selection="selectedProducts" :value="products" dataKey="id" :paginator="true" :rows="rows"
+            :totalRecords="totalRecords" :lazy="true" :first="(currentPage - 1) * rows" @page="onPage"
+            :filters="filters"
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReportTemplate RowsPerPageDropdown"
+            :rowsPerPageOptions="[5, 10, 25]"
+            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} propiedades"
+            responsiveLayout="scroll" class="p-datatable-sm" :loading="loading">
 
-        <template #header>
-            <div class="flex flex-wrap gap-2 items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <h4 class="m-0">Hipotecas
-                        <Tag severity="success" :value="totalRecords" />
-                    </h4>
-                </div>
-                <div class="flex flex-wrap gap-2">
-                    <IconField>
-                        <InputIcon>
-                            <i class="pi pi-search" />
-                        </InputIcon>
-                        <InputText v-model="filters['global'].value" placeholder="Buscar..." />
-                    </IconField>
-                    <Select v-model="selectedCurrency" :options="currencyOptions" optionLabel="codigo"
-                        placeholder="Moneda" class="w-full md:w-auto" showClear @change="loadProperties" />
+            <template #header>
+                <div class="flex flex-wrap gap-2 items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <h4 class="m-0">Hipotecas
+                            <Tag severity="success" :value="totalRecords" />
+                        </h4>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <IconField>
+                            <InputIcon>
+                                <i class="pi pi-search" />
+                            </InputIcon>
+                            <InputText v-model="filters['global'].value" placeholder="Buscar..." />
+                        </IconField>
+                        <Select v-model="selectedCurrency" :options="currencyOptions" optionLabel="codigo"
+                            placeholder="Moneda" class="w-full md:w-auto" showClear @change="loadProperties" />
 
-                    <Button icon="pi pi-refresh" outlined rounded aria-label="Refresh" @click="loadProperties" />
-                </div>
-            </div>
-        </template>
-
-        <Column selectionMode="multiple" style="width: 3rem" :exportable="false" />
-        <Column field="nombre" header="Nombre de la propiedad" sortable style="min-width: 15rem" />
-        <Column field="descripcion" header="Descripcion de la propiedad" sortable style="min-width: 20rem" />
-        <Column field="Moneda" header="Moneda" sortable style="min-width: 5rem" />
-        <Column field="valor_estimado" header="Valor de la propiedad" sortable style="min-width: 12rem" />
-        <Column field="financiado" header="Financiamiento" sortable style="min-width: 8rem" />
-        <Column field="tea" header="TEM" sortable style="min-width: 8rem" />
-        <Column field="foto" header="Imagen">
-            <template #body="slotProps">
-                <div class="flex justify-center">
-                    <Image v-if="slotProps.data.foto" :src="slotProps.data.foto" class="rounded"
-                        :alt="slotProps.data.nombre || 'Imagen de propiedad'" preview width="50" style="width: 64px" />
-                    <div v-else class="w-16 h-16 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
-                        <i class="pi pi-image text-gray-400 text-xl"></i>
+                        <Button icon="pi pi-refresh" outlined rounded aria-label="Refresh" @click="loadProperties" />
                     </div>
                 </div>
             </template>
-        </Column>
-        <Column field="detalles" header="">
-            <template #body="slotProps">
-                <Button label="Simular" outlined class="p-button-sm"
-                    @click="() => scheduleRef.open(slotProps.data.id)" />
-            </template>
-        </Column>
-    </DataTable>
+
+            <Column selectionMode="multiple" style="width: 3rem" :exportable="false" />
+            <Column field="nombre" header="Nombre de la propiedad" sortable style="min-width: 15rem" />
+            <Column field="descripcion" header="Descripcion de la propiedad" sortable style="min-width: 20rem" />
+            <Column field="Moneda" header="Moneda" sortable style="min-width: 5rem" />
+            <Column field="valor_estimado" header="Valor de la propiedad" sortable style="min-width: 12rem" />
+            <Column field="tea" header="TEM" sortable style="min-width: 8rem" />
+            <Column field="foto" header="Imagen">
+                <template #body="slotProps">
+                    <div class="flex justify-center">
+                        <Image v-if="slotProps.data.foto" :src="slotProps.data.foto" class="rounded"
+                            :alt="slotProps.data.nombre || 'Imagen de propiedad'" preview width="50"
+                            style="width: 64px" />
+                        <div v-else
+                            class="w-16 h-16 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
+                            <i class="pi pi-image text-gray-400 text-xl"></i>
+                        </div>
+                    </div>
+                </template>
+            </Column>
+            <Column field="detalles" header="">
+                <template #body="slotProps">
+                    <Button label="Revisar detalles" outlined severity="contrast"
+                        @click="() => scheduleRef.open(slotProps.data.id)" />
+                </template>
+            </Column>
+        </DataTable>
+    </div>
     <ScheduleGeneration ref="scheduleRef" />
 </template>
 
@@ -65,6 +71,7 @@ import { propertyService } from '@/services/propertyService.js';
 import { currencyService } from '@/services/currencyService.js';
 import Image from 'primevue/image';
 import ScheduleGeneration from './ScheduleGeneration.vue';
+import Billetera from './Billetera.vue'
 
 const toast = useToast();
 const scheduleRef = ref(null);
@@ -82,7 +89,7 @@ const filters = ref({
 });
 
 const home = ref({ icon: 'pi pi-home' });
-const items = ref([{ label: 'Subasta hipotecas' }, { label: 'Buscar' }]);
+const items = ref([{ label: 'Subastas de hipotecas' }, { label: 'Buscar hipotecas' }]);
 
 const selectedCurrency = ref(null);
 const currencyOptions = ref([]);

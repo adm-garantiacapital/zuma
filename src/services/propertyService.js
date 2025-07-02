@@ -25,15 +25,4 @@ export const propertyService = {
   deleteProperty(id) {
     return apiAdmin1.delete(`/property/${id}`);
   },
-
-  getPropertyInvestments(property_id, page = 1) {
-    const params = new URLSearchParams({
-      page: page.toString()
-    });
-    return apiAdmin1.get(`/online/inversiones/1?${params}`);
-  },
-
-  createInvestment(property_id, data) {
-    return apiAdmin1.post(`/online/inversiones/1`, data);
-  },
 };
