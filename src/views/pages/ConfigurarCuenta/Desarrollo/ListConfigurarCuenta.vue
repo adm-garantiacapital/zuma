@@ -1,4 +1,5 @@
 <template>
+  <Toast />
   <div class="card p-6 space-y-6">
     <!-- Título con Nombre -->
     <div class="text-center">
@@ -94,7 +95,36 @@
                 title="Eliminar imagen"
               />
             </div>
-            <Badge value="Subido" severity="success" class="mt-2" />
+            
+            <!-- Estado de validación -->
+            <div class="mt-2">
+              <Badge 
+                v-if="frontValidation.status === 'valid'" 
+                value="DNI Validado" 
+                severity="success" 
+              />
+              <Badge 
+                v-else-if="frontValidation.status === 'invalid'" 
+                value="DNI Inválido" 
+                severity="danger" 
+              />
+              <Badge 
+                v-else-if="frontValidation.status === 'processing'" 
+                value="Validando..." 
+                severity="secondary" 
+              />
+              <Badge 
+                v-else 
+                value="Subida - Sin validar" 
+                severity="warning" 
+              />
+            </div>
+            
+            <!-- Mensaje de error -->
+            <div v-if="frontValidation.message && frontValidation.status === 'invalid'" 
+                 class="mt-2 text-xs text-red-600 bg-red-50 p-2 rounded">
+              {{ frontValidation.message }}
+            </div>
           </div>
         </div>
       </div>
@@ -158,21 +188,29 @@
     </div>
 
     <div class="text-center">
-      <Button label="Guardar" icon="pi pi-save" class="p-button-success w-40" @click="guardarPerfil" />
+      <Button 
+        label="Guardar" 
+        icon="pi pi-save" 
+        rounded  
+        severity="contrast" 
+        variant="outlined" 
+        fluid 
+        @click="guardarPerfil"
+        :disabled="!canSave"
+        :loading="isSaving"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import Select from 'primevue/select'
-import InputText from 'primevue/inputtext'
-import ToggleSwitch from 'primevue/inputswitch'
-import Checkbox from 'primevue/checkbox'
-import Button from 'primevue/button'
-import Badge from 'primevue/badge'
-import profileService from '@/services/profileService'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
+import { useToast } from 'primevue/usetoast'
+import profileService from '@/services/profileService'
+import { ocrService } from '@/services/ocrService'
+
+const toast = useToast()
 
 const perfil = ref({})
 const form = ref({
@@ -194,6 +232,26 @@ const distritos = ref([])
 // Para las vistas previas de las imágenes
 const frontImagePreview = ref('')
 const backImagePreview = ref('')
+
+// Estados de validación
+const frontValidation = ref({
+  status: null, // null, 'processing', 'valid', 'invalid'
+  message: ''
+})
+
+const isSaving = ref(false)
+
+// Computed para habilitar/deshabilitar el botón guardar
+const canSave = computed(() => {
+  return form.value.departamento && 
+         form.value.provincia && 
+         form.value.distrito && 
+         form.value.address && 
+         form.value.dni_front && 
+         form.value.dni_back &&
+         form.value.contractAccepted &&
+         frontValidation.value.status === 'valid'
+})
 
 onMounted(async () => {
   try {
@@ -219,8 +277,30 @@ const onProvinciaChange = () => {
   distritos.value = form.value.provincia?.districts || []
 }
 
+// Validar DNI con OCR
+const validateDniWithOCR = async (file) => {
+  try {
+    frontValidation.value = { status: 'processing', message: 'Validando DNI...' }
+    
+    const response = await ocrService.extractDni(file)
+    const { validation } = response.data
+    
+    if (validation.is_valid) {
+      frontValidation.value = { status: 'valid', message: validation.message }
+    } else {
+      frontValidation.value = { status: 'invalid', message: validation.message }
+    }
+  } catch (error) {
+    console.error('Error en validación OCR:', error)
+    frontValidation.value = { 
+      status: 'invalid', 
+      message: 'Error al validar el DNI. Intenta con una imagen más clara.' 
+    }
+  }
+}
+
 // Subida de imagen frontal
-const onUploadFront = (event) => {
+const onUploadFront = async (event) => {
   const file = event.target.files[0]
   if (file) {
     form.value.dni_front = file
@@ -231,6 +311,9 @@ const onUploadFront = (event) => {
       frontImagePreview.value = e.target.result
     }
     reader.readAsDataURL(file)
+    
+    // Validar con OCR
+    await validateDniWithOCR(file)
   }
 }
 
@@ -253,6 +336,7 @@ const onUploadBack = (event) => {
 const removeFrontImage = () => {
   form.value.dni_front = null
   frontImagePreview.value = ''
+  frontValidation.value = { status: null, message: '' }
 }
 
 // Eliminar imagen trasera
@@ -261,17 +345,131 @@ const removeBackImage = () => {
   backImagePreview.value = ''
 }
 
-// Guardar
-const guardarPerfil = () => {
-  if (!form.value.contractAccepted) {
-    alert('Debe aceptar el contrato para continuar.')
-    return
+// Función guardarPerfil corregida
+const guardarPerfil = async () => {
+  if (!canSave.value) {
+    toast.add({
+      severity: 'warn',
+      summary: 'Validación requerida',
+      detail: 'Debes completar todos los campos y validar el DNI correctamente.',
+      life: 5000
+    });
+    return;
   }
 
-  // Aquí puedes preparar los datos para enviarlos
-  console.log('Formulario a enviar:', form.value)
-  // Enviar con `profileService.updateProfile(...)`
-}
+  isSaving.value = true;
+
+  const payload = new FormData();
+  
+  // Enviar valores PEP como números (1 o 0)
+  payload.append('is_pep', form.value.is_pep ? 1 : 0);
+  payload.append('has_relationship_pep', form.value.has_relationship_pep ? 1 : 0);
+  
+  // AQUÍ ESTÁ EL PROBLEMA PRINCIPAL: necesitas extraer el código correcto del ubigeo
+  // Opción 1: Si el backend espera códigos cortos (2 dígitos para departamento, etc.)
+  // Necesitas mapear o extraer el código correcto del ubigeo_id
+  
+  // Temporal: enviar los IDs directamente pero como números
+  payload.append('department', parseInt(form.value.departamento?.ubigeo_id) || 0);
+  payload.append('province', parseInt(form.value.provincia?.ubigeo_id) || 0);
+  payload.append('district', parseInt(form.value.distrito?.ubigeo_id) || 0);
+  
+  // Dirección
+  payload.append('address', form.value.address || '');
+
+  // ARCHIVOS: Verificar que existan antes de añadirlos
+  if (form.value.dni_front && form.value.dni_front instanceof File) {
+    payload.append('document_front', form.value.dni_front);
+  }
+
+  if (form.value.dni_back && form.value.dni_back instanceof File) {
+    payload.append('document_back', form.value.dni_back);
+  }
+
+  // Debug mejorado
+  console.log('=== PAYLOAD DEBUG ===');
+  for (let pair of payload.entries()) {
+    if (pair[1] instanceof File) {
+      console.log(pair[0] + ':', `File: ${pair[1].name} (${pair[1].size} bytes)`);
+    } else {
+      console.log(pair[0] + ':', pair[1], typeof pair[1]);
+    }
+  }
+
+  try {
+    await profileService.updateConfirmAccount(payload);
+    toast.add({
+      severity: 'success',
+      summary: 'Perfil actualizado',
+      detail: 'Se ha enviado tu información correctamente.',
+      life: 4000
+    });
+  } catch (error) {
+    console.error('Error al guardar datos:', error.response?.data || error);
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: error.response?.data?.message || 'Ocurrió un error al guardar los datos.',
+      life: 4000
+    });
+  } finally {
+    isSaving.value = false;
+  }
+};
+
+// SOLUCIÓN ALTERNATIVA: Si necesitas códigos específicos para ubigeo
+// Necesitarías una función que extraiga el código correcto:
+const extractUbigeoCode = (ubigeoId) => {
+  // Ejemplo: si ubigeo_id es "2534" pero necesitas "10" para Lima
+  // Necesitarías un mapeo o lógica específica
+  
+  // Mapeo temporal (debes ajustar según tu API):
+  const departmentMap = {
+    '2534': '10', // Lima
+    // Agregar más mapeos según necesites
+  };
+  
+  return departmentMap[ubigeoId] || ubigeoId;
+};
+
+// Función guardarPerfil con mapeo de códigos ubigeo
+const guardarPerfilConMapeo = async () => {
+  if (!canSave.value) {
+    toast.add({
+      severity: 'warn',
+      summary: 'Validación requerida', 
+      detail: 'Debes completar todos los campos y validar el DNI correctamente.',
+      life: 5000
+    });
+    return;
+  }
+
+  isSaving.value = true;
+
+  const payload = new FormData();
+  
+  // Valores PEP como números
+  payload.append('is_pep', form.value.is_pep ? 1 : 0);
+  payload.append('has_relationship_pep', form.value.has_relationship_pep ? 1 : 0);
+  
+  // Ubigeo con mapeo de códigos
+  payload.append('department', extractUbigeoCode(form.value.departamento?.ubigeo_id));
+  payload.append('province', extractUbigeoCode(form.value.provincia?.ubigeo_id));
+  payload.append('district', extractUbigeoCode(form.value.distrito?.ubigeo_id));
+  
+  payload.append('address', form.value.address || '');
+
+  // Archivos con validación
+  if (form.value.dni_front && form.value.dni_front instanceof File) {
+    payload.append('document_front', form.value.dni_front);
+  }
+
+  if (form.value.dni_back && form.value.dni_back instanceof File) {
+    payload.append('document_back', form.value.dni_back);
+  }
+
+  // Resto del código igual...
+};
 </script>
 
 <style scoped>

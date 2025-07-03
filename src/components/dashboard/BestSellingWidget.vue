@@ -1,6 +1,8 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { auctionService } from '@/services/auctionService.js';
+import Cronograma from './Cronograma.vue';
+import { paymentScheduleService } from '@/services/paymentScheduleService'
 
 const auctions = ref([]);
 const loading = ref(false);
@@ -8,7 +10,8 @@ const currentPage = ref(1);
 const totalPages = ref(1);
 const perPage = ref(15);
 const total = ref(0);
-
+const scheduleDialog = ref(false);
+const scheduleData = ref([]);
 // Dialog para ofertas
 const bidDialog = ref(false);
 const selectedAuction = ref(null);
@@ -111,6 +114,17 @@ const submitBid = async () => {
         console.error('Error al hacer la oferta:', error.response?.data || error.message);
     } finally {
         submittingBid.value = false;
+    }
+};
+
+const openScheduleDialog = async (auction) => {
+    try {
+        // Aquí puedes tener el ID real del property_investor asociado (por ejemplo auction.property_investor_id)
+        const response = await paymentScheduleService.getByPropertyInvestorId(auction.property_investor_id);
+        scheduleData.value = response.data;
+        scheduleDialog.value = true;
+    } catch (error) {
+        console.error('Error al cargar el cronograma:', error);
     }
 };
 
@@ -237,6 +251,7 @@ onMounted(() => {
                         <!-- Botón debajo a todo el ancho -->
                         <Button label="Ver Cronograma" icon="pi pi-calendar" severity="secondary" rounded
                             @click="openScheduleDialog(auction)" />
+
                     </div>
 
                 </div>
@@ -435,7 +450,12 @@ onMounted(() => {
                 </div>
             </template>
         </Dialog>
-    </div>
+        <Cronograma
+            v-model:visible="scheduleDialog"
+            :schedules="scheduleData"
+        />
+
+        </div>
 </template>
 
 <style scoped>

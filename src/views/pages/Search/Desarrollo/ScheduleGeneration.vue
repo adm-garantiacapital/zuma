@@ -106,7 +106,7 @@
     <!-- Tabla de selección de plazos -->
     <div v-if="!scheduleData && scheduleDataPreview.length > 0" class="mb-5">
       <DataTable v-model:selection="selectedPlazo" :value="scheduleDataPreview" responsiveLayout="scroll"
-        class="p-datatable-sm" dataKey="deadline_id" selectionMode="single">
+        class="p-datatable-sm" dataKey="deadline_id" selectionMode="single" @rowSelect="onRowSelect" @rowUnselect="onRowUnselect">
         <template #header>
           <div class="flex flex-wrap gap-2 items-center justify-between">
             <div class="flex items-center gap-2">
@@ -128,6 +128,16 @@
               <Button label="Exportar" icon="pi pi-file-excel" size="small" severity="success"
                 :disabled="selectedPlazo?.deadline_id !== slotProps.data.deadline_id"
                 @click="exportPreviewToExcel(slotProps.data)" />
+                
+              <Button 
+                label="Invertir" 
+                icon="pi pi-dollar" 
+                size="small" 
+                severity="contrast" 
+                :disabled="selectedPlazo?.deadline_id !== slotProps.data.deadline_id"
+                :loading="investLoading && selectedPlazo?.deadline_id === slotProps.data.deadline_id"
+                @click="handleInvest(slotProps.data.deadline_id)" 
+              />
             </div>
           </template>
         </Column>
@@ -172,6 +182,7 @@
 <script setup>
 import { ref, watch, defineExpose } from 'vue'
 import { simulationService } from '@/services/simulationService.js'
+import { propertyInvestorService } from '@/services/propertyInvestorService.js' // Importar el servicio
 import { useExport } from '@/composables/useExport.js'
 import { useToast } from 'primevue/usetoast'
 
@@ -189,6 +200,7 @@ const currentPage = ref(1)
 const totalRecords = ref(0)
 const loading = ref(false)
 const filters = ref({})
+const investLoading = ref(false) // Estado de carga para inversión
 
 // Nueva variable para manejar mensajes de validación
 const validationMessage = ref(null)
@@ -202,6 +214,90 @@ watch(selectedPlazo, (newVal) => {
     form.value.plazo_id = newVal.deadline_id
   }
 })
+
+// Eventos de selección/deselección de fila
+const onRowSelect = (event) => {
+  console.log('Fila seleccionada:', event.data)
+}
+
+const onRowUnselect = (event) => {
+  console.log('Fila deseleccionada:', event.data)
+}
+
+// Función para manejar la inversión
+const handleInvest = async (deadlineId) => {
+  if (!propertyId.value) {
+    toast.add({ 
+      severity: 'error', 
+      summary: 'Error', 
+      detail: 'No se ha seleccionado una propiedad', 
+      life: 3000 
+    })
+    return
+  }
+
+  if (!deadlineId) {
+    toast.add({ 
+      severity: 'error', 
+      summary: 'Error', 
+      detail: 'No se ha seleccionado un plazo de financiamiento', 
+      life: 3000 
+    })
+    return
+  }
+
+  try {
+    investLoading.value = true
+    
+    // Ahora se envían ambos parámetros: propertyId y deadlineId
+    const response = await propertyInvestorService.invest(propertyId.value, deadlineId)
+    
+    // Manejar respuesta exitosa
+    toast.add({ 
+      severity: 'success', 
+      summary: 'Éxito', 
+      detail: 'Inversión realizada correctamente', 
+      life: 3000 
+    })
+    
+    console.log('Respuesta de inversión:', response.data)
+    
+    // Cerrar el modal después de la inversión exitosa
+    visible.value = false
+    
+    // Aquí puedes emitir un evento para actualizar la lista de propiedades
+    // emit('investmentComplete', response.data)
+    
+  } catch (error) {
+    console.error('Error al realizar la inversión:', error)
+    
+    // Manejar diferentes tipos de errores
+    let errorMessage = 'No se pudo realizar la inversión'
+    
+    if (error.response?.status === 400) {
+      errorMessage = error.response.data?.message || 'Datos de inversión inválidos'
+    } else if (error.response?.status === 401) {
+      errorMessage = 'No tienes autorización para realizar esta inversión'
+    } else if (error.response?.status === 403) {
+      errorMessage = 'No tienes permisos para realizar esta inversión'
+    } else if (error.response?.status === 404) {
+      errorMessage = 'Propiedad o plazo no encontrado'
+    } else if (error.response?.status === 422) {
+      errorMessage = 'Error de validación en los datos'
+    } else if (error.response?.status >= 500) {
+      errorMessage = 'Error del servidor. Por favor, inténtalo más tarde'
+    }
+    
+    toast.add({ 
+      severity: 'error', 
+      summary: 'Error', 
+      detail: errorMessage, 
+      life: 5000 
+    })
+  } finally {
+    investLoading.value = false
+  }
+}
 
 // Abrir el modal y cargar plazos
 const open = async (id) => {

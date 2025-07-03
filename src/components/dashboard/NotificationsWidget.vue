@@ -1,78 +1,94 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue'
+import Button from 'primevue/button'
+import ProgressBar from 'primevue/progressbar'
+import Tag from 'primevue/tag'
+import { investorDashboardService } from '@/services/investorDashboardService'
 
-const menu = ref(null);
+const lastInvestment = ref(null)
+const progressPercentage = ref(0)
+const remainingAmount = ref(0)
+const financedAmount = ref(0)
+const daysRemaining = ref(0)
 
-const items = ref([
-    { label: 'Add New', icon: 'pi pi-fw pi-plus' },
-    { label: 'Remove', icon: 'pi pi-fw pi-trash' }
-]);
+const handleReviewDetails = () => {
+  console.log('Revisar detalles clicked')
+}
+
+onMounted(async () => {
+  try {
+    const response = await investorDashboardService.getLastInvestment()
+    lastInvestment.value = response.data
+
+    // Simulación: usa 50% financiado como en tu maqueta
+    progressPercentage.value = 50
+    financedAmount.value = lastInvestment.value.property.valor_estimado * (progressPercentage.value / 100)
+    remainingAmount.value = lastInvestment.value.property.valor_estimado - financedAmount.value
+
+    // Simulación: días restantes (en caso no tengas un campo real)
+    daysRemaining.value = 60
+  } catch (error) {
+    console.error('Error al cargar la última inversión:', error)
+  }
+})
 </script>
 
 <template>
-    <div class="card">
-        <div class="flex items-center justify-between mb-6">
-            <div class="font-semibold text-xl">Notifications</div>
-            <div>
-                <Button icon="pi pi-ellipsis-v" class="p-button-text p-button-plain p-button-rounded" @click="$refs.menu.toggle($event)"></Button>
-                <Menu ref="menu" popup :model="items" class="!min-w-40"></Menu>
-            </div>
-        </div>
-
-        <span class="block text-muted-color font-medium mb-4">TODAY</span>
-        <ul class="p-0 mx-0 mt-0 mb-6 list-none">
-            <li class="flex items-center py-2 border-b border-surface">
-                <div class="w-12 h-12 flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-full mr-4 shrink-0">
-                    <i class="pi pi-dollar !text-xl text-blue-500"></i>
-                </div>
-                <span class="text-surface-900 dark:text-surface-0 leading-normal"
-                    >Richard Jones
-                    <span class="text-surface-700 dark:text-surface-100">has purchased a blue t-shirt for <span class="text-primary font-bold">$79.00</span></span>
-                </span>
-            </li>
-            <li class="flex items-center py-2">
-                <div class="w-12 h-12 flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-full mr-4 shrink-0">
-                    <i class="pi pi-download !text-xl text-orange-500"></i>
-                </div>
-                <span class="text-surface-700 dark:text-surface-100 leading-normal">Your request for withdrawal of <span class="text-primary font-bold">$2500.00</span> has been initiated.</span>
-            </li>
-        </ul>
-
-        <span class="block text-muted-color font-medium mb-4">YESTERDAY</span>
-        <ul class="p-0 m-0 list-none mb-6">
-            <li class="flex items-center py-2 border-b border-surface">
-                <div class="w-12 h-12 flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-full mr-4 shrink-0">
-                    <i class="pi pi-dollar !text-xl text-blue-500"></i>
-                </div>
-                <span class="text-surface-900 dark:text-surface-0 leading-normal"
-                    >Keyser Wick
-                    <span class="text-surface-700 dark:text-surface-100">has purchased a black jacket for <span class="text-primary font-bold">$59.00</span></span>
-                </span>
-            </li>
-            <li class="flex items-center py-2 border-b border-surface">
-                <div class="w-12 h-12 flex items-center justify-center bg-pink-100 dark:bg-pink-400/10 rounded-full mr-4 shrink-0">
-                    <i class="pi pi-question !text-xl text-pink-500"></i>
-                </div>
-                <span class="text-surface-900 dark:text-surface-0 leading-normal"
-                    >Jane Davis
-                    <span class="text-surface-700 dark:text-surface-100">has posted a new questions about your product.</span>
-                </span>
-            </li>
-        </ul>
-        <span class="block text-muted-color font-medium mb-4">LAST WEEK</span>
-        <ul class="p-0 m-0 list-none">
-            <li class="flex items-center py-2 border-b border-surface">
-                <div class="w-12 h-12 flex items-center justify-center bg-green-100 dark:bg-green-400/10 rounded-full mr-4 shrink-0">
-                    <i class="pi pi-arrow-up !text-xl text-green-500"></i>
-                </div>
-                <span class="text-surface-900 dark:text-surface-0 leading-normal">Your revenue has increased by <span class="text-primary font-bold">%25</span>.</span>
-            </li>
-            <li class="flex items-center py-2 border-b border-surface">
-                <div class="w-12 h-12 flex items-center justify-center bg-purple-100 dark:bg-purple-400/10 rounded-full mr-4 shrink-0">
-                    <i class="pi pi-heart !text-xl text-purple-500"></i>
-                </div>
-                <span class="text-surface-900 dark:text-surface-0 leading-normal"><span class="text-primary font-bold">12</span> users have added your products to their wishlist.</span>
-            </li>
-        </ul>
+  <div class="card" v-if="lastInvestment">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="font-semibold text-xl">Última hipoteca</div>
     </div>
+
+    <!-- Company / Property Information -->
+    <div class="mb-4">
+      <div class="text-sm mb-2">Código único</div>
+      <div class="flex items-center justify-between">
+        <div class="font-bold text-xl">{{ lastInvestment.property.nombre }}</div>
+        <Tag severity="info" value="A+" class="font-semibold" />
+      </div>
+    </div>
+
+    <!-- Amount Section -->
+    <div class="mb-5">
+      <div class="text-sm mb-2">Monto a financiar</div>
+      <div class="flex items-center text-3xl font-bold leading-tight">
+        <div>
+          S/ {{ Number(lastInvestment.property.valor_estimado).toLocaleString('es-PE', { minimumFractionDigits: 2 }) }}
+        </div>
+        <div class="ml-4 text-base font-normal">
+          {{ progressPercentage }}% financiada
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress and Details -->
+    <div class="mb-6">
+      <div class="flex justify-between text-sm mb-2">
+        <span>Tasa mensual</span>
+        <span class="font-semibold">
+          {{ lastInvestment.property.tem ?? '15.5%' }}
+        </span>
+      </div>
+
+      <ProgressBar :value="progressPercentage" :showValue="false" :style="{ height: '12px' }" class="mb-3" />
+
+      <div class="flex items-center justify-between">
+        <div class="flex items-center text-sm">
+          <i class="pi pi-clock mr-2 text-blue-500"></i>
+          <span>Cierre inversión</span>
+          <span class="ml-2 font-semibold text-gray-800">{{ daysRemaining }} días</span>
+        </div>
+        <div class="text-sm">
+          Faltan S/ {{ Number(remainingAmount).toLocaleString('es-PE', { minimumFractionDigits: 2 }) }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Button -->
+    <div class="pt-2">
+      <Button label="Revisar detalles" severity="contrast" variant="outlined" class="w-full"
+        @click="handleReviewDetails" rounded />
+    </div>
+  </div>
 </template>

@@ -10,5 +10,16 @@ export const ocrService = {
         'Content-Type': 'multipart/form-data'
       }
     })
+  },
+
+  extractDni(imageFile) {
+    const formData = new FormData()
+    formData.append('image', imageFile)
+
+    return apiAdmin1.post('/extract-dni', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
   }
 }
