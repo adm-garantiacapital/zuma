@@ -21,10 +21,22 @@
         <p class="m-0 text-[#171717]">Puedes utilizar ambas monedas al momento de hacer la inversión.</p>
       </div>
       <div class="col-span-8 lg:col-span-4 text-end mb-5">
-        <Button label="Calcular" icon="pi pi-plus"
-          class="!border-none !text-white !bg-[#171717] hover:!bg-[#6790FF] focus:!border-none focus:!bg-[#FF4929] !font-bold !rounded-3xl !px-5 !py-3 !me-3 !transition !duration-100 !ease-in" />
-        <Button label="Retiro" icon="pi pi-minus"
-          class="border-button-black !border-none !text-[#171717] !bg-transparent hover:!bg-[#6790FF] focus:!border-none focus:!bg-[#FF4929] !font-bold !rounded-3xl !px-5 !py-3 !transition !duration-100 !ease-in" />
+        <Button
+          label="Depósito"
+          icon="pi pi-plus"
+          iconPos="left"
+          class="!border-none !text-white !bg-[#171717] hover:!bg-[#6790FF] focus:!border-none focus:!bg-[#FF4929] !font-bold !rounded-3xl !px-5 !py-3 !me-3 !transition !duration-100 !ease-in"
+          rounded
+          @click="showDepositoDialog = true"
+        />
+        <Button
+          label="Retiro"
+          icon="pi pi-minus"
+          iconPos="left"
+                    class="border-button-black !border-none !text-[#171717] !bg-transparent hover:!bg-[#6790FF] focus:!border-none focus:!bg-[#FF4929] !font-bold !rounded-3xl !px-5 !py-3 !transition !duration-100 !ease-in"
+          rounded
+          @click="showRetiroDialog = true"
+        />
         <Button v-if="wallet" @click="showWallet" icon="pi pi-angle-up" aria-label="Mostrar Billetera"
           variant="link" class="!text-black" />
         <Button v-else @click="showWallet" icon="pi pi-angle-down" aria-label="Mostrar Billetera" variant="link"
@@ -84,12 +96,22 @@
         </div>
       </div>
       <br>
-  <div class="card">
-      <h3 class="text-center font-semibold mb-4 text-[#171717]">Encuentra más oportunidades de hipotecas</h3>
-      <div class="flex justify-center">
-        <Button label="Ver hipotecas aqui" rounded severity="info"/>
-      </div>
-    </div>
+      <div class="card text-center py-10 px-4 bg-white rounded-3xl shadow-md">
+  <h3 class="text-[#171717] font-bold text-2xl mb-4">Descubre nuevas oportunidades de inversión</h3>
+  <p class="text-[#555] mb-6">Explora hipotecas disponibles desde la más alta hasta la menor.</p>
+
+  <router-link to="/Search">
+    <Button
+      label="Explorar Hipotecas"
+      icon="pi pi-search"
+      iconPos="left"
+      class="!bg-[#171717] hover:!bg-[#6790FF] !border-none !text-white font-bold !px-6 !py-3 rounded-3xl text-base transition duration-150 ease-in-out"
+    />
+  </router-link>
+</div>
+
+  <AddDeposito v-model:visible="showDepositoDialog" @success="handleDepositSuccess" />
+  <AddRetiro v-model:visible="showRetiroDialog" @success="handleWithdrawSuccess" />
 </template>
 
 <script setup>
@@ -99,12 +121,16 @@ import profileService from '@/services/profileService';
 import reportsService from '@/services/reportsService';
 import NotificationsWidget from "@/components/dashboard/NotificationsWidget.vue";
 import RevenueStreamWidget from "@/components/dashboard/RevenueStreamWidget.vue";
+import AddDeposito from "./pages/EstadoCuenta/Desarrollo/AddDeposito.vue";
+import AddRetiro from "./pages/EstadoCuenta/Desarrollo/AddRetiro.vue";
 
 const home = ref({ icon: 'pi pi-home' });
 const items = ref([{ label: 'Subasta hipotecas' }, { label: 'Mi billetera' }]);
 const profile = ref(null);
 const fullName = ref('');
 const wallet = ref(false);
+const showDepositoDialog = ref(false)
+const showRetiroDialog = ref(false)
 
 // Labels para las tarjetas
 const penLabels = {
@@ -163,6 +189,19 @@ const loadBalances = async () => {
     console.error('Error cargando balances:', error);
   }
 };
+
+
+// Éxito en depósito
+const handleDepositSuccess = () => {
+  emit('deposit-success')
+  fetchBalances()
+}
+
+// Éxito en retiro
+const handleWithdrawSuccess = () => {
+  emit('withdraw-success')
+  fetchBalances()
+}
 
 onMounted(() => {
   loadProfile();

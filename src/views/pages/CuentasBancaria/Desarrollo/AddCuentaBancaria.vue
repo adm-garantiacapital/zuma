@@ -1,7 +1,6 @@
 <template>
     <div>
         <Button label="Nueva Cuenta" severity="contrast" rounded @click="openNew"/>
-        
         <Dialog :visible="visible" @update:visible="updateVisible" modal :style="{ width: '450px' }"
             :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <!-- Título centrado con color personalizado -->

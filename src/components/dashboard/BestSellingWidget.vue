@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { auctionService } from '@/services/auctionService.js';
-import Cronograma from './Cronograma.vue';
+import FormularioCronograma from './FormularioCronograma.vue';
 import { paymentScheduleService } from '@/services/paymentScheduleService'
 
 const auctions = ref([]);
@@ -118,15 +118,15 @@ const submitBid = async () => {
 };
 
 const openScheduleDialog = async (auction) => {
-    try {
-        // Aquí puedes tener el ID real del property_investor asociado (por ejemplo auction.property_investor_id)
-        const response = await paymentScheduleService.getByPropertyInvestorId(auction.property_investor_id);
-        scheduleData.value = response.data;
-        scheduleDialog.value = true;
-    } catch (error) {
-        console.error('Error al cargar el cronograma:', error);
-    }
+  try {
+    const response = await paymentScheduleService.getByPropertyId(auction.property_id); // 👈 aquí
+    scheduleData.value = response.data;
+    scheduleDialog.value = true;
+  } catch (error) {
+    console.error('Error al cargar el cronograma:', error);
+  }
 };
+
 
 const formatCurrency = (amount) => {
     return new Intl.NumberFormat('es-PE', {
@@ -450,10 +450,12 @@ onMounted(() => {
                 </div>
             </template>
         </Dialog>
-        <Cronograma
+
+        <FormularioCronograma
             v-model:visible="scheduleDialog"
-            :schedules="scheduleData"
-        />
+            :data="scheduleData"
+            />
+
 
         </div>
 </template>

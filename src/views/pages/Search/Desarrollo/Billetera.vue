@@ -4,9 +4,9 @@
 
     <div class="flex flex-wrap justify-between items-center gap-4">
       <!-- Texto -->
-      <h4>
+      <h6>
         Puedes utilizar ambas monedas al momento de hacer la inversión
-      </h4>
+      </h6>
 
       <!-- Saldos disponibles -->
       <div class="flex gap-4">
