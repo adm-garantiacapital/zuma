@@ -1,8 +1,8 @@
 <template>
   <!-- Mostrar mensaje si no hay inversión -->
   <div v-if="!lastInvestment">
-    <div class="col-span-2 lg:col-span-1">
-      <div class="border-general-grey rounded-3xl bg-white relative p-10">
+<div class="col-span-2 lg:col-span-1 border rounded-xl">
+    <div class="border-general-grey rounded-3xl bg-white relative p-10">
         <h5 class="text-[#171717] m-0 font-semibold w-full m-0 text-[#171717]">Última hipoteca</h5>
         <div class="text-center my-20">
           <p class="font-bold mt-0 mb-3 fill-[#171717]">¡Ups aún no tienes una hipoteca registrada!</p>

@@ -84,7 +84,7 @@
             label="Revisar detalles"
             outlined
             severity="contrast"
-            @click="() => scheduleRef.value.open(slotProps.data.id)"
+            @click="scheduleRef?.open(slotProps.data.id)"
           />
         </template>
       </Column>
@@ -105,8 +105,7 @@
         <p class="text-[#171717] mb-6">Aquí verás las hipotecas disponibles para que puedas invertir cuando se publiquen.</p>
     </div>
   </div>
-
-  <ScheduleGeneration ref="scheduleRef" />
+<ScheduleGeneration ref="scheduleRef" />
 </template>
 
 <script setup>

@@ -2,7 +2,7 @@
   <div>
     <!-- Mostrar mensaje si no hay datos -->
     <div v-if="properties.length === 0">
-    <div class="col-span-2 lg:col-span-1">
+<div class="col-span-2 lg:col-span-1 border rounded-xl">
       <div class="border-general-grey rounded-3xl bg-white relative p-10">
         <h5 class="text-[#171717] m-0 font-semibold w-full m-0 text-[#171717]">Ranking top 6 de subastas más altas</h5>
         <div class="text-center my-20">
@@ -21,7 +21,7 @@
     </div>
 
     <!-- Lista de propiedades si hay datos -->
-    <div v-else class="space-y-3">
+    <div v-else>
       <div
         v-for="property in properties"
         :key="property.id"
