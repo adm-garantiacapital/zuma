@@ -21,24 +21,14 @@
         <p class="m-0 text-[#171717]">Puedes utilizar ambas monedas al momento de hacer la inversión.</p>
       </div>
       <div class="col-span-8 lg:col-span-4 text-end mb-5">
-        <Button
-          label="Depósito"
-          icon="pi pi-plus"
-          iconPos="left"
+        <Button label="Depósito" icon="pi pi-plus" iconPos="left"
           class="!border-none !text-white !bg-[#171717] hover:!bg-[#6790FF] focus:!border-none focus:!bg-[#FF4929] !font-bold !rounded-3xl !px-5 !py-3 !me-3 !transition !duration-100 !ease-in"
-          rounded
-          @click="showDepositoDialog = true"
-        />
-        <Button
-          label="Retiro"
-          icon="pi pi-minus"
-          iconPos="left"
-                    class="border-button-black !border-none !text-[#171717] !bg-transparent hover:!bg-[#6790FF] focus:!border-none focus:!bg-[#FF4929] !font-bold !rounded-3xl !px-5 !py-3 !transition !duration-100 !ease-in"
-          rounded
-          @click="showRetiroDialog = true"
-        />
-        <Button v-if="wallet" @click="showWallet" icon="pi pi-angle-up" aria-label="Mostrar Billetera"
-          variant="link" class="!text-black" />
+          rounded @click="showDepositoDialog = true" />
+        <Button label="Retiro" icon="pi pi-minus" iconPos="left"
+          class="border-button-black !border-none !text-[#171717] !bg-transparent hover:!bg-[#6790FF] focus:!border-none focus:!bg-[#FF4929] !font-bold !rounded-3xl !px-5 !py-3 !transition !duration-100 !ease-in"
+          rounded @click="showRetiroDialog = true" />
+        <Button v-if="wallet" @click="showWallet" icon="pi pi-angle-up" aria-label="Mostrar Billetera" variant="link"
+          class="!text-black" />
         <Button v-else @click="showWallet" icon="pi pi-angle-down" aria-label="Mostrar Billetera" variant="link"
           class="!text-black" />
       </div>
@@ -88,27 +78,23 @@
     </div>
   </div>
   <div class="grid grid-cols-12 gap-8">
-        <div class="col-span-12 xl:col-span-6">
-          <NotificationsWidget />
-        </div>
-        <div class="col-span-12 xl:col-span-6">
-          <RevenueStreamWidget />
-        </div>
-      </div>
-      <br>
-      <div class="card text-center py-10 px-4 bg-white rounded-3xl shadow-md">
-  <h3 class="text-[#171717] font-bold text-2xl mb-4">Descubre nuevas oportunidades de inversión</h3>
-  <p class="text-[#555] mb-6">Explora hipotecas disponibles desde la más alta hasta la menor.</p>
+    <div class="col-span-12 xl:col-span-6">
+      <NotificationsWidget />
+    </div>
+    <div class="col-span-12 xl:col-span-6">
+      <RevenueStreamWidget />
+    </div>
+  </div>
+  <br>
+  <div class="card text-center py-10 px-4 bg-white rounded-3xl shadow-md">
+    <h3 class="text-[#171717] font-bold text-2xl mb-4">Descubre nuevas oportunidades de inversión</h3>
+    <p class="text-[#555] mb-6">Explora hipotecas disponibles desde la más alta hasta la menor.</p>
 
-  <router-link to="/Search">
-    <Button
-      label="Explorar Hipotecas"
-      icon="pi pi-search"
-      iconPos="left"
-      class="!bg-[#171717] hover:!bg-[#6790FF] !border-none !text-white font-bold !px-6 !py-3 rounded-3xl text-base transition duration-150 ease-in-out"
-    />
-  </router-link>
-</div>
+    <router-link to="/Search">
+      <Button label="Explorar Hipotecas" icon="pi pi-search" iconPos="left"
+        class="!bg-[#171717] hover:!bg-[#6790FF] !border-none !text-white font-bold !px-6 !py-3 rounded-3xl text-base transition duration-150 ease-in-out" />
+    </router-link>
+  </div>
 
   <AddDeposito v-model:visible="showDepositoDialog" @success="handleDepositSuccess" />
   <AddRetiro v-model:visible="showRetiroDialog" @success="handleWithdrawSuccess" />

@@ -80,3 +80,33 @@
     <Cronograma v-model:visible="showCronograma" :propertyId="lastInvestment.property.id" />
   </div>
 </template>
+<script setup>
+import { ref, onMounted } from 'vue'
+import Button from 'primevue/button'
+import Tag from 'primevue/tag'
+import ProgressBar from 'primevue/progressbar'
+import Cronograma from './Cronograma.vue'
+import { investorDashboardService } from '@/services/investorDashboardService'
+
+const lastInvestment = ref(null)
+const progressPercentage = ref(50)
+const remainingAmount = ref(0)
+const daysRemaining = ref(60)
+const showCronograma = ref(false)
+
+const handleReviewDetails = () => {
+  showCronograma.value = true
+}
+
+onMounted(async () => {
+  try {
+    const response = await investorDashboardService.getLastInvestment()
+    lastInvestment.value = response.data
+
+    const total = Number(lastInvestment.value.property.valor_estimado)
+    remainingAmount.value = total - total * (progressPercentage.value / 100)
+  } catch (error) {
+    console.error('Error al cargar la última inversión:', error)
+  }
+})
+</script>
