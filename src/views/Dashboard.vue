@@ -85,8 +85,7 @@
       <RevenueStreamWidget />
     </div>
   </div>
-  <br>
-  <div class="card text-center py-10 px-4 bg-white rounded-3xl shadow-md">
+  <div class="text-center py-10">
     <h3 class="text-[#171717] font-bold text-2xl mb-4">Descubre nuevas oportunidades de inversión</h3>
     <p class="text-[#555] mb-6">Explora hipotecas disponibles desde la más alta hasta la menor.</p>
 
