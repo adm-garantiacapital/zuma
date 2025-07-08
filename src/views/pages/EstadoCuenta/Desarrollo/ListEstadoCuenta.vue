@@ -1,20 +1,5 @@
 <template>
   <div class="mt-6">
-    <!-- Saldo disponible -->
-    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-6 border border-blue-100">
-      <div class="flex justify-between items-center">
-        <div>
-          <h6 class="text-sm font-medium text-gray-600 mb-1">Saldo disponible</h6>
-          <p class="text-2xl font-bold text-blue-600">
-            {{ currentCurrency }} {{ formatAmount(availableBalance) }}
-          </p>
-        </div>
-        <div class="text-blue-500">
-          <i class="pi pi-wallet text-2xl"></i>
-        </div>
-      </div>
-    </div>
-
     <!-- Loading state -->
     <div v-if="loading" class="flex justify-center items-center py-8">
       <ProgressSpinner />

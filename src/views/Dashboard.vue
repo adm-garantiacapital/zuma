@@ -12,8 +12,6 @@
     </div>
   </div>
 
-  <StatsWidget />
-
   <div class="p-10 my-10 rounded-3xl bg-[#F0F1F9]">
     <div class="grid grid-cols-8 gap-0">
       <div class="col-span-8 lg:col-span-4 mb-5">
@@ -101,7 +99,6 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import StatsWidget from '@/components/dashboard/StatsWidget.vue';
 import profileService from '@/services/profileService';
 import reportsService from '@/services/reportsService';
 import NotificationsWidget from "@/components/dashboard/NotificationsWidget.vue";

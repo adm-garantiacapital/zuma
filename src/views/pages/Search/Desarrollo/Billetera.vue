@@ -12,29 +12,31 @@
       <div class="flex gap-4">
         <!-- Saldo PEN -->
         <div class="flex flex-col items-center">
-          <div class="flex items-center gap-1 mb-2">
-            <img src="https://flagcdn.com/w40/pe.png" alt="PEN" class="w-5 h-5 rounded-full" />
-            <span class="text-sm font-semibold text-black">PEN</span>
-          </div>
 
-          <div class="bg-white px-6 py-4 rounded-2xl shadow-sm w-56 text-center space-y-1">
-            <i class="pi pi-wallet text-3xl text-black"></i>
-            <p class="text-sm text-gray-700">Saldo disponible</p>
-            <p class="text-xl font-bold text-black">S/ {{ saldoPEN }}</p>
+
+          <div class="bg-white px-6 py-4 rounded-2xl shadow-sm w-56 space-y-1">
+            <div class="flex gap-1 mb-2">
+              <img src="https://flagcdn.com/w40/pe.png" alt="PEN" class="w-5 h-5 rounded-full" />
+              <span class="text-sm font-semibold text-[#171717]">PEN</span>
+            </div>
+            <i class="pi pi-wallet text-3xl text-[#171717] inline-block me-2"></i>
+            <p class="text-sm text-gray-700 inline-block">Saldo disponible</p>
+            <p class="text-xl font-bold text-[#171717]">S/ {{ saldoPEN }}</p>
           </div>
         </div>
 
         <!-- Saldo USD -->
         <div class="flex flex-col items-center">
-          <div class="flex items-center gap-1 mb-2">
-            <img src="https://flagcdn.com/w40/us.png" alt="USD" class="w-5 h-5 rounded-full" />
-            <span class="text-sm font-semibold text-black">USD</span>
-          </div>
 
-          <div class="bg-white px-6 py-4 rounded-2xl shadow-sm w-56 text-center space-y-1">
-            <i class="pi pi-wallet text-3xl text-black"></i>
-            <p class="text-sm text-gray-700">Saldo disponible</p>
-            <p class="text-xl font-bold text-black">$ {{ saldoUSD }}</p>
+
+          <div class="bg-white px-6 py-4 rounded-2xl shadow-sm w-56 space-y-1">
+            <div class="flex gap-1 mb-2">
+              <img src="https://flagcdn.com/w40/us.png" alt="USD" class="w-5 h-5 rounded-full" />
+              <span class="text-sm font-semibold text-[#171717]">USD</span>
+            </div>
+            <i class="pi pi-wallet text-3xl text-[#171717] inline-block me-2"></i>
+            <p class="text-sm text-gray-700 inline-block">Saldo disponible</p>
+            <p class="text-xl font-bold text-[#171717]">$ {{ saldoUSD }}</p>
           </div>
         </div>
       </div>
@@ -43,8 +45,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
 import reportsService from '@/services/reportsService';
+import { onMounted, ref } from 'vue';
 
 const saldoPEN = ref('0.00');
 const saldoUSD = ref('0.00');

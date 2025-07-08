@@ -61,14 +61,15 @@
         <template #body="slotProps">
           <div class="flex justify-center">
             <Image
-              v-if="slotProps.data.foto"
-              :src="slotProps.data.foto"
-              class="rounded"
-              :alt="slotProps.data.nombre || 'Imagen de propiedad'"
-              preview
-              width="50"
-              style="width: 64px"
-            />
+            v-if="slotProps.data.foto && slotProps.data.foto.length > 0"
+            :src="slotProps.data.foto[0]"
+            class="rounded"
+            :alt="slotProps.data.nombre || 'Imagen de propiedad'"
+            preview
+            width="50"
+            style="width: 64px"
+          />
+
             <div
               v-else
               class="w-16 h-16 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center"
