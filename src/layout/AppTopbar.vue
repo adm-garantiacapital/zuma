@@ -38,34 +38,33 @@
           <!-- Lista de notificaciones -->
           <div :class="{ 'max-h-[400px] overflow-y-auto': notifications.length >= 4 }" class="p-4 space-y-3 bg-white">
             <div v-for="notification in notifications" :key="notification.id"
-  @click="irADetalleNotificacion(notification.type)"
-  class="bg-white border-l-4 p-4 rounded-xl shadow-sm transition hover:shadow-md cursor-pointer"
-  :class="{
-    'border-blue-500': notification.type === 'personal',
-    'border-yellow-500': notification.type === 'cuenta',
-    'border-green-500': notification.type === 'deposito',
-    'border-gray-300': !['personal', 'cuenta', 'deposito'].includes(notification.type)
-  }">
-  <div class="flex items-start gap-4">
-    <div class="w-10 h-10 rounded-full flex items-center justify-center" :class="{
-      'bg-blue-100 text-blue-600': notification.type === 'personal',
-      'bg-yellow-100 text-yellow-600': notification.type === 'cuenta',
-      'bg-green-100 text-green-600': notification.type === 'deposito',
-      'bg-gray-100 text-gray-600': !['personal', 'cuenta', 'deposito'].includes(notification.type)
-    }">
-      <i :class="notification.icon + ' text-lg'" />
-    </div>
-    <div class="flex-1">
-      <p class="text-sm text-gray-800 mb-2 leading-snug">{{ notification.text }}</p>
-      <div class="flex justify-end">
-        <button @click.stop="completarNotificacion(notification.id)"
-          class="text-xs font-semibold px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
-          {{ notification.action }}
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
+              @click="irADetalleNotificacion(notification.type)"
+              class="bg-white border-l-4 p-4 rounded-xl shadow-sm transition hover:shadow-md cursor-pointer" :class="{
+                'border-blue-500': notification.type === 'personal',
+                'border-yellow-500': notification.type === 'cuenta',
+                'border-green-500': notification.type === 'deposito',
+                'border-gray-300': !['personal', 'cuenta', 'deposito'].includes(notification.type)
+              }">
+              <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center" :class="{
+                  'bg-blue-100 text-blue-600': notification.type === 'personal',
+                  'bg-yellow-100 text-yellow-600': notification.type === 'cuenta',
+                  'bg-green-100 text-green-600': notification.type === 'deposito',
+                  'bg-gray-100 text-gray-600': !['personal', 'cuenta', 'deposito'].includes(notification.type)
+                }">
+                  <i :class="notification.icon + ' text-lg'" />
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm text-gray-800 mb-2 leading-snug">{{ notification.text }}</p>
+                  <div class="flex justify-end">
+                    <button @click.stop="completarNotificacion(notification.id)"
+                      class="text-xs font-semibold px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
+                      {{ notification.action }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <div v-if="notifications.length === 0" class="text-center py-10">
               <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
@@ -140,13 +139,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import OverlayBadge from 'primevue/overlaybadge';
 import AddCuenta from '@/views/pages/Notificaciones/CuentaBancaria/Desarrollo/AddCuenta.vue';
 import profileService from '@/services/profileService';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
+const route = useRoute();
 const showNotifications = ref(false);
 const showUserMenu = ref(false);
 const notificationsPanelRef = ref(null);
@@ -177,6 +177,14 @@ const notifications = ref([
   }
 ]);
 
+// Computed para determinar la sección actual
+const currentSection = computed(() => {
+  if (route.path.startsWith('/tasas-fijas')) {
+    return 'tasas-fijas';
+  }
+  return 'hipotecas';
+});
+
 const toggleNotifications = () => {
   showNotifications.value = !showNotifications.value;
   showUserMenu.value = false; // Cerrar menú de usuario si está abierto
@@ -198,12 +206,7 @@ const completarNotificacion = (id) => {
 
 const logout = () => {
   showUserMenu.value = false;
-  // Aquí puedes agregar la lógica de cerrar sesión
   console.log('Cerrar sesión');
-  // Ejemplo: 
-  // - Limpiar localStorage/sessionStorage
-  // - Redirigir al login
-  // - Llamar a un servicio de logout
 };
 
 const handleClickOutside = (event) => {
@@ -242,21 +245,40 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside);
 });
+
 const goToProfile = () => {
   showUserMenu.value = false;
-  router.push({ name: 'perfil' }); // ✅ Usa el name correcto (minúscula)
-};
-
-const irADetalleNotificacion = (type) => {
-  if (type === 'personal') {
-    router.push('/Confirmar-Cuenta');
-  } else if (type === 'cuenta') {
-    router.push('/Cuenta-Bancaria');
-  } else if (type === 'deposito') {
-    router.push('/Estado-Cuenta');
+  // Redirigir al perfil según la sección actual
+  if (currentSection.value === 'tasas-fijas') {
+    router.push('/tasas-fijas/Perfil'); // Necesitarás agregar esta ruta
+  } else {
+    router.push('/hipotecas/Perfil');
   }
 };
 
+const irADetalleNotificacion = (type) => {
+  const section = currentSection.value;
+  
+  if (type === 'personal') {
+    if (section === 'tasas-fijas') {
+      router.push('/tasas-fijas/Confirmar-Cuenta'); // Necesitarás agregar esta ruta
+    } else {
+      router.push('/hipotecas/Confirmar-Cuenta');
+    }
+  } else if (type === 'cuenta') {
+    if (section === 'tasas-fijas') {
+      router.push('/tasas-fijas/Cuenta-Bancaria');
+    } else {
+      router.push('/hipotecas/Cuenta-Bancaria');
+    }
+  } else if (type === 'deposito') {
+    if (section === 'tasas-fijas') {
+      router.push('/tasas-fijas/Estado-Cuenta');
+    } else {
+      router.push('/hipotecas/Estado-Cuenta');
+    }
+  }
+};
 </script>
 
 <style scoped></style>

@@ -11,6 +11,7 @@
         class="inline-block w-49 hover:scale-110 transition duration-100 ease-in" />
     </div>
   </div>
+    <StatsWidget />
 
   <div class="p-10 my-10 rounded-3xl bg-[#F0F1F9]">
     <div class="grid grid-cols-8 gap-0">

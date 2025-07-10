@@ -14,32 +14,44 @@ const checked = ref(false);
 const loading = ref(false);
 
 const login = async () => {
-    loading.value = true;
-    try {
-        const response = await authService.login('admin2', {
-            document: document.value,
-            password: password.value,
-        });
-
-        toast.add({ 
-            severity: 'success', 
-            summary: 'Éxito', 
-            detail: 'Sesión iniciada correctamente', 
-            life: 3000 
-        });
-
-        router.push('/');
-    } catch (error) {
-        console.error('Login error:', error);
-        toast.add({
-            severity: 'error',
-            summary: 'Error de autenticación',
-            detail: error.response?.data?.message || 'Credenciales inválidas',
-            life: 4000,
-        });
-    } finally {
-        loading.value = false;
-    }
+  loading.value = true;
+  try {
+    console.log('🔄 Iniciando login...');
+    
+    const response = await authService.login('admin2', {
+      document: document.value,
+      password: password.value,
+    });
+    
+    console.log('✅ Login exitoso:', response);
+    console.log('🔍 Token guardado:', authService.getToken());
+    console.log('🔍 Customer guardado:', authService.getCustomer());
+    console.log('🔍 ¿Está autenticado?:', authService.isAuthenticated());
+    
+    toast.add({
+      severity: 'success',
+      summary: 'Éxito',
+      detail: 'Sesión iniciada correctamente',
+      life: 3000
+    });
+    
+    console.log('🚀 Intentando redirigir a /hipotecas...');
+    
+    // Probar diferentes métodos de redirección
+    const result = await router.push('/hipotecas');
+    console.log('🔍 Resultado de router.push:', result);
+    
+  } catch (error) {
+    console.error('❌ Login error:', error);
+    toast.add({
+      severity: 'error',
+      summary: 'Error de autenticación',
+      detail: error.response?.data?.message || 'Credenciales inválidas',
+      life: 4000,
+    });
+  } finally {
+    loading.value = false;
+  }
 };
 </script>
 

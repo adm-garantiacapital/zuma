@@ -50,7 +50,7 @@ export const useExport = () => {
 
 
       // Título principal (A1:I3)
-      worksheet.mergeCells('A1:I3')
+      worksheet.mergeCells('A1:G3')
       const titleCell = worksheet.getCell('A1')
       titleCell.value = 'CRONOGRAMA DE HIPOTECA'
       titleCell.font = { size: 14, bold: true, color: { argb: 'FFFFFFFF' } }
@@ -62,11 +62,11 @@ export const useExport = () => {
       }
 
       // Fila 4 vacía, luego encabezados en A5:I5
-      worksheet.addRow([])
       const headers = [
-        'Cuota', 'Vencimiento', 'Saldo Inicial', 'Capital',
-        'Interés', 'Cuota Neta', 'IGV', 'Total Cuota', 'Saldo Final'
+        'Cuota', 'Vcmto. (día)', 'Saldo Inicial',
+        'Interés', 'Capital', 'Cuota Neta', 'Saldo Final'
       ]
+
 
       const headerRow = worksheet.addRow(headers.map(h => h.toUpperCase())) // Mayúsculas
 
@@ -92,13 +92,12 @@ export const useExport = () => {
           item.cuota,
           item.vcmto,
           item.saldo_inicial,
-          item.capital,
           item.interes,
+          item.capital,
           item.cuota_neta,
-          item.igv,
-          item.total_cuota,
           item.saldo_final
         ])
+
         row.eachCell(cell => {
           cell.alignment = { horizontal: 'center', vertical: 'middle' }
           cell.border = {
@@ -123,8 +122,8 @@ export const useExport = () => {
 
       const timestamp = new Date().toISOString().slice(0, 10)
       const fileName = plazoMeses
-        ? `cronograma_pagos_${plazoMeses}_meses_${timestamp}.xlsx`
-        : `cronograma_pagos_${timestamp}.xlsx`
+      ? `cronograma_credito_hipotecario_${plazoMeses}_meses_${timestamp}.xlsx`
+      : `cronograma_credito_hipotecario_${timestamp}.xlsx`
 
       const link = document.createElement('a')
       link.href = URL.createObjectURL(blob)

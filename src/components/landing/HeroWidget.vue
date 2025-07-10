@@ -1,16 +1,80 @@
 <template>
-    <div
-        id="hero"
-        class="flex flex-col pt-6 px-6 lg:px-20 overflow-hidden"
-        style="background: linear-gradient(0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2)), radial-gradient(77.36% 256.97% at 77.36% 57.52%, rgb(238, 239, 175) 0%, rgb(195, 227, 250) 100%); clip-path: ellipse(150% 87% at 93% 13%)"
-    >
-        <div class="mx-6 md:mx-20 mt-0 md:mt-6">
-            <h1 class="text-6xl font-bold text-gray-900 leading-tight"><span class="font-light block">Eu sem integer</span>eget magna fermentum</h1>
-            <p class="font-normal text-2xl leading-normal md:mt-4 text-gray-700">Sed blandit libero volutpat sed cras. Fames ac turpis egestas integer. Placerat in egestas erat...</p>
-            <Button label="Get Started" as="router-link" to="/" rounded class="!text-xl mt-8 !px-4"></Button>
+  <div id="hero" class="flex flex-col items-center px-6 lg:px-20 pb-16 pt-5 space-y-12" style="background-color: #EDEAE4;">
+    <div class="max-w-7xl mx-auto px-10 lg:px-20 grid grid-cols-12 gap-10"></div>
+    <!-- HERO PRINCIPAL -->
+    <div class="flex flex-col md:flex-row items-center justify-between w-full max-w-6xl px-4" data-aos="fade-up"
+      data-aos-duration="1000">
+      <!-- Texto -->
+      <div class="md:w-1/2 mb-10 md:mb-0" data-aos="fade-right" data-aos-delay="200">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-light text-[#171717] font-noto pe-0 md:pe-20">
+          <img src="/imagenes/landing/logo-zuma.svg" alt="Logo Zuma" class="inline-block w-48 lg:w-64 mb-5" />,
+          <br>invierte fácil gana seguro
+        </h1>
+        <ul class="mt-10 space-y-3 text-xl text-[#171717]">
+          <li class="flex items-center gap-3 font-medium">
+            <i class="pi pi-check text-xl text-[#171717]"></i>
+            <span>Invierte fácil</span>
+          </li>
+          <li class="flex items-center gap-3 font-medium">
+            <i class="pi pi-check text-xl text-[#171717]"></i>
+            <span>Gana seguro</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Imagen -->
+      <div class="md:w-1/2 flex justify-center md:justify-end" data-aos="zoom-in" data-aos-delay="400">
+        <div class="bg-[#FF4929] rounded-full p-6 overflow-hidden">
+          <img src="/imagenes/landing/principal.svg" alt="Imagen principal" class="w-full py-4 px-12 md:py-10 md:px-16" />
         </div>
-        <div class="flex justify-center md:justify-end">
-            <img src="/demo/images/landing/screen-1.png" alt="Hero Image" class="w-9/12 md:w-auto" />
-        </div>
+      </div>
     </div>
+    
+
+    <!-- Línea divisoria -->
+    <div class="w-full border-t border-gray-300" data-aos="fade-in" data-aos-delay="600"></div>
+
+    <!-- BOTONES DE INVERSIÓN -->
+    <div class="flex flex-col md:flex-row items-center justify-center gap-6 max-w-3xl px-5" data-aos="fade-up" data-aos-delay="800">
+
+      <!-- Botón 1 -->
+      <a href="https://fondeo.apros.global/iniciar-sesion?redirect=%2F" target="_blank" rel="noopener noreferrer">
+        <div class="w-96 h-28 bg-white hover:bg-[#6790FF] hover:text-white transition-all duration-300 rounded-full flex items-center gap-6 shadow-md cursor-pointer px-8 hover:scale-110 group">
+          <div class="w-24 h-24 rounded-full relative items-center justify-center transition-all duration-300 group-hover:scale-110">
+            <img src="/imagenes/landing/circulo.svg" alt="Factoring" class="w-14 h-14 absolute top-4 left-5 group-hover:scale-110 group-hover:opacity-0" />
+            <img src="/imagenes/landing/circulo-saltando.svg" alt="Factoring" class="w-14 h-14 absolute top-4 left-5 opacity-0 group-hover:scale-110 group-hover:opacity-100" />
+          </div>
+          <span class="text-[#171717] group-hover:text-white text-2xl font-semibold leading-tight">
+            Facturas
+          </span>
+        </div>
+      </a>
+
+      <!-- Botón 2 -->
+      <a href="https://hipotecas-main-ctqfss.laravel.cloud/login" target="_blank" rel="noopener noreferrer">
+        <div class="w-96 h-28 bg-white hover:bg-[#6790FF] hover:text-white transition-all duration-300 rounded-full flex items-center gap-6 shadow-md cursor-pointer px-8 hover:scale-110 group">
+          <div class="w-24 h-24 rounded-full relative items-center justify-center transition-all duration-300 group-hover:scale-110">
+            <img src="/imagenes/landing/triangulo.svg" alt="Factoring" class="w-14 h-14 absolute top-4 left-5 group-hover:scale-110 group-hover:opacity-0" />
+            <img src="/imagenes/landing/triangulo-saltando.svg" alt="Factoring" class="w-14 h-14 absolute top-4 left-5 opacity-0 group-hover:scale-110 group-hover:opacity-100" />
+          </div>
+          <span class="text-[#171717] group-hover:text-white text-2xl font-semibold leading-tight">
+            Préstamos<br>con Garantía
+          </span>
+        </div>
+      </a>
+
+      <!-- Botón 3 -->
+      <a href="https://landing-main-p1nnxs.laravel.cloud/login" target="_blank" rel="noopener noreferrer">
+        <div class="w-96 h-28 bg-white hover:bg-[#6790FF] hover:text-white transition-all duration-300 rounded-full flex items-center gap-6 shadow-md cursor-pointer px-8 hover:scale-110 group">
+          <div class="w-24 h-24 rounded-full relative items-center justify-center transition-all duration-300 group-hover:scale-110">
+            <img src="/imagenes/landing/cuadrado.svg" alt="Factoring" class="w-14 h-14 absolute top-4 left-5 group-hover:scale-110 group-hover:opacity-0" />
+            <img src="/imagenes/landing/cuadrado-saltando.svg" alt="Factoring" class="w-14 h-14 absolute top-4 left-5 opacity-0 group-hover:scale-110 group-hover:opacity-100" />
+          </div>
+          <span class="text-[#171717] group-hover:text-white text-2xl font-semibold leading-tight">
+            Depósitos<br>a Plazo
+          </span>
+        </div>
+      </a>
+    </div>
+  </div>
 </template>
