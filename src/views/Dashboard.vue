@@ -4,7 +4,7 @@
 
   <div class="mb-10 rounded-3xl bg-[#6790FF] relative overflow-hidden">
     <div class="px-10 py-20 relative superior inline-block">
-      <h2 class="m-0 text-[#171717]">Bienvenido [{{ fullName }}] a tu perfil del inversionista</h2>
+      <h2 class="m-0 text-[#171717]">Bienvenido {{ fullName }} a tu perfil del inversionista</h2>
     </div>
     <div class="mask absolute -top-14 -right-8">
       <img src="/imagenes/zuma/imagen-1.png" alt="Logo Zuma"

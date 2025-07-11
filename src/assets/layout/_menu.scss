@@ -1,10 +1,8 @@
 @use 'mixins' as *;
 
 .layout-sidebar {
-    /*position: fixed;*/
     position: absolute;
     width: 20rem;
-    /* height: calc(150vh - 8rem); */
     z-index: 999;
     overflow-y: auto;
     user-select: none;
@@ -12,10 +10,7 @@
         transform var(--layout-section-transition-duration),
         left var(--layout-section-transition-duration);
     background-color: var(--surface-overlay);
-    /* border-radius: var(--content-border-radius); */
     padding: 0.5rem 1.5rem;
-    /* border-right: 3px solid var(--surface-border); */
-    border-right: 1px solid #D9D9D9;
 }
 
 .layout-menu {
@@ -68,19 +63,10 @@
             color: var(--text-color);
             cursor: pointer;
             padding: 0.76rem 1rem;
-            border-radius: var(--content-border-radius);
+            border-radius: 1.5rem;
             transition:
                 background-color var(--element-transition-duration),
                 box-shadow var(--element-transition-duration);
-
-            .layout-menuitem-icon {
-                margin-right: 0.5rem;
-            }
-
-            .prueba-icono:hover {
-                fill: red !important
-            }
-
 
             .layout-menuitem-text {
                 color: #171717;
@@ -95,10 +81,15 @@
             &.active-route {
                 font-weight: 700;
                 color: var(--primary-color);
+                background-color: #F0F1F9;
+
+                .icon-zuma-menu {
+                    color: #FF4929;
+                }
             }
 
             &:hover {
-                background-color: var(--surface-hover);
+                background-color: #F0F1F9;
             }
 
             &:focus {

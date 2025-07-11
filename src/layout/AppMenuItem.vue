@@ -1,4 +1,11 @@
 <script setup>
+import BilleteraIcon from '@/components/icons/BilleteraIcon.vue';
+import BuscarIcon from '@/components/icons/BuscarIcon.vue';
+import CuentasIcon from '@/components/icons/CuentasIcon.vue';
+import DashboardIcon from '@/components/icons/DashboardIcon.vue';
+import DatosIcon from '@/components/icons/DatosIcon.vue';
+import EstadosIcon from '@/components/icons/EstadosIcon.vue';
+import InformacionIcon from '@/components/icons/InformacionIcon.vue';
 import { useLayout } from '@/layout/composables/layout';
 import { onBeforeMount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
@@ -74,16 +81,28 @@ function checkActiveRoute(item) {
         <a v-if="(!item.to || item.items) && item.visible !== false" :href="item.url"
             @click="itemClick($event, item, index)" :class="item.class" :target="item.target" tabindex="0">
             <!-- <i :class="item.icon" class="layout-menuitem-icon"></i> -->
-            <img :src="item.icon" alt="Logo Zuma" class="layout-menuitem-icon" width="20" />
+            <BilleteraIcon v-if="item.icon == 'billetera'" />
+            <BuscarIcon v-if="item.icon == 'buscar'" />
+            <DashboardIcon v-if="item.icon == 'dashboard'" />
+            <InformacionIcon v-if="item.icon == 'informacion'" />
+            <DatosIcon v-if="item.icon == 'datos'" />
+            <CuentasIcon v-if="item.icon == 'cuentas'" />
+            <EstadosIcon v-if="item.icon == 'estados'" />
             <span class="layout-menuitem-text">{{ item.label }}</span>
-            <i class="pi pi-fw pi-angle-down layout-submenu-toggler" v-if="item.items"></i>
+            <i class="pi pi-fw pi-angle-down layout-submenu-toggler layout-menuitem-text" v-if="item.items"></i>
         </a>
         <router-link v-if="item.to && !item.items && item.visible !== false" @click="itemClick($event, item, index)"
             :class="[item.class, { 'active-route': checkActiveRoute(item) }]" tabindex="0" :to="item.to">
             <!-- <i :class="item.icon" class="layout-menuitem-icon"></i> -->
-            <img :src="item.icon" alt="Logo Zuma" class="layout-menuitem-icon" width="20" />
+            <BilleteraIcon v-if="item.icon == 'billetera'" />
+            <BuscarIcon v-if="item.icon == 'buscar'" />
+            <DashboardIcon v-if="item.icon == 'dashboard'" />
+            <InformacionIcon v-if="item.icon == 'informacion'" />
+            <DatosIcon v-if="item.icon == 'datos'" />
+            <CuentasIcon v-if="item.icon == 'cuentas'" />
+            <EstadosIcon v-if="item.icon == 'estados'" />
             <span class="layout-menuitem-text">{{ item.label }}</span>
-            <i class="pi pi-fw pi-angle-down layout-submenu-toggler" v-if="item.items"></i>
+            <i class="pi pi-fw pi-angle-down layout-submenu-toggler layout-menuitem-text" v-if="item.items"></i>
         </router-link>
         <Transition v-if="item.items && item.visible !== false" name="layout-submenu">
             <ul v-show="root ? true : isActiveMenu" class="layout-submenu">

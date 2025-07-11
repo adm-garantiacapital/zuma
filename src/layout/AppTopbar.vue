@@ -1,5 +1,7 @@
 <template>
   <div class="layout-topbar">
+    <img id="zuma-top" src="/imagenes/landing/logo-zuma.svg" alt="Logo Zuma"
+            class="inline-block w-28 float-left hidden" />
     <div class="layout-topbar-actions">
       <!-- Campana con contador -->
       <div class="relative notifications-container">
@@ -94,7 +96,7 @@
             <img v-if="profilePhoto" :src="profilePhoto" alt="Avatar" class="w-full h-full object-cover" />
             <i v-else class="pi pi-user text-gray-600 text-sm flex items-center justify-center w-full h-full"></i>
           </div>
-          <span class="text-sm font-medium text-gray-800">[ {{ fullName }} ]</span>
+          <span class="text-sm font-medium text-gray-800">{{ fullName }}</span>
           <i class="pi pi-chevron-down text-xs text-gray-600 transition-transform duration-200"
             :class="{ 'rotate-180': showUserMenu }"></i>
         </button>
