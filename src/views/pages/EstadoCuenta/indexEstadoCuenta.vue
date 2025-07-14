@@ -13,10 +13,6 @@
             @balance-updated="handleBalanceUpdate"
             ref="listEstadoCuentaRef"
         />
-        <br>
-        <h3>Nuestras Hipotecas</h3>
-        <p class="text-gray-600 text-lg">Encuentra la opción perfecta para tu hogar</p>
-        <ListHipotecasCB/>
     </div>
 </template>
 

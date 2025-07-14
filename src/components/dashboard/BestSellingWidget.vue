@@ -365,7 +365,7 @@ onMounted(() => {
 
         <template #footer>
             <div class="flex gap-2 justify-end">
-                <Button label="Cancelar" icon="pi pi-times" class="p-button-text" @click="bidDialog = false" />
+                <Button label="Cancelar" icon="pi pi-times" severity="secondary" class="p-button-text" @click="bidDialog = false" />
                 <Button label="Confirmar oferta" icon="pi pi-check" severity="contrast" rounded @click="submitBid"
                     :loading="submittingBid"
                     :disabled="!bidAmount || parseFloat(bidAmount) <= parseFloat(selectedAuction?.monto_actual_mayor || 0)" />
@@ -529,7 +529,7 @@ onMounted(() => {
 
         <template #footer>
             <div class="flex gap-2 justify-end">
-                <Button label="Cerrar" icon="pi pi-times" class="p-button-text" @click="detailDialog = false" />
+                <Button label="Cerrar" icon="pi pi-times" severity="secondary" class="p-button-text" @click="detailDialog = false" />
                 <Button label="Hacer Oferta" icon="pi pi-money-bill" severity="contrast" rounded
                     @click="detailDialog = false; openBidDialog(selectedAuction)"
                     :disabled="getTimeRemaining(selectedAuction.finalizacion).urgent && getTimeRemaining(selectedAuction.finalizacion).text === 'Finalizada'" />

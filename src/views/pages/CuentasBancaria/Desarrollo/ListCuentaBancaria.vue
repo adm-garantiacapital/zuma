@@ -1,45 +1,72 @@
 <template>
-    <div class="py-6">
-        <DataTable :value="bankAccounts" :loading="loading" stripedRows class="p-datatable-sm">
+    <div class="">
+        <DataTable ref="dt" :value="bankAccounts" :loading="loading" stripedRows responsiveLayout="scroll" dataKey="id"
+            :paginator="true" :rows="10" :rowsPerPageOptions="[5, 10, 25, 50]" :filters="filters" filterDisplay="menu"
+            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} cuentas"
+            emptyMessage="No se encontraron cuentas bancarias" class="p-datatable-sm">
+            <!-- CABECERA -->
             <template #header>
-                <div class="flex flex-wrap gap-2 items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <h4 class="m-0">Mis cuentas bancaria</h4>
-                    </div>
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <h4 class="m-0 font-bold text-[#171717]"></h4>
+                    <IconField>
+                        <InputIcon>
+                            <i class="pi pi-search" />
+                        </InputIcon>
+                        <InputText v-model="filters['global'].value" placeholder="Buscar..." />
+
+                    </IconField>
                 </div>
             </template>
 
-            <Column field="bank" header="Banco" sortable style="min-width: 15rem"></Column>
-            <Column field="type" header="Tipo de cuenta" sortable style="min-width: 10rem"></Column>
-            <Column field="currency" header="Moneda" sortable style="min-width: 7rem"></Column>
-            <Column field="cc" header="CC" sortable style="min-width: 10rem"></Column>
-            <Column field="cci" header="CCI" sortable style="min-width: 10rem"></Column>
-            <Column field="status" header="Estado" sortable style="min-width: 12rem">
+            <!-- SELECCIÓN -->
+            <Column selectionMode="multiple" headerStyle="width: 3rem" />
+
+            <!-- COLUMNAS -->
+            <Column field="bank" header="Banco" sortable filter filterPlaceholder="Buscar banco"
+                style="min-width: 15rem" />
+            <Column field="type" header="Tipo de cuenta" sortable filter filterPlaceholder="Buscar tipo"
+                style="min-width: 10rem" />
+            <Column field="currency" header="Moneda" sortable filter filterPlaceholder="Buscar moneda"
+                style="min-width: 7rem" />
+            <Column field="cc" header="CC" sortable filter filterPlaceholder="Buscar CC" style="min-width: 10rem" />
+            <Column field="cci" header="CCI" sortable filter filterPlaceholder="Buscar CCI" style="min-width: 10rem" />
+
+            <Column field="status" header="Estado" sortable filter style="min-width: 12rem">
                 <template #body="slotProps">
                     <Tag :value="slotProps.data.status"
                         :severity="slotProps.data.status === 'valid' ? 'success' : 'warn'" />
                 </template>
+                <template #filter>
+                    <Dropdown v-model="filters['status'].value" :options="statusOptions" placeholder="Selecciona estado"
+                        class="p-column-filter" showClear />
+                </template>
             </Column>
-            <Column header="">
+
+            <!-- ACCIONES -->
+            <Column header="Acciones" style="min-width: 10rem">
                 <template #body="slotProps">
-                    <Button label="Ver detalles" severity="warn" variant="link" @click="viewDetail(slotProps.data)" />
+                    <Button label="Ver detalles" severity="warn" variant="link" @click="viewDetail(slotProps.data)"
+                        class="text-sm" />
                 </template>
             </Column>
         </DataTable>
 
-        <!-- Componente para ver/editar detalles -->
+        <!-- DIALOG DETALLE -->
         <VerDetalleCuentaBancaria :visible="showDetailDialog" :accountData="selectedAccount"
             @update:visible="updateDetailDialog" @account-updated="handleAccountUpdated"
             @account-deleted="handleAccountDeleted" />
     </div>
 </template>
-
 <script setup>
 import { ref, onMounted } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
+import InputText from 'primevue/inputtext';
+import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
+import { FilterMatchMode } from '@primevue/core/api';
+
 import { bankAccountService } from '@/services/bankAccountService.js';
 import VerDetalleCuentaBancaria from './VerDetalleCuentaBancaria.vue';
 
@@ -47,6 +74,17 @@ const loading = ref(false);
 const bankAccounts = ref([]);
 const showDetailDialog = ref(false);
 const selectedAccount = ref(null);
+
+const filters = ref({
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    status: { value: null, matchMode: FilterMatchMode.EQUALS },
+});
+
+const statusOptions = [
+    { label: 'Válido', value: 'valid' },
+    { label: 'Pendiente', value: 'pending' },
+    { label: 'Invalido', value: 'invalid' },
+];
 
 const loadBankAccounts = async () => {
     loading.value = true;
@@ -63,37 +101,28 @@ const loadBankAccounts = async () => {
 };
 
 const viewDetail = (account) => {
-    console.log('Ver detalle:', account);
     selectedAccount.value = account;
     showDetailDialog.value = true;
 };
 
-const updateDetailDialog = (value) => {
-    showDetailDialog.value = value;
-    if (!value) {
-        selectedAccount.value = null;
-    }
+const updateDetailDialog = (visible) => {
+    showDetailDialog.value = visible;
+    if (!visible) selectedAccount.value = null;
 };
 
 const handleAccountUpdated = () => {
-    // Recargar la lista cuando se actualiza una cuenta
     loadBankAccounts();
 };
 
 const handleAccountDeleted = () => {
-    // Recargar la lista cuando se elimina una cuenta
     loadBankAccounts();
 };
 
-// Función expuesta para recargar desde el componente padre
 const refreshList = () => {
     loadBankAccounts();
 };
 
-// Exponer la función para que el componente padre pueda llamarla
-defineExpose({
-    refreshList
-});
+defineExpose({ refreshList });
 
 onMounted(() => {
     loadBankAccounts();

@@ -1,6 +1,16 @@
 <template>
-    <div>
-        <Button label="Nueva Cuenta" severity="contrast" rounded @click="openNew"/>
+    <div class="">
+        <div class="flex items-center gap-3">
+            <Button label="Nueva Cuenta" severity="contrast" rounded @click="openNew"/>
+            <span class="text-[#171717] font-semibold">
+                Ir a 
+                <span class="text-[#FF4929] underline cursor-pointer font-semibold">
+                estados de cuentas
+                </span> 
+                para depositar o retirar
+            </span>
+        </div>
+
         <Dialog :visible="visible" @update:visible="updateVisible" modal :style="{ width: '450px' }"
             :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <!-- Título centrado con color personalizado -->

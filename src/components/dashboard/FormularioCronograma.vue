@@ -30,7 +30,7 @@
 
             <Column field="saldo_inicial" header="Saldo Inicial" sortable style="min-width: 140px">
                 <template #body="slotProps">
-                    <div class="text-right font-medium">
+                    <div class="font-medium">
                         {{ formatCurrencyValue(slotProps.data.saldo_inicial) }}
                     </div>
                 </template>
@@ -38,7 +38,7 @@
 
             <Column field="capital" header="Capital" sortable style="min-width: 120px">
                 <template #body="slotProps">
-                    <div class="text-right font-medium text-blue-600">
+                    <div class="font-medium text-blue-600">
                         {{ formatCurrencyValue(slotProps.data.capital) }}
                     </div>
                 </template>
@@ -46,7 +46,7 @@
 
             <Column field="intereses" header="Interés" sortable style="min-width: 120px">
                 <template #body="slotProps">
-                    <div class="text-right font-medium text-orange-600">
+                    <div class="font-medium text-orange-600">
                         {{ formatCurrencyValue(slotProps.data.intereses) }}
                     </div>
                 </template>
@@ -54,23 +54,15 @@
 
             <Column field="cuota_neta" header="Cuota Neta" sortable style="min-width: 130px">
                 <template #body="slotProps">
-                    <div class="text-right font-bold text-primary">
+                    <div class="font-bold text-primary">
                         {{ formatCurrencyValue(slotProps.data.cuota_neta) }}
-                    </div>
-                </template>
-            </Column>
-
-            <Column field="igv" header="IGV" sortable style="min-width: 100px">
-                <template #body="slotProps">
-                    <div class="text-right font-medium text-purple-600">
-                        {{ formatCurrencyValue(slotProps.data.igv) }}
                     </div>
                 </template>
             </Column>
 
             <Column field="total_cuota" header="Total Cuota" sortable style="min-width: 140px">
                 <template #body="slotProps">
-                    <div class="text-right font-bold text-green-600">
+                    <div class="font-bold text-green-600">
                         {{ formatCurrencyValue(slotProps.data.total_cuota) }}
                     </div>
                 </template>
@@ -78,7 +70,7 @@
 
             <Column field="saldo_final" header="Saldo Final" sortable style="min-width: 140px">
                 <template #body="slotProps">
-                    <div class="text-right font-medium">
+                    <div class="font-medium">
                         {{ formatCurrencyValue(slotProps.data.saldo_final) }}
                     </div>
                 </template>

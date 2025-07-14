@@ -1,110 +1,76 @@
 <template>
-  <h5>Estados de cuenta</h5>
-  <Tabs v-model:value="activeTab" @update:value="onTabChange">
-    <div class="flex justify-between items-center">
-      <TabList>
-        <Tab value="0" as="div" class="flex items-center gap-2">
-          <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" />
-          <span class="font-bold whitespace-nowrap">PEN</span>
-        </Tab>
-        <Tab value="1" as="div" class="flex items-center gap-2">
-          <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/onyamalimba.png" shape="circle" />
-          <span class="font-bold whitespace-nowrap">USD</span>
-        </Tab>
-      </TabList>
-      <div class="flex gap-2">
-        <Button
-          :icon="showAmounts ? 'pi pi-eye' : 'pi pi-eye-slash'"
-          severity="secondary"
-          variant="text"
-          rounded
-          @click="toggleAmounts"
-          v-tooltip.top="showAmounts ? 'Ocultar montos' : 'Mostrar montos'"
-        />
-        <Button
-          label="Depósito"
-          icon="pi pi-plus"
-          iconPos="left"
-          severity="contrast"
-          rounded
-          @click="showDepositoDialog = true"
-        />
-        <Button
-          label="Retiro"
-          icon="pi pi-minus"
-          iconPos="left"
-          severity="contrast"
-          variant="outlined"
-          rounded
-          @click="showRetiroDialog = true"
-        />
+  <div class="p-10 rounded-3xl bg-[#F0F1F9]">
+    <h3 class="text-[#171717] font-bold text-xl mb-6">Estados de cuenta</h3>
+
+    <Tabs v-model:value="activeTab" @update:value="onTabChange">
+      <!-- Encabezado -->
+      <div class="flex justify-between items-center flex-wrap gap-4 mb-6">
+        <TabList class="flex gap-3">
+          <Tab value="0" as="div" class="flex items-center gap-2 px-4 py-2 bg-white shadow-sm cursor-pointer">
+            <Avatar shape="circle" class="w-8 h-8">
+              <img src="https://flagcdn.com/w80/pe.png" alt="Bandera de Perú" class="w-full h-full object-cover rounded-full" />
+            </Avatar>
+            <span class="font-bold whitespace-nowrap text-[#171717]">PEN</span>
+          </Tab>
+          <Tab value="1" as="div" class="flex items-center gap-2 px-4 py-2 bg-white shadow-sm cursor-pointer">
+            <Avatar shape="circle" class="w-8 h-8">
+              <img src="https://flagcdn.com/w80/us.png" alt="Bandera de Estados Unidos" class="w-full h-full object-cover rounded-full" />
+            </Avatar>
+            <span class="font-bold whitespace-nowrap text-[#171717]">USD</span>
+          </Tab>
+        </TabList>
+
+        <div class="flex gap-2">
+          <Button :icon="showAmounts ? 'pi pi-eye' : 'pi pi-eye-slash'" severity="contrast" variant="outlined"
+            rounded @click="toggleAmounts" :title="showAmounts ? 'Ocultar montos' : 'Mostrar montos'" />
+          <Button label="Depósito" icon="pi pi-plus" iconPos="left" severity="contrast" rounded
+            @click="showDepositoDialog = true" />
+          <Button label="Retiro" icon="pi pi-minus" iconPos="left" severity="contrast" variant="outlined" rounded
+            @click="showRetiroDialog = true" />
+        </div>
       </div>
-    </div>
-    <TabPanels>
-      <TabPanel value="0" as="div" class="m-0 mt-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="rounded-2xl shadow-md p-4 bg-white">
-            <h6 class="text-gray-500">Saldo disponible</h6>
-            <p v-if="showAmounts" class="text-xl font-bold text-green-600">
-              PEN {{ formatAmount(balances.pen.available) }}
-            </p>
-            <p v-else class="text-xl font-bold text-gray-400">
-              PEN ****
-            </p>
+
+      <!-- Panel PEN -->
+      <TabPanels>
+        <TabPanel value="0" as="div">
+          <div v-if="wallet" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div v-for="(label, key, index) in penLabels" :key="'pen-' + index">
+              <div class="rounded-3xl bg-white p-8 flex items-start gap-4 h-full shadow-sm">
+                <i :class="label.icon" class="text-[#171717] !text-[2.5rem] mt-1"></i>
+                <div>
+                  <h5 class="text-[#171717] font-semibold m-0">{{ label.title }}</h5>
+                  <h3 class="text-[#171717] font-bold text-base m-0">
+                    <span v-if="showAmounts">S/ {{ formatAmount(balances.pen[key]) }}</span>
+                    <span v-else class="text-gray-400">****</span>
+                  </h3>
+                  <a class="text-[#6790FF] font-medium text-sm mt-2 inline-block">Ver más...</a>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="rounded-2xl shadow-md p-4 bg-white">
-            <h6 class="text-gray-500">Total invertido</h6>
-            <p v-if="showAmounts" class="text-xl font-bold text-blue-600">
-              PEN {{ formatAmount(balances.pen.invested) }}
-            </p>
-            <p v-else class="text-xl font-bold text-gray-400">
-              PEN ****
-            </p>
+        </TabPanel>
+
+        <!-- Panel USD -->
+        <TabPanel value="1" as="div">
+          <div v-if="wallet" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div v-for="(label, key, index) in usdLabels" :key="'usd-' + index">
+              <div class="rounded-3xl bg-white p-8 flex items-start gap-4 h-full shadow-sm">
+                <i :class="label.icon" class="text-[#171717] !text-[2.5rem] mt-1"></i>
+                <div>
+                  <h5 class="text-[#171717] font-semibold m-0">{{ label.title }}</h5>
+                  <h3 class="text-[#171717] font-bold text-base m-0">
+                    <span v-if="showAmounts">$ {{ formatAmount(balances.usd[key]) }}</span>
+                    <span v-else class="text-gray-400">****</span>
+                  </h3>
+                  <a class="text-[#6790FF] font-medium text-sm mt-2 inline-block">Ver más...</a>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="rounded-2xl shadow-md p-4 bg-white">
-            <h6 class="text-gray-500">Retorno esperado</h6>
-            <p v-if="showAmounts" class="text-xl font-bold text-orange-500">
-              PEN {{ formatAmount(balances.pen.expectedReturn) }}
-            </p>
-            <p v-else class="text-xl font-bold text-gray-400">
-              PEN ****
-            </p>
-          </div>
-        </div>
-      </TabPanel>
-      <TabPanel value="1" as="div" class="m-0 mt-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="rounded-2xl shadow-md p-4 bg-white">
-            <h6 class="text-gray-500">Saldo disponible</h6>
-            <p v-if="showAmounts" class="text-xl font-bold text-green-600">
-              USD {{ formatAmount(balances.usd.available) }}
-            </p>
-            <p v-else class="text-xl font-bold text-gray-400">
-              USD ****
-            </p>
-          </div>
-          <div class="rounded-2xl shadow-md p-4 bg-white">
-            <h6 class="text-gray-500">Total invertido</h6>
-            <p v-if="showAmounts" class="text-xl font-bold text-blue-600">
-              USD {{ formatAmount(balances.usd.invested) }}
-            </p>
-            <p v-else class="text-xl font-bold text-gray-400">
-              USD ****
-            </p>
-          </div>
-          <div class="rounded-2xl shadow-md p-4 bg-white">
-            <h6 class="text-gray-500">Retorno esperado</h6>
-            <p v-if="showAmounts" class="text-xl font-bold text-orange-500">
-              USD {{ formatAmount(balances.usd.expectedReturn) }}
-            </p>
-            <p v-else class="text-xl font-bold text-gray-400">
-              USD ****
-            </p>
-          </div>
-        </div>
-      </TabPanel>
-    </TabPanels>
-  </Tabs>
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
+  </div>
 
   <!-- Diálogos -->
   <AddDeposito v-model:visible="showDepositoDialog" @success="handleDepositSuccess" />
@@ -120,11 +86,12 @@ import reportsService from '@/services/reportsService'
 // Emits
 const emit = defineEmits(['currency-changed', 'deposit-success', 'withdraw-success'])
 
-// Estado reactivo
+// Estados
 const activeTab = ref('0')
 const showDepositoDialog = ref(false)
 const showRetiroDialog = ref(false)
 const showAmounts = ref(true)
+const wallet = ref(true)
 
 // Balances iniciales
 const balances = ref({
@@ -140,29 +107,42 @@ const balances = ref({
   }
 })
 
-// Computed para la moneda seleccionada
+// Etiquetas por moneda
+const penLabels = {
+  available: { icon: 'pi pi-wallet', title: 'Saldo disponible' },
+  invested: { icon: 'pi pi-chart-line', title: 'Total invertido' },
+  expectedReturn: { icon: 'pi pi-dollar', title: 'Retorno total' }
+}
+
+const usdLabels = {
+  available: { icon: 'pi pi-wallet', title: 'Saldo disponible' },
+  invested: { icon: 'pi pi-chart-line', title: 'Total invertido' },
+  expectedReturn: { icon: 'pi pi-dollar', title: 'Retorno total' }
+}
+
+// Computed para moneda actual
 const currentCurrency = computed(() => {
   return activeTab.value === '0' ? 'PEN' : 'USD'
 })
 
-// Alternar visibilidad de montos
+// Alternar visibilidad
 const toggleAmounts = () => {
   showAmounts.value = !showAmounts.value
 }
 
-// Cambio de tab
+// Cambio de pestaña
 const onTabChange = (newTab) => {
   const currency = newTab === '0' ? 'PEN' : 'USD'
   emit('currency-changed', currency)
 }
 
-// Éxito en depósito
+// Éxito depósito
 const handleDepositSuccess = () => {
   emit('deposit-success')
   fetchBalances()
 }
 
-// Éxito en retiro
+// Éxito retiro
 const handleWithdrawSuccess = () => {
   emit('withdraw-success')
   fetchBalances()
@@ -176,11 +156,11 @@ const formatAmount = (amount) => {
   })
 }
 
-// Cargar balances desde API
+// Obtener balances de la API
 const fetchBalances = async () => {
   try {
     const response = await reportsService.getBalances()
-    
+
     if (response.data.success) {
       const result = {
         pen: {
@@ -211,7 +191,7 @@ const fetchBalances = async () => {
   }
 }
 
-// Exponer métodos al padre
+// Métodos públicos
 const updateBalance = (currency, balance) => {
   const key = currency.toLowerCase()
   if (balances.value[key]) {
@@ -229,7 +209,7 @@ defineExpose({
   currentCurrency
 })
 
-// Al montar, obtener balances
+// Al montar
 onMounted(() => {
   fetchBalances()
 })
