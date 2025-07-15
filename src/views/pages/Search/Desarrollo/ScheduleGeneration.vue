@@ -1,509 +1,430 @@
 <template>
-  <Dialog v-model:visible="visible" maximizable modal header="Simulador de Cronograma de Pagos"
-    :style="{ width: '70rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+  <Dialog v-model:visible="visible" maximizable modal header="Cronograma de Pagos" :style="{ width: '79rem' }"
+    :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
 
-    <!-- Mensaje de validación de balance - Diseño elegante -->
-    <div v-if="validationMessage && !scheduleDataPreview.length" class="mb-6">
-      <div class="relative overflow-hidden">
-        <!-- Tarjeta principal con gradiente -->
-        <div class="bg-gradient-to-br from-orange-50 to-red-50 border-l-4 border-orange-400 rounded-xl p-6 shadow-lg">
-          <!-- Icono y título -->
-          <div class="flex items-start gap-4">
-            <div class="flex-shrink-0">
-              <div class="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center shadow-lg">
-                <i class="pi pi-exclamation-triangle text-white text-xl"></i>
-              </div>
-            </div>
-            
-            <div class="flex-1">
-              <!-- Título principal -->
-              <h3 class="text-lg font-bold text-gray-800 mb-3">
-                Validación de Balance
-              </h3>
-              
-              <!-- Mensaje principal -->
-              <div class="bg-white/70 backdrop-blur-sm rounded-lg p-4 mb-4 border border-orange-200">
-                <div class="flex items-center gap-3">
-                  <i class="pi pi-wallet text-orange-500 text-lg"></i>
-                  <p class="text-gray-700 font-medium">{{ validationMessage.balance }}</p>
-                </div>
-              </div>
-              
-              <!-- Mensaje de conversión si existe -->
-              <div v-if="validationMessage.conversion" class="space-y-4">
-                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
-                  <div class="flex items-start gap-3">
-                    <i class="pi pi-info-circle text-blue-500 text-lg mt-0.5"></i>
-                    <div>
-                      <p class="text-blue-800 font-medium mb-3">{{ validationMessage.conversion }}</p>
-                      
-                      <!-- Botón de conversión elegante -->
-                      <Button 
-                        label="Convertir Moneda" 
-                        icon="pi pi-refresh" 
-                        class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 border-0 px-6 py-2 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                        @click="handleCurrencyConversion" 
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Mensaje de ayuda -->
-              <div class="mt-4 flex items-center gap-2 text-sm text-gray-600">
-                <i class="pi pi-lightbulb text-yellow-500"></i>
-                <span>Puedes recargar tu billetera o convertir tus fondos disponibles</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Efecto decorativo -->
-        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-200/20 to-red-200/20 rounded-full -translate-y-8 translate-x-8"></div>
-        <div class="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-orange-300/10 to-yellow-300/10 rounded-full translate-y-4 -translate-x-4"></div>
-      </div>
-      
-      <!-- Estadísticas adicionales si están disponibles -->
-      <div v-if="validationMessage.additionalInfo" class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-white rounded-lg p-4 shadow-md border border-gray-100">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-              <i class="pi pi-dollar text-green-600"></i>
-            </div>
-            <div>
-              <p class="text-sm text-gray-600">Balance Disponible</p>
-              <p class="font-bold text-gray-800">{{ validationMessage.additionalInfo.balance || 'N/A' }}</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="bg-white rounded-lg p-4 shadow-md border border-gray-100">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-              <i class="pi pi-credit-card text-blue-600"></i>
-            </div>
-            <div>
-              <p class="text-sm text-gray-600">Cuota Requerida</p>
-              <p class="font-bold text-gray-800">{{ validationMessage.additionalInfo.requiredAmount || 'N/A' }}</p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="bg-white rounded-lg p-4 shadow-md border border-gray-100">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-              <i class="pi pi-globe text-purple-600"></i>
-            </div>
-            <div>
-              <p class="text-sm text-gray-600">Moneda</p>
-              <p class="font-bold text-gray-800">{{ validationMessage.additionalInfo.currency || 'N/A' }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tabla de selección de plazos -->
-    <div v-if="!scheduleData && scheduleDataPreview.length > 0" class="mb-5">
-      <DataTable v-model:selection="selectedPlazo" :value="scheduleDataPreview" responsiveLayout="scroll"
-        class="p-datatable-sm" dataKey="deadline_id" selectionMode="single" @rowSelect="onRowSelect" @rowUnselect="onRowUnselect">
-        <template #header>
-          <div class="flex flex-wrap gap-2 items-center justify-between">
-            <div class="flex items-center gap-2">
-              <h3 class="text-lg font-semibold mb-3">Selecciona un plazo de financiamiento</h3>
-            </div>
-          </div>
-        </template>
-        <Column selectionMode="single" style="width: 3rem" :exportable="false"></Column>
-        <Column field="plazo_meses" header="Plazo (meses)" sortable style="min-width: 12rem" />
-        <Column field="cuota_mensual" header="Cuota mensual (S/)" sortable style="min-width: 12rem" />
-        <Column field="total_pagado" header="Total a pagar (S/)" sortable style="min-width: 12rem" />
-        <Column header="">
-          <template #body="slotProps">
-            <div class="flex gap-2">
-              <Button label="Ver cronograma" icon="pi pi-eye" size="small"
-                :severity="form.plazo_id === slotProps.data.deadline_id ? 'primary' : 'secondary'"
-                @click="selectPlazo(slotProps.data.deadline_id)" />
-
-              <Button label="Exportar" icon="pi pi-file-excel" size="small" severity="success"
-                :disabled="selectedPlazo?.deadline_id !== slotProps.data.deadline_id"
-                @click="exportPreviewToExcel(slotProps.data)" />
-                
-              <Button 
-                label="Invertir" 
-                icon="pi pi-dollar" 
-                size="small" 
-                severity="contrast" 
-                :disabled="selectedPlazo?.deadline_id !== slotProps.data.deadline_id"
-                :loading="investLoading && selectedPlazo?.deadline_id === slotProps.data.deadline_id"
-                @click="handleInvest(slotProps.data.deadline_id)" 
-              />
-            </div>
-          </template>
-        </Column>
-      </DataTable>
-    </div>
-
-    <!-- Tabla de cuotas del cronograma -->
-    <div v-else-if="scheduleData">
-        <DataTable v-model:selection="selectedCuotas" :value="scheduleData.cronograma_final.pagos" dataKey="cuota"
-        :paginator="true" :rows="rows" :totalRecords="totalRecords" :lazy="true" :first="(currentPage - 1) * rows"
-        @page="onPage" :filters="filters"
+    <div v-if="scheduleData && scheduleData.length > 0">
+      <DataTable v-model:selection="selectedCuotas" :value="formattedScheduleData" dataKey="id" :paginator="true"
+        :rows="rows" :totalRecords="totalRecords" :lazy="true" :first="(currentPage - 1) * rows" @page="onPage"
+        :filters="filters"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReportTemplate RowsPerPageDropdown"
-        :rowsPerPageOptions="[5, 10, 25]"
-        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} cuotas" responsiveLayout="scroll"
-        class="p-datatable-sm" :loading="loading" selectionMode="multiple">
+        :rowsPerPageOptions="[5, 10, 25]" responsiveLayout="scroll"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} cuotas" class="p-datatable-sm"
+        :loading="loading" selectionMode="multiple">
+
+        <!-- Encabezado con botones -->
         <template #header>
           <div class="flex justify-between items-center mb-3">
-        <span class="text-lg font-semibold">Cronograma detallado de pagos</span>
-        <div class="flex gap-2">
-          <Button label="Exportar a Excel" icon="pi pi-file-excel" severity="success" size="small"
-            @click="handleExportToExcel" :loading="exportLoading" />
-          <Button label="Cambiar plazo" icon="pi pi-arrow-left" severity="secondary" size="small"
-            @click="volverASeleccion" />
-        </div>
-      </div>
+            <span class="text-lg font-semibold">Cronograma detallado de pagos</span>
+            <div class="flex gap-2">
+              <Button label="Exportar a Excel" icon="pi pi-file-excel" severity="success" rounded
+                @click="handleExportToExcel" :loading="exportLoading" />
+
+              <Button label="Exportar a PDF" icon="pi pi-file-pdf" severity="danger" rounded
+                @click="handleExportToPDF" />
+
+              <Button label="Invertir" severity="contrast" variant="outlined" rounded 
+                @click="confirmarInversion" />
+            </div>
+          </div>
         </template>
-        <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
-        <Column field="cuota" header="Cuota" sortable />
-        <Column field="vcmto" header="Vencimiento" sortable />
-        <Column field="saldo_inicial" header="Saldo Inicial" sortable />
-        <Column field="capital" header="Capital" sortable />
-        <Column field="interes" header="Interés" sortable />
-        <Column field="cuota_neta" header="Cuota Neta" sortable />
-        <Column field="igv" header="IGV" sortable />
-        <Column field="total_cuota" header="Total Cuota" sortable />
-        <Column field="saldo_final" header="Saldo Final" sortable />
+
+        <!-- Columnas -->
+        <Column selectionMode="multiple" style="width: 3rem" :exportable="false" />
+        <Column field="cuota" header="Cuota" sortable style="width: 3rem" />
+        <Column field="vencimiento" header="Vencimiento" sortable style="width: 5rem" />
+        <Column field="saldo_inicial" header="Saldo Inicial" sortable style="width: 10rem" />
+        <Column field="capital" header="Capital" sortable style="width: 8rem" />
+        <Column field="intereses" header="Interés" sortable style="width: 8rem" />
+        <Column field="cuota_neta" header="Cuota Neta" sortable style="width: 10rem" />
+        <Column field="total_cuota" header="Total Cuota" sortable style="width: 10rem" />
+        <Column field="saldo_final" header="Saldo Final" sortable style="width: 13rem" />
+
+        <!-- Columna Estado con tag -->
+        <Column field="estado" header="Estado" sortable style="width: 8rem">
+          <template #body="slotProps">
+            <Tag :value="slotProps.data.estado" :severity="getEstadoSeverity(slotProps.data.estado)"
+              class="uppercase font-semibold text-xs" />
+          </template>
+        </Column>
+
       </DataTable>
     </div>
+
+    <!-- Dialog de confirmación de inversión -->
+    <Dialog v-model:visible="showConfirmInvestment" modal header="Confirmar Inversión" 
+      :style="{ width: '450px' }" :breakpoints="{ '960px': '75vw' }">
+      <div class="flex align-items-center gap-3 mb-3">
+        <i class="pi pi-exclamation-triangle text-3xl text-orange-500"></i>
+        <span>¿Estás seguro que deseas invertir en esta propiedad?</span>
+      </div>
+      <template #footer>
+        <Button label="No" icon="pi pi-times" @click="showConfirmInvestment = false" 
+          class="p-button-text" />
+        <Button label="Sí" icon="pi pi-check" @click="confirmarSi" autofocus />
+      </template>
+    </Dialog>
+
+    <!-- Dialog de método de pago -->
+    <Dialog v-model:visible="showPaymentMethod" modal header="Método de Pago" 
+      :style="{ width: '500px' }" :breakpoints="{ '960px': '75vw' }">
+      <div class="mb-4">
+        <p class="mb-3">¿Cómo quieres que se realice el cobro?</p>
+        <div class="flex flex-column gap-3">
+          <div class="flex align-items-center">
+            <RadioButton v-model="paymentMethod" inputId="automatic" value="automatic" />
+            <label for="automatic" class="ml-2">Automático desde tu cuenta</label>
+          </div>
+          <div class="flex align-items-center">
+            <RadioButton v-model="paymentMethod" inputId="deposit" value="deposit" />
+            <label for="deposit" class="ml-2">Depositar y subir voucher en depósitos</label>
+          </div>
+          <div class="flex align-items-center">
+            <RadioButton v-model="paymentMethod" inputId="guarantee" value="guarantee" />
+            <label for="guarantee" class="ml-2">Selección cuenta de garantía</label>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <Button label="Cancelar" icon="pi pi-times" @click="showPaymentMethod = false" 
+          class="p-button-text" />
+        <Button label="Continuar" icon="pi pi-check" @click="procesarMetodoPago" 
+          :disabled="!paymentMethod" />
+      </template>
+    </Dialog>
+
+    <!-- Dialog de cuenta de garantía -->
+    <Dialog v-model:visible="showGuaranteeAccount" modal header="Cuenta de Garantía" 
+      :style="{ width: '600px' }" :breakpoints="{ '960px': '75vw' }">
+      <div class="mb-4">
+        <h4 class="mb-3">Selecciona tu cuenta de garantía:</h4>
+        
+        <div class="grid">
+          <div class="col-12 md:col-6 mb-3">
+            <Card>
+              <template #content>
+                <div class="flex align-items-center gap-3">
+                  <i class="pi pi-credit-card text-2xl text-blue-500"></i>
+                  <div>
+                    <h5 class="mb-1">Cuenta Principal</h5>
+                    <p class="text-sm text-gray-600 mb-0">**** **** **** 1234</p>
+                    <p class="text-sm text-gray-600 mb-0">Saldo: S/ 15,000.00</p>
+                  </div>
+                </div>
+              </template>
+            </Card>
+          </div>
+          
+          <div class="col-12 md:col-6 mb-3">
+            <Card>
+              <template #content>
+                <div class="flex align-items-center gap-3">
+                  <i class="pi pi-wallet text-2xl text-green-500"></i>
+                  <div>
+                    <h5 class="mb-1">Cuenta de Ahorros</h5>
+                    <p class="text-sm text-gray-600 mb-0">**** **** **** 5678</p>
+                    <p class="text-sm text-gray-600 mb-0">Saldo: S/ 8,500.00</p>
+                  </div>
+                </div>
+              </template>
+            </Card>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <label for="guaranteeAmount" class="block text-sm font-medium mb-2">
+            Monto de garantía:
+          </label>
+          <InputNumber 
+            v-model="guaranteeAmount" 
+            inputId="guaranteeAmount"
+            mode="currency" 
+            currency="PEN" 
+            locale="es-PE"
+            :min="0"
+            :max="50000"
+            placeholder="Ingresa el monto"
+            class="w-full"
+          />
+        </div>
+
+        <div class="mt-4">
+          <label for="guaranteeDescription" class="block text-sm font-medium mb-2">
+            Descripción (opcional):
+          </label>
+          <Textarea 
+            v-model="guaranteeDescription" 
+            inputId="guaranteeDescription"
+            rows="3" 
+            placeholder="Ingresa una descripción para la garantía..."
+            class="w-full"
+          />
+        </div>
+      </div>
+      
+      <template #footer>
+        <Button label="Cancelar" icon="pi pi-times" @click="showGuaranteeAccount = false" 
+          class="p-button-text" />
+        <Button label="Procesar Garantía" icon="pi pi-check" @click="procesarGarantia" 
+          :disabled="!guaranteeAmount || guaranteeAmount <= 0" />
+      </template>
+    </Dialog>
   </Dialog>
 </template>
 
 <script setup>
-import { ref, watch, defineExpose } from 'vue'
+import { ref, computed, defineExpose } from 'vue'
 import { simulationService } from '@/services/simulationService.js'
-import { propertyInvestorService } from '@/services/propertyInvestorService.js' // Importar el servicio
 import { useExport } from '@/composables/useExport.js'
 import { useToast } from 'primevue/usetoast'
+import Tag from 'primevue/tag'
+import RadioButton from 'primevue/radiobutton'
+import Card from 'primevue/card'
+import InputNumber from 'primevue/inputnumber'
+import Textarea from 'primevue/textarea'
 
 const toast = useToast()
 const visible = ref(false)
 const propertyId = ref(null)
 
-const form = ref({ plazo_id: null })
-const scheduleDataPreview = ref([]) // Opciones de plazo
-const scheduleData = ref(null) // Cronograma final con pagos
+const scheduleData = ref(null)
 const selectedCuotas = ref([])
-const selectedPlazo = ref(null) // Para la selección single de plazo
 const rows = ref(10)
 const currentPage = ref(1)
 const totalRecords = ref(0)
 const loading = ref(false)
 const filters = ref({})
-const investLoading = ref(false) // Estado de carga para inversión
 
-// Nueva variable para manejar mensajes de validación
-const validationMessage = ref(null)
+// Variables para los diálogos de inversión
+const showConfirmInvestment = ref(false)
+const showPaymentMethod = ref(false)
+const showGuaranteeAccount = ref(false)
+const paymentMethod = ref(null)
+const guaranteeAmount = ref(null)
+const guaranteeDescription = ref('')
 
-// Composable para exportaciones
 const { exportLoading, exportCronogramaToExcel } = useExport()
 
-// Watcher para sincronizar la selección de plazo
-watch(selectedPlazo, (newVal) => {
-  if (newVal && newVal.deadline_id) {
-    form.value.plazo_id = newVal.deadline_id
-  }
+// Formateo de fechas a dd-mm-yyyy
+const formattedScheduleData = computed(() => {
+  return scheduleData.value?.map(item => ({
+    ...item,
+    vencimiento: new Date(item.vencimiento).toLocaleDateString('es-PE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    })
+  })) || []
 })
 
-// Eventos de selección/deselección de fila
-const onRowSelect = (event) => {
-  console.log('Fila seleccionada:', event.data)
-}
-
-const onRowUnselect = (event) => {
-  console.log('Fila deseleccionada:', event.data)
-}
-
-// Función para manejar la inversión
-const handleInvest = async (deadlineId) => {
-  if (!propertyId.value) {
-    toast.add({ 
-      severity: 'error', 
-      summary: 'Error', 
-      detail: 'No se ha seleccionado una propiedad', 
-      life: 3000 
-    })
-    return
-  }
-
-  if (!deadlineId) {
-    toast.add({ 
-      severity: 'error', 
-      summary: 'Error', 
-      detail: 'No se ha seleccionado un plazo de financiamiento', 
-      life: 3000 
-    })
-    return
-  }
-
-  try {
-    investLoading.value = true
-    
-    // Ahora se envían ambos parámetros: propertyId y deadlineId
-    const response = await propertyInvestorService.invest(propertyId.value, deadlineId)
-    
-    // Manejar respuesta exitosa
-    toast.add({ 
-      severity: 'success', 
-      summary: 'Éxito', 
-      detail: 'Inversión realizada correctamente', 
-      life: 3000 
-    })
-    
-    console.log('Respuesta de inversión:', response.data)
-    
-    // Cerrar el modal después de la inversión exitosa
-    visible.value = false
-    
-    // Aquí puedes emitir un evento para actualizar la lista de propiedades
-    // emit('investmentComplete', response.data)
-    
-  } catch (error) {
-    console.error('Error al realizar la inversión:', error)
-    
-    // Manejar diferentes tipos de errores
-    let errorMessage = 'No se pudo realizar la inversión'
-    
-    if (error.response?.status === 400) {
-      errorMessage = error.response.data?.message || 'Datos de inversión inválidos'
-    } else if (error.response?.status === 401) {
-      errorMessage = 'No tienes autorización para realizar esta inversión'
-    } else if (error.response?.status === 403) {
-      errorMessage = 'No tienes permisos para realizar esta inversión'
-    } else if (error.response?.status === 404) {
-      errorMessage = 'Propiedad o plazo no encontrado'
-    } else if (error.response?.status === 422) {
-      errorMessage = 'Error de validación en los datos'
-    } else if (error.response?.status >= 500) {
-      errorMessage = 'Error del servidor. Por favor, inténtalo más tarde'
-    }
-    
-    toast.add({ 
-      severity: 'error', 
-      summary: 'Error', 
-      detail: errorMessage, 
-      life: 5000 
-    })
-  } finally {
-    investLoading.value = false
+// Función para mostrar el estado con color dinámico
+const getEstadoSeverity = (estado) => {
+  switch (estado?.toLowerCase()) {
+    case 'pendiente':
+      return 'warning'
+    case 'pagado':
+      return 'success'
+    case 'vencido':
+      return 'danger'
+    default:
+      return 'info'
   }
 }
 
-// Abrir el modal y cargar plazos
+// Abrir modal y cargar data
 const open = async (id) => {
   propertyId.value = id
   visible.value = true
   scheduleData.value = null
-  form.value.plazo_id = null
-  selectedPlazo.value = null
   currentPage.value = 1
-  validationMessage.value = null
-  scheduleDataPreview.value = []
 
   try {
-    const response = await simulationService.getAvailableTerms(id)
-    const responseData = response.data.data
-    
-    // Verificar si hay cuadro de amortización o solo mensajes de validación
-    if (responseData.cuadro_amortizacion && responseData.cuadro_amortizacion.length > 0) {
-      scheduleDataPreview.value = responseData.cuadro_amortizacion
-      validationMessage.value = null
-    } else {
-      // No hay cuadro de amortización, mostrar mensajes de validación
-      scheduleDataPreview.value = []
-      validationMessage.value = {
-        balance: responseData.mensaje_validacion_balance,
-        conversion: responseData.mensaje_conversion_sugerida,
-        type: responseData.mensaje_conversion_sugerida ? 'info' : 'warn'
-      }
+    const response = await simulationService.getSchedules(id)
+    const responseData = response.data
+
+    if (responseData.data && Array.isArray(responseData.data) && responseData.data.length > 0) {
+      scheduleData.value = responseData.data
+      totalRecords.value = responseData.total
+      currentPage.value = responseData.current_page
+      rows.value = responseData.per_page
     }
-    
   } catch (e) {
-    console.error("Error obteniendo cuadro de amortización:", e)
-    toast.add({ 
-      severity: 'error', 
-      summary: 'Error', 
-      detail: 'No se pudo cargar la información de la propiedad', 
-      life: 3000 
+    console.error("Error obteniendo cronograma:", e)
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'No se pudo cargar la información del cronograma',
+      life: 3000
     })
   }
 }
 
-// Manejar conversión de moneda (placeholder para tu lógica)
-const handleCurrencyConversion = () => {
-  toast.add({ 
-    severity: 'info', 
-    summary: 'Conversión de moneda', 
-    detail: 'Función de conversión de moneda pendiente de implementar', 
-    life: 3000 
-  })
-  // Aquí puedes implementar la lógica para convertir la moneda
-  // Por ejemplo, abrir otro modal o redirigir a una página de conversión
-}
-
-// Selección de plazo y generación de cronograma
-const selectPlazo = (id) => {
-  form.value.plazo_id = id
-  // Actualizar la selección en la tabla
-  selectedPlazo.value = scheduleDataPreview.value.find(item => item.deadline_id === id)
-  currentPage.value = 1
-  generateSchedule()
-}
-
-const generateSchedule = async () => {
-  if (!form.value.plazo_id || !propertyId.value) return
+// Manejo de paginación
+const onPage = async (event) => {
+  currentPage.value = (event.page ?? 0) + 1
+  rows.value = event.rows
 
   try {
     loading.value = true
 
-    const payload = {
-      property_id: propertyId.value,
-      deadline_id: form.value.plazo_id
-    }
-
-    const response = await simulationService.generate(payload, {
+    const response = await simulationService.getSchedules(propertyId.value, {
       page: currentPage.value,
       per_page: rows.value
     })
 
-    scheduleData.value = response.data.data
-    totalRecords.value = response.data.data.cronograma_final.pagination.total
+    const responseData = response.data
+    scheduleData.value = responseData.data
+    totalRecords.value = responseData.total
   } catch (e) {
-    console.error("Error generando cronograma:", e)
-    toast.add({ 
-      severity: 'error', 
-      summary: 'Error', 
-      detail: 'No se pudo generar el cronograma', 
-      life: 3000 
+    console.error("Error en paginación:", e)
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'No se pudo cargar la página',
+      life: 3000
     })
   } finally {
     loading.value = false
   }
 }
 
-// Volver a vista de selección de plazo
-const volverASeleccion = () => {
-  scheduleData.value = null
-  form.value.plazo_id = null
-  selectedPlazo.value = null
-  selectedCuotas.value = []
+// Funciones para el flujo de inversión
+const confirmarInversion = () => {
+  showConfirmInvestment.value = true
 }
 
-// Paginación
-const onPage = (event) => {
-  currentPage.value = (event.page ?? 0) + 1
-  rows.value = event.rows
-  generateSchedule()
+const confirmarSi = () => {
+  showConfirmInvestment.value = false
+  showPaymentMethod.value = true
+  paymentMethod.value = null
 }
 
-// Función para manejar la exportación
+const procesarMetodoPago = () => {
+  if (paymentMethod.value === 'guarantee') {
+    showPaymentMethod.value = false
+    showGuaranteeAccount.value = true
+    guaranteeAmount.value = null
+    guaranteeDescription.value = ''
+  } else if (paymentMethod.value === 'automatic') {
+    showPaymentMethod.value = false
+    procesarPagoAutomatico()
+  } else if (paymentMethod.value === 'deposit') {
+    showPaymentMethod.value = false
+    procesarDeposito()
+  }
+}
+
+const procesarGarantia = () => {
+  // Aquí implementarías la lógica para procesar la garantía
+  console.log('Procesando garantía:', {
+    amount: guaranteeAmount.value,
+    description: guaranteeDescription.value,
+    propertyId: propertyId.value
+  })
+  
+  toast.add({
+    severity: 'success',
+    summary: 'Garantía Procesada',
+    detail: `Se ha procesado la garantía por S/ ${guaranteeAmount.value?.toFixed(2)}`,
+    life: 5000
+  })
+  
+  showGuaranteeAccount.value = false
+  resetInvestmentFlow()
+}
+
+const procesarPagoAutomatico = () => {
+  // Aquí implementarías la lógica para pago automático
+  console.log('Procesando pago automático para propiedad:', propertyId.value)
+  
+  toast.add({
+    severity: 'success',
+    summary: 'Pago Automático Configurado',
+    detail: 'Se ha configurado el pago automático desde tu cuenta',
+    life: 5000
+  })
+  
+  resetInvestmentFlow()
+}
+
+const procesarDeposito = () => {
+  // Aquí implementarías la lógica para depósito manual
+  console.log('Procesando depósito manual para propiedad:', propertyId.value)
+  
+  toast.add({
+    severity: 'info',
+    summary: 'Depósito Manual',
+    detail: 'Redirigiendo a la sección de depósitos para subir tu voucher',
+    life: 5000
+  })
+  
+  resetInvestmentFlow()
+}
+
+const resetInvestmentFlow = () => {
+  paymentMethod.value = null
+  guaranteeAmount.value = null
+  guaranteeDescription.value = ''
+}
+
+// Botón: invertir orden (función original)
+const invertirOrden = () => {
+  if (scheduleData.value && scheduleData.value.length > 0) {
+    scheduleData.value = [...scheduleData.value].reverse()
+  }
+}
+
+// Botón: exportar a Excel
 const handleExportToExcel = async () => {
   if (!scheduleData.value) return
 
   try {
-    // Obtener todos los datos del cronograma para la exportación
-    const payload = {
-      property_id: propertyId.value,
-      deadline_id: form.value.plazo_id
-    }
-
-    // Solicitar todos los datos sin paginación para la exportación
-    const response = await simulationService.generate(payload, {
-      page: 1,
-      per_page: totalRecords.value // Obtener todos los registros
-    })
-
-    const allData = response.data.data.cronograma_final.pagos
-    const plazoInfo = scheduleDataPreview.value.find(p => p.deadline_id === form.value.plazo_id)
-
-    // Usar el composable para exportar
-    const result = await exportCronogramaToExcel(allData, plazoInfo?.plazo_meses)
-
-    if (result.success) {
-      console.log(`Archivo exportado: ${result.fileName}`)
-      toast.add({ 
-        severity: 'success', 
-        summary: 'Éxito', 
-        detail: 'Cronograma exportado correctamente', 
-        life: 3000 
-      })
-    } else {
-      console.error('Error en la exportación:', result.error)
-      toast.add({ 
-        severity: 'error', 
-        summary: 'Error', 
-        detail: 'No se pudo exportar el cronograma', 
-        life: 3000 
-      })
-    }
-
-  } catch (e) {
-    console.error("Error obteniendo datos para exportar:", e)
-    toast.add({ 
-      severity: 'error', 
-      summary: 'Error', 
-      detail: 'Error al obtener los datos para exportar', 
-      life: 3000 
-    })
-  }
-}
-
-const exportPreviewToExcel = async (plazoData) => {
-  try {
     exportLoading.value = true
 
-    const payload = {
-      property_id: propertyId.value,
-      deadline_id: plazoData.deadline_id
-    }
-
-    const response = await simulationService.generate(payload, {
+    const response = await simulationService.getSchedules(propertyId.value, {
       page: 1,
-      per_page: 9999 // puedes ajustar si sabes el total exacto
+      per_page: totalRecords.value
     })
 
-    const allData = response.data.data.cronograma_final.pagos
-    const result = await exportCronogramaToExcel(allData, plazoData.plazo_meses)
+    const allData = response.data.data
+    const result = await exportCronogramaToExcel(allData)
 
     if (result.success) {
-      console.log(`Archivo exportado: ${result.fileName}`)
-      toast.add({ 
-        severity: 'success', 
-        summary: 'Éxito', 
-        detail: 'Cronograma exportado correctamente', 
-        life: 3000 
+      toast.add({
+        severity: 'success',
+        summary: 'Éxito',
+        detail: 'Cronograma exportado correctamente',
+        life: 3000
       })
     } else {
-      console.error('Error en la exportación:', result.error)
-      toast.add({ 
-        severity: 'error', 
-        summary: 'Error', 
-        detail: 'No se pudo exportar el cronograma', 
-        life: 3000 
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No se pudo exportar el cronograma',
+        life: 3000
       })
     }
 
   } catch (e) {
-    console.error('Error exportando cronograma desde vista previa:', e)
-    toast.add({ 
-      severity: 'error', 
-      summary: 'Error', 
-      detail: 'Error al exportar el cronograma', 
-      life: 3000 
+    console.error("Error exportando:", e)
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Error al exportar el cronograma',
+      life: 3000
     })
   } finally {
     exportLoading.value = false
   }
+}
+
+// Botón: exportar a PDF (placeholder)
+const handleExportToPDF = () => {
+  toast.add({
+    severity: 'info',
+    summary: 'PDF',
+    detail: 'Función de exportar a PDF pendiente de implementar',
+    life: 3000
+  })
 }
 
 defineExpose({ open })

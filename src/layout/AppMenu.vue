@@ -75,9 +75,17 @@ const tasasFijasMenu = [
     }
 ];
 
+// Menú CLIENTE
+const clienteMenu = [
+    {
+        items: [{ label: 'Mi billetera', icon: 'billetera', to: '/cliente' }]
+    }
+];
+
 // Escoge el modelo según la ruta
 const model = computed(() => {
     if (route.path.startsWith('/tasas-fijas')) return tasasFijasMenu;
+    if (route.path.startsWith('/cliente')) return clienteMenu;
     return hipotecasMenu;
 });
 </script>

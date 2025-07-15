@@ -122,6 +122,19 @@ const router = createRouter({
             ]
         },
         {
+            path: '/cliente',
+            component: AppLayout,
+            meta: { requiresAuth: true },
+            children: [
+                {
+                    path: '',
+                    name: 'cliente',
+                    component: () => import('@/views/Cliente/Dashboard.vue'),
+                    meta: { requiresAuth: true }
+                }
+            ]
+        },
+        {
             path: '/:pathMatch(.*)*',
             redirect: '/'
         }

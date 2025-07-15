@@ -4,16 +4,27 @@ export const simulationService = {
   generate(data, params = { page: 1, per_page: 10 }) {
     return apiAdmin1.post('/simulation/generate', data, { params });
   },
+  
   getAvailableTerms(property_id) {
     return apiAdmin1.get(`/property/${property_id}/show`);
   },
-   getSimulateByAmount(payload) {
+  
+  getSimulateByAmount(payload) {
     return apiAdmin1.post('/investments/simulate-by-amount', payload);
   },
+  
   getPaymentFrecuencies() {
     return apiAdmin1.get('/investments/payment-frequencies');
   },
+  
   getGenerateSchedule(payload) {
     return apiAdmin1.post('/investments/generate-schedule', payload);
+  },
+  
+  // Nuevo método para obtener cronogramas de pagos
+  getSchedules(id, params = {}) {
+    const queryParams = new URLSearchParams(params).toString();
+    const url = `/config/${id}/schedules${queryParams ? `?${queryParams}` : ''}`;
+    return apiAdmin1.get(url);
   }
 };
