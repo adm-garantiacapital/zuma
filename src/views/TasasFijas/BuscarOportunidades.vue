@@ -147,6 +147,50 @@ const formatMoney = (amount) => {
     }).format(amount);
 };
 
+// Función para descargar PDF
+const downloadPDF = (pdfUrl, cooperativaName) => {
+    if (!pdfUrl) {
+        toast.add({
+            severity: 'warn',
+            summary: 'Atención',
+            detail: 'No hay documento PDF disponible para esta entidad',
+            life: 3000
+        });
+        return;
+    }
+
+    try {
+        // Construir la URL completa del PDF
+        const fullUrl = `/storage/pdfs/${pdfUrl}`;
+        
+        // Crear un enlace temporal para descargar
+        const link = document.createElement('a');
+        link.href = fullUrl;
+        link.download = `${cooperativaName}_documento.pdf`;
+        link.target = '_blank';
+        
+        // Agregar el enlace al DOM, hacer clic y removerlo
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        toast.add({
+            severity: 'success',
+            summary: 'Descarga iniciada',
+            detail: 'El documento PDF se está descargando',
+            life: 3000
+        });
+    } catch (error) {
+        console.error('Error descargando PDF:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Error al descargar el documento PDF',
+            life: 5000
+        });
+    }
+};
+
 const simulateByAmount = async () => {
     if (!simulationForm.value.amount || simulationForm.value.amount < 100) {
         toast.add({
@@ -190,7 +234,7 @@ const simulateByAmount = async () => {
     }
 };
 
-const simulationResponse = computed(() => {
+/*const simulationResponse = computed(() => {
     let total = 0;
     let id = 0;
     simulationItems.value = [];
@@ -198,6 +242,7 @@ const simulationResponse = computed(() => {
         let datos = {};
         datos.id = id;
         datos.nombre = coop.cooperativa;
+        datos.pdf_url = coop.pdf_url; // Agregar la URL del PDF
         coop.tipos_tasa.forEach((res) => {
             if (res.tipo_tasa == 'TEA') {
                 let arreglo = [];
@@ -223,7 +268,59 @@ const simulationResponse = computed(() => {
     });
 
     return total;
+});*/
+
+const simulationResponse = computed(() => {
+    let total = 0;
+    let id = 0;
+    simulationItems.value = [];
+
+    simulationResults.value.forEach((coop) => {
+        let datos = {};
+        datos.id = id;
+        datos.nombre = coop.cooperativa;
+        datos.pdf_url = coop.pdf_url;
+
+        // Recorremos todos los tipos de tasa, no solo TEA
+        coop.tipos_tasa.forEach((res) => {
+            let arreglo = [];
+
+            if (res.tasas.length === 9) {
+                for (let i = res.tasas.length - 1; i >= 0; i--) {
+                    arreglo.push([
+                        res.tasas[i].id,
+                        res.tasas[i].TEA,
+                        res.tasas[i].plazo_dias,
+                        res.tasas[i].retorno
+                    ]);
+                }
+            } else {
+                // Agregamos espacio vacío para mantener formato
+                arreglo.push(['', '', '', ''], ['', '', '', ''], ['', '', '', '']);
+
+                for (let i = res.tasas.length - 1; i >= 0; i--) {
+                    arreglo.push([
+                        res.tasas[i].id,
+                        res.tasas[i].TEA,
+                        res.tasas[i].plazo_dias,
+                        res.tasas[i].retorno
+                    ]);
+                }
+
+                arreglo.splice(4, 0, ['', '', '', '']);
+                arreglo.splice(6, 0, ['', '', '', '']);
+                arreglo.push(['', '', '', '']);
+            }
+
+            datos.tea = arreglo;
+            simulationItems.value.push(datos);
+            id++;
+        });
+    });
+
+    return total;
 });
+
 
 onMounted(async () => {
     await loadPaymentFrequencies();
@@ -332,7 +429,17 @@ const createInvestment = async () => {
                     <tr v-for="item in simulationItems" :key="item.id"
                         class="odd:bg-white even:bg-gray-50 text-[#171717]">
                         <th scope="row" class="px-5 py-3 font-medium">
-                            {{ item.nombre }}
+                            <div class="flex items-center justify-between">
+                                <span>{{ item.nombre }}</span>
+                                <Button 
+                                    v-if="item.pdf_url" 
+                                    @click="downloadPDF(item.pdf_url, item.nombre)"
+                                    icon="pi pi-download" 
+                                    aria-label="Descargar PDF" 
+                                    variant="link"
+                                    v-tooltip.top="'Descargar documento PDF'"
+                                    class="!text-[#FF4929] !w-[30px] !h-[30px] hover:!text-[#6790FF] focus:!text-[#FF4929] !transition !duration-100 !ease-in !ml-2" />
+                            </div>
                         </th>
                         <td v-for="subitem in item.tea" :key="subitem.id" class="px-3 py-3">
                             {{ subitem[1] }}
@@ -504,16 +611,5 @@ const createInvestment = async () => {
 </template>
 
 <style>
-.p-dialog {
-    border-radius: 1.5rem !important;
-}
 
-.p-dialog-header {
-    padding: 2.5rem !important;
-}
-
-.p-dialog-content {
-    background-color: #f0f1f9;
-    padding: 2.5rem !important;
-}
 </style>

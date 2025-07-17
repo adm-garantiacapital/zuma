@@ -142,12 +142,18 @@ const availableBalance = computed(() => {
       switch (movement.type) {
         case 'deposit':
         case 'payment':
+        case 'fixed_rate_interest_payment':
+        case 'fixed_rate_disbursement':
+        case 'mortgage_disbursement':
           balance += amount
           break
         case 'withdraw':
         case 'investment':
         case 'tax':
         case 'exchange_up':
+        case 'fixed_rate_capital_return':
+        case 'mortgage_installment_payment':
+        case 'mortgage_early_payment':
           balance -= amount
           break
         case 'exchange_down':
@@ -214,7 +220,13 @@ const getMovementLabel = (type) => {
     'investment': 'Inversión',
     'tax': 'Impuesto',
     'exchange_up': 'Cambio ↑',
-    'exchange_down': 'Cambio ↓'
+    'exchange_down': 'Cambio ↓',
+    'fixed_rate_disbursement': 'Desembolso Tasa Fija',
+    'fixed_rate_interest_payment': 'Pago Intereses T.F.',
+    'fixed_rate_capital_return': 'Devolución Capital T.F.',
+    'mortgage_disbursement': 'Desembolso Hipoteca',
+    'mortgage_installment_payment': 'Cuota Hipoteca',
+    'mortgage_early_payment': 'Pago Adelantado Hipoteca'
   }
   return labels[type] || type
 }
@@ -239,7 +251,7 @@ const getMovementStyle = (type) => {
       bgClass: 'bg-purple-100'
     },
     'tax': {
-      iconClass: 'pi pi-arrow-up text-orange-600',
+      iconClass: 'pi pi-minus text-orange-600',
       bgClass: 'bg-orange-100'
     },
     'exchange_up': {
@@ -249,6 +261,30 @@ const getMovementStyle = (type) => {
     'exchange_down': {
       iconClass: 'pi pi-arrow-down text-teal-600',
       bgClass: 'bg-teal-100'
+    },
+    'fixed_rate_disbursement': {
+      iconClass: 'pi pi-dollar text-green-600',
+      bgClass: 'bg-green-100'
+    },
+    'fixed_rate_interest_payment': {
+      iconClass: 'pi pi-percentage text-emerald-600',
+      bgClass: 'bg-emerald-100'
+    },
+    'fixed_rate_capital_return': {
+      iconClass: 'pi pi-undo text-amber-600',
+      bgClass: 'bg-amber-100'
+    },
+    'mortgage_disbursement': {
+      iconClass: 'pi pi-home text-blue-600',
+      bgClass: 'bg-blue-100'
+    },
+    'mortgage_installment_payment': {
+      iconClass: 'pi pi-calendar text-violet-600',
+      bgClass: 'bg-violet-100'
+    },
+    'mortgage_early_payment': {
+      iconClass: 'pi pi-fast-forward text-pink-600',
+      bgClass: 'bg-pink-100'
     }
   }
 
@@ -260,13 +296,27 @@ const getMovementStyle = (type) => {
 
 // Obtener prefijo del monto
 const getAmountPrefix = (type) => {
-  const incomingTypes = ['deposit', 'payment', 'exchange_down']
+  const incomingTypes = [
+    'deposit', 
+    'payment', 
+    'exchange_down', 
+    'fixed_rate_interest_payment', 
+    'fixed_rate_disbursement', 
+    'mortgage_disbursement'
+  ]
   return incomingTypes.includes(type) ? '+' : '-'
 }
 
 // Obtener color del monto
 const getAmountColor = (type) => {
-  const incomingTypes = ['deposit', 'payment', 'exchange_down']
+  const incomingTypes = [
+    'deposit', 
+    'payment', 
+    'exchange_down', 
+    'fixed_rate_interest_payment', 
+    'fixed_rate_disbursement', 
+    'mortgage_disbursement'
+  ]
   return incomingTypes.includes(type) ? 'text-green-600' : 'text-red-600'
 }
 
@@ -299,6 +349,7 @@ const getStatusLabel = (status) => {
   const statusMap = {
     'pending': 'Pendiente',
     'valid': 'Aprobado',
+    'confirmed': 'Confirmado',
     'rejected': 'Rechazado',
     'completed': 'Completado'
   }
@@ -309,7 +360,8 @@ const getStatusLabel = (status) => {
 const getStatusSeverity = (status) => {
   const severityMap = {
     'pending': 'warn',
-    'approved': 'info',
+    'valid': 'info',
+    'confirmed': 'success',
     'rejected': 'danger',
     'completed': 'success'
   }
