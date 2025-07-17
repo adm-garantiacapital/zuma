@@ -29,47 +29,52 @@
         </div>
       </div>
 
-      <!-- Selección de cuenta bancaria -->
+      <!-- Selección de cooperativa con inversiones pendientes -->
       <div>
         <label class="block text-sm font-semibold mb-2 text-gray-700">
-          ¿De qué cuenta bancaria nos envías el dinero?
+          Cooperativas con depósitos pendientes
         </label>
-        <Select v-model="selectedBank" :options="bankOptions" optionLabel="name" optionValue="value"
-          placeholder="Seleccionar cuenta" class="w-full" :optionDisabled="isOptionDisabled">
-          <!-- Opción del dropdown -->
+        <Select v-model="selectedPendingInvestment" :options="pendingCooperatives" optionLabel="entidad"
+          optionValue="id" placeholder="Seleccionar cooperativa" class="w-full">
+          <!-- Cómo se muestran las opciones -->
           <template #option="slotProps">
-            <div class=""
-              :class="{ 'opacity-50 cursor-not-allowed': slotProps.option.status === 'invalid' }">
-              <!-- Fila superior: Alias + Estado -->
-              <div class="flex justify-between items-center">
-                <span class="font-semibold text-gray-800 text-sm">
-                  {{ slotProps.option.alias }}
-                </span>
-                <Tag :value="getStatusLabel(slotProps.option.status)"
-                  :severity="slotProps.option.status === 'valid' ? 'success' : 'danger'" class="text-xs" />
-              </div>
-
-              <!-- Fila inferior: Banco | Moneda | Tipo -->
-              <div class="text-xs text-gray-600">
-                Banco: {{ slotProps.option.bank }} | Moneda: {{ slotProps.option.currency }} | Tipo: {{ slotProps.option.type }}
-              </div>
-
-              <!-- Mensaje adicional según estado -->
-              <div v-if="slotProps.option.status === 'invalid'" class="text-xs text-red-500 mt-1">
-                ⚠️ Esta cuenta aún no ha sido validada.
-              </div>
-              <div v-else class="text-xs text-green-600 mt-1">
-                ✅ Esta cuenta fue validada correctamente.
-              </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-800">{{ slotProps.option.entidad }}</span>
+              <Tag value="Pendiente" severity="warn" />
             </div>
           </template>
 
-          <!-- Visualización de la cuenta seleccionada -->
+          <!-- Valor seleccionado -->
           <template #value="slotProps">
-            <div v-if="slotProps.value" class="text-sm text-gray-800">
-              {{ getSelectedBankName(slotProps.value) }}
+            <div class="flex items-center justify-between w-full">
+              <span class="text-sm" :class="slotProps.value ? 'text-gray-800' : 'text-gray-400'">
+                {{ slotProps.value ? getCooperativeName(slotProps.value) : 'Seleccionar cooperativa' }}
+              </span>
+              <Tag v-if="slotProps.value" value="Pendiente" severity="warn" />
             </div>
-            <span v-else class="text-gray-400 text-sm">Seleccionar cuenta</span>
+          </template>
+
+        </Select>
+      </div>
+
+      <!-- Selección del medio de pago (sin íconos) -->
+      <div>
+        <label class="block text-sm font-semibold mb-2 text-gray-700">
+          ¿Desde qué medio realizaste el depósito?
+        </label>
+        <Select v-model="selectedPaymentSource" :options="paymentSources" optionLabel="name" optionValue="id"
+          placeholder="Seleccionar medio" class="w-full">
+          <!-- Opciones del dropdown -->
+          <template #option="slotProps">
+            <span class="text-sm text-gray-800">{{ slotProps.option.name }}</span>
+          </template>
+
+          <!-- Valor seleccionado -->
+          <template #value="slotProps">
+            <span v-if="slotProps.value" class="text-sm text-gray-800">
+              {{ getPaymentSourceName(slotProps.value) }}
+            </span>
+            <span v-else class="text-gray-400 text-sm">Seleccionar medio</span>
           </template>
         </Select>
       </div>
@@ -113,7 +118,7 @@
           <i class="pi pi-eye text-blue-600"></i>
           <span class="text-sm font-semibold text-blue-800">Datos detectados automáticamente</span>
         </div>
-        
+
         <div class="space-y-2 text-sm">
           <div v-if="detectedOperationNumber">
             <span class="text-gray-600">📄 N° Operación detectado:</span>
@@ -126,21 +131,9 @@
         </div>
 
         <div class="flex gap-2 mt-4">
-          <Button 
-            label="Confirmar datos" 
-            icon="pi pi-check" 
-            size="small" 
-            severity="success" 
-            @click="confirmOcrData" 
-          />
-          <Button 
-            label="Editar manualmente" 
-            icon="pi pi-pencil" 
-            size="small" 
-            severity="secondary" 
-            outlined 
-            @click="editManually" 
-          />
+          <Button label="Confirmar datos" icon="pi pi-check" size="small" severity="success" @click="confirmOcrData" />
+          <Button label="Editar manualmente" icon="pi pi-pencil" size="small" severity="secondary" outlined
+            @click="editManually" />
         </div>
       </div>
 
@@ -151,13 +144,8 @@
             N° de operación
             <i class="pi pi-info-circle ml-1" v-tooltip.top="'Número de la operación bancaria'"></i>
           </label>
-          <InputText 
-            v-model="operationNumber" 
-            placeholder="0" 
-            class="w-full" 
-            :disabled="ocrDataConfirmed"
-            :class="{ 'bg-green-50 border-green-300': ocrDataConfirmed }"
-          />
+          <InputText v-model="operationNumber" placeholder="0" class="w-full" :disabled="ocrDataConfirmed"
+            :class="{ 'bg-green-50 border-green-300': ocrDataConfirmed }" />
           <div v-if="ocrDataConfirmed" class="text-xs text-green-600 mt-1 flex items-center gap-1">
             <i class="pi pi-check-circle"></i>
             Dato confirmado automáticamente
@@ -165,16 +153,8 @@
         </div>
         <div>
           <label class="block text-sm font-medium mb-2">Monto</label>
-          <InputNumber 
-            v-model="amount" 
-            mode="currency" 
-            currency="PEN" 
-            locale="es-PE" 
-            placeholder="0.00"
-            class="w-full" 
-            :disabled="ocrDataConfirmed"
-            :class="{ 'bg-green-50': ocrDataConfirmed }"
-          />
+          <InputNumber v-model="amount" mode="currency" currency="PEN" locale="es-PE" placeholder="0.00" class="w-full"
+            :disabled="ocrDataConfirmed" :class="{ 'bg-green-50': ocrDataConfirmed }" />
           <div v-if="ocrDataConfirmed" class="text-xs text-green-600 mt-1 flex items-center gap-1">
             <i class="pi pi-check-circle"></i>
             Dato confirmado automáticamente
@@ -184,14 +164,8 @@
 
       <!-- Botón para habilitar edición si los datos están confirmados -->
       <div v-if="ocrDataConfirmed" class="text-center">
-        <Button 
-          label="Editar datos" 
-          icon="pi pi-pencil" 
-          size="small" 
-          severity="warning" 
-          outlined 
-          @click="enableEditing" 
-        />
+        <Button label="Editar datos" icon="pi pi-pencil" size="small" severity="warning" outlined
+          @click="enableEditing" />
       </div>
 
       <div class="text-xs text-gray-600 space-y-2">
@@ -239,9 +213,12 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { bankAccountService } from '@/services/bankAccountService'
-import { createDeposit } from '@/services/movementsservice'
 import { useToast } from 'primevue/usetoast'
 import { ocrService } from '@/services/ocrService'
+import { fixedTermInvestmentService } from '@/services/fixedTermInvestmentService'
+import { createFixedRateDeposit } from '@/services/movementsservice'
+
+const selectedPaymentSource = ref(null)
 
 const props = defineProps({
   visible: Boolean
@@ -253,6 +230,8 @@ const toast = useToast()
 const accountNumber = ref('123456789012.34')
 const companyName = ref('GARANTIA CAPITAL S.A.')
 const ruc = ref('12345678901234.')
+const pendingCooperatives = ref([])
+const selectedPendingInvestment = ref(null)
 
 // Opciones de bancos
 const bankOptions = ref([])
@@ -276,9 +255,15 @@ const ocrDataConfirmed = ref(false)
 const detectedOperationNumber = ref('')
 const detectedAmount = ref(null)
 
+const getCooperativeName = (id) => {
+  const item = pendingCooperatives.value.find(p => p.id === id)
+  return item ? item.entidad : ''
+}
+
 // Computed
 const isFormValid = computed(() => {
-  return selectedBank.value &&
+  return selectedPendingInvestment.value &&
+    selectedPaymentSource.value &&
     operationNumber.value &&
     amount.value &&
     amount.value > 0 &&
@@ -307,17 +292,21 @@ const isImage = (file) => {
   return file && file.type.startsWith('image/')
 }
 
-const isOptionDisabled = (option) => {
-  return option.status === 'invalid'
-}
+const paymentSources = ref([
+  { id: 'yape', name: 'Yape' },
+  { id: 'plin', name: 'Plin' },
+  { id: 'bcp', name: 'BCP' },
+  { id: 'interbank', name: 'Interbank' },
+  { id: 'bbva', name: 'BBVA' },
+  { id: 'scotiabank', name: 'Scotiabank' },
+  { id: 'pichincha', name: 'Pichincha' },
+  { id: 'tunki', name: 'Tunki' },
+  { id: 'otros', name: 'Otros' }
+])
 
-const getStatusLabel = (status) => {
-  return status === 'valid' ? 'Validada' : 'No validada'
-}
-
-const getSelectedBankName = (selectedValue) => {
-  const bank = bankOptions.value.find(option => option.value === selectedValue)
-  return bank ? bank.bank : ''
+const getPaymentSourceName = (id) => {
+  const source = paymentSources.value.find(p => p.id === id)
+  return source ? source.name : ''
 }
 
 const handleFileUpload = async (event) => {
@@ -365,7 +354,7 @@ const handleFileUpload = async (event) => {
     if (ocrData) {
       detectedOperationNumber.value = ocrData.codigo || ''
       detectedAmount.value = parseFloat(ocrData.monto?.replace(/[^\d.]/g, '')) || null
-      
+
       // Solo mostrar confirmación si se detectaron datos
       if (detectedOperationNumber.value || detectedAmount.value) {
         showOcrConfirmation.value = true
@@ -393,7 +382,7 @@ const confirmOcrData = () => {
   if (detectedAmount.value) {
     amount.value = detectedAmount.value
   }
-  
+
   // Ocultar el panel de confirmación y marcar como confirmado
   showOcrConfirmation.value = false
   ocrDataConfirmed.value = true
@@ -410,7 +399,7 @@ const editManually = () => {
   // Ocultar panel de confirmación y permitir edición manual
   showOcrConfirmation.value = false
   ocrDataConfirmed.value = false
-  
+
   toast.add({
     severity: 'info',
     summary: 'Edición manual',
@@ -422,7 +411,7 @@ const editManually = () => {
 const enableEditing = () => {
   // Habilitar edición de campos confirmados
   ocrDataConfirmed.value = false
-  
+
   toast.add({
     severity: 'info',
     summary: 'Edición habilitada',
@@ -439,7 +428,7 @@ const removeVoucher = () => {
   ocrDataConfirmed.value = false
   detectedOperationNumber.value = ''
   detectedAmount.value = null
-  
+
   // Limpiar el input file
   if (document.querySelector('input[type="file"]')) {
     document.querySelector('input[type="file"]').value = ''
@@ -454,7 +443,25 @@ const openPdfModal = () => {
   showPdfModal.value = true
 }
 
+// Cargar cooperativas pendientes y cuentas bancarias
 onMounted(async () => {
+  // Cargar cooperativas pendientes
+  try {
+    const response = await fixedTermInvestmentService.getPending()
+    // FIX: Acceder correctamente a los datos
+    pendingCooperatives.value = response.data.data || []
+    console.log('Cooperativas pendientes cargadas:', pendingCooperatives.value)
+  } catch (error) {
+    console.error('Error al obtener cooperativas pendientes:', error)
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'No se pudieron cargar las cooperativas pendientes',
+      life: 4000
+    })
+  }
+
+  // Cargar cuentas bancarias
   try {
     const response = await bankAccountService.getBankAccounts()
     const accounts = response.data.data
@@ -486,13 +493,15 @@ const handleSubmit = async () => {
   }
 
   const formData = new FormData()
-  formData.append('bank', selectedBank.value)
+  // ✅ CORREGIDO: Cambiar 'investment_id' por 'fixed_term_investment_id'
+  formData.append('fixed_term_investment_id', selectedPendingInvestment.value)
+  formData.append('payment_source', selectedPaymentSource.value)
   formData.append('nro_operation', operationNumber.value)
   formData.append('amount', amount.value)
   formData.append('voucher', voucherFile.value)
 
   try {
-    const response = await createDeposit(formData)
+    const response = await createFixedRateDeposit(formData)
 
     toast.add({
       severity: 'success',
@@ -502,9 +511,9 @@ const handleSubmit = async () => {
     })
 
     updateVisible(false)
-    // Limpiar formulario
     resetForm()
   } catch (error) {
+    console.error('Error al registrar depósito:', error)
     toast.add({
       severity: 'error',
       summary: 'Error al registrar depósito',
@@ -515,6 +524,8 @@ const handleSubmit = async () => {
 }
 
 const resetForm = () => {
+  selectedPendingInvestment.value = null
+  selectedPaymentSource.value = null
   selectedBank.value = null
   operationNumber.value = ''
   amount.value = null

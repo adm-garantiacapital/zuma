@@ -1,7 +1,7 @@
 <template>
   <Dialog :visible="visible" @update:visible="emit('update:visible', $event)" modal header="Cronograma de Pagos"
     :style="{ width: '95vw', maxWidth: '1400px' }" class="payment-schedule-dialog">
-    
+
     <!-- Resumen de cuotas -->
     <div class="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -25,19 +25,11 @@
       <p class="mt-4 text-gray-600">Cargando cronograma...</p>
     </div>
 
-    <DataTable v-else :value="cronograma" 
-      :lazy="true"
-      :paginator="true" 
-      :rows="paginationMeta.per_page"
-      :totalRecords="paginationMeta.total"
-      :first="(paginationMeta.current_page - 1) * paginationMeta.per_page"
-      :rowsPerPageOptions="[5, 10, 20, 50]"
-      @page="onPageChange"
-      responsiveLayout="scroll" 
-      stripedRows  
-      :globalFilterFields="['cuota', 'estado']"
-      class="p-datatable-sm">
-      
+    <DataTable v-else :value="cronograma" :lazy="true" :paginator="true" :rows="paginationMeta.per_page"
+      :totalRecords="paginationMeta.total" :first="(paginationMeta.current_page - 1) * paginationMeta.per_page"
+      :rowsPerPageOptions="[5, 10, 20, 50]" @page="onPageChange" responsiveLayout="scroll" stripedRows
+      :globalFilterFields="['cuota', 'estado']" class="p-datatable-sm">
+
       <template #header>
         <div class="flex justify-between items-center">
           <h3 class="text-lg font-semibold text-gray-800">Detalle de Cuotas</h3>
@@ -52,7 +44,7 @@
       <Column field="cuota" header="N°" sortable>
         <template #body="{ data }">
           <div class="flex justify-center">
-            <Badge :value="data.cuota" class="bg-blue-100 text-blue-800"/>
+            <Badge :value="data.cuota" class="bg-blue-100 text-blue-800" />
           </div>
         </template>
       </Column>
@@ -103,7 +95,16 @@
           <Tag :value="data.estado" :severity="getTagSeverity(data.estado)" class="capitalize" />
         </template>
       </Column>
-
+      <Column header="">
+        <template #body="{ data }">
+          <div class="flex gap-2 justify-center">
+            <Button v-if="['pendiente', 'vencido'].includes(data.estado)" icon="pi pi-credit-card" label="Pagar"
+              size="small" severity="contrast" rounded @click="openPaymentDialog(data)" />
+            <Button v-if="data.estado === 'pagado'" icon="pi pi-file-pdf" class="p-button-outlined p-button-sm"
+              @click="downloadReceipt(data)" />
+          </div>
+        </template>
+      </Column>
     </DataTable>
 
     <!-- Componente de Pago -->
@@ -124,10 +125,10 @@ import Pagos from './Pagos.vue'
 import { paymentScheduleService } from '@/services/paymentScheduleService'
 import { useToast } from 'primevue/usetoast'
 
-const props = defineProps({ 
-  propertyId: Number, 
-  propertyInvestorId: Number, 
-  visible: Boolean 
+const props = defineProps({
+  propertyId: Number,
+  propertyInvestorId: Number,
+  visible: Boolean
 })
 const emit = defineEmits(['update:visible'])
 
@@ -160,7 +161,6 @@ const paymentDialogVisible = ref(false)
 const totalCuotas = computed(() => summaryData.value.totalCuotas || paginationMeta.value.total || 0)
 const cuotasPagadas = computed(() => summaryData.value.cuotasPagadas || 0)
 const cuotasPendientes = computed(() => summaryData.value.cuotasPendientes || 0)
-const cuotasVencidas = computed(() => summaryData.value.cuotasVencidas || 0)
 
 watch(() => props.visible, async (val) => {
   if (val && (props.propertyId || props.id)) {
@@ -184,9 +184,9 @@ const loadData = async (page = 1, perPage = 10) => {
         per_page: perPage
       })
     }
-    
+
     cronograma.value = res.data.data
-    
+
     // Actualizar metadatos de paginación
     paginationMeta.value = {
       current_page: res.data.meta.current_page,
@@ -196,7 +196,7 @@ const loadData = async (page = 1, perPage = 10) => {
       from: res.data.meta.from,
       to: res.data.meta.to
     }
-    
+
   } catch (error) {
     toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo cargar el cronograma', life: 5000 })
   } finally {
@@ -209,12 +209,12 @@ const loadSummary = async () => {
   try {
     // Opción 1: Endpoint específico para resumen (recomendado)
     let res
-    
+
     if (res && res.data) {
       summaryData.value = res.data
       return
     }
-    
+
     // Opción 2: Fallback - cargar todos los datos para calcular el resumen
     // Solo usa esto si no tienes el endpoint de resumen
     if (props.propertyId) {
@@ -222,7 +222,7 @@ const loadSummary = async () => {
     } else if (props.propertyInvestorId) {
       res = await paymentScheduleService.getAll(props.propertyInvestorId)
     }
-    
+
     const allData = res.data.data || res.data
     summaryData.value = {
       totalCuotas: allData.length,
@@ -230,7 +230,7 @@ const loadSummary = async () => {
       cuotasPendientes: allData.filter(c => c.estado === 'pendiente').length,
       cuotasVencidas: allData.filter(c => c.estado === 'vencido').length
     }
-    
+
   } catch (error) {
     console.error('Error loading summary:', error)
     // Si falla, usar solo el total de paginación para total de cuotas
@@ -262,16 +262,16 @@ const getTagSeverity = (estado) => {
 const formatDate = (date) => new Date(date).toLocaleDateString('es-PE')
 const formatCurrency = (amount) => new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(amount)
 
-const openPaymentDialog = (payment) => {
-  selectedPayment.value = payment
-  paymentDialogVisible.value = true
-}
-
 const onPaymentSuccess = (id) => {
   const i = cronograma.value.findIndex(c => c.id === id)
   if (i !== -1) cronograma.value[i].estado = 'pagado'
   // Actualizar el resumen también
   loadSummary()
+}
+
+const openPaymentDialog = (payment) => {
+  selectedPayment.value = payment
+  paymentDialogVisible.value = true
 }
 
 const downloadReceipt = (payment) => {

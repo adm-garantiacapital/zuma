@@ -22,8 +22,8 @@
               <Button label="Exportar a PDF" icon="pi pi-file-pdf" severity="danger" rounded
                 @click="handleExportToPDF" />
 
-              <Button label="Invertir" severity="contrast" variant="outlined" rounded 
-                @click="confirmarInversion" />
+              <Button label="Invertir" severity="contrast" variant="outlined" rounded
+                @click="mostrarMensajeInversion" />
             </div>
           </div>
         </template>
@@ -50,124 +50,80 @@
       </DataTable>
     </div>
 
-    <!-- Dialog de confirmación de inversión -->
-    <Dialog v-model:visible="showConfirmInvestment" modal header="Confirmar Inversión" 
-      :style="{ width: '450px' }" :breakpoints="{ '960px': '75vw' }">
-      <div class="flex align-items-center gap-3 mb-3">
-        <i class="pi pi-exclamation-triangle text-3xl text-orange-500"></i>
-        <span>¿Estás seguro que deseas invertir en esta propiedad?</span>
-      </div>
-      <template #footer>
-        <Button label="No" icon="pi pi-times" @click="showConfirmInvestment = false" 
-          class="p-button-text" />
-        <Button label="Sí" icon="pi pi-check" @click="confirmarSi" autofocus />
-      </template>
-    </Dialog>
+    <!-- Dialog de información de inversión -->
+    <Dialog v-model:visible="showInvestmentInfo" modal header="Información de Inversión" :style="{ width: '450px' }"
+      :breakpoints="{ '960px': '75vw' }">
+      <div class="flex flex-column gap-4">
+        <div class="flex align-items-center gap-3 mb-3">
+          <i class="pi pi-clock text-3xl text-orange-500"></i>
+          <div>
+            <h4 class="mb-2 text-orange-600">Plazo de 24 horas</h4>
+            <p class="text-gray-700 mb-0">
+              Tienes un plazo de 24 horas para realizar el pago. Si no se completa el pago en este tiempo,
+              la propiedad pasará a estado activo.
+            </p>
+          </div>
+        </div>
 
-    <!-- Dialog de método de pago -->
-    <Dialog v-model:visible="showPaymentMethod" modal header="Método de Pago" 
-      :style="{ width: '500px' }" :breakpoints="{ '960px': '75vw' }">
-      <div class="mb-4">
-        <p class="mb-3">¿Cómo quieres que se realice el cobro?</p>
-        <div class="flex flex-column gap-3">
-          <div class="flex align-items-center">
-            <RadioButton v-model="paymentMethod" inputId="automatic" value="automatic" />
-            <label for="automatic" class="ml-2">Automático desde tu cuenta</label>
-          </div>
-          <div class="flex align-items-center">
-            <RadioButton v-model="paymentMethod" inputId="deposit" value="deposit" />
-            <label for="deposit" class="ml-2">Depositar y subir voucher en depósitos</label>
-          </div>
-          <div class="flex align-items-center">
-            <RadioButton v-model="paymentMethod" inputId="guarantee" value="guarantee" />
-            <label for="guarantee" class="ml-2">Selección cuenta de garantía</label>
+        <div class="border-top-1 border-gray-200 pt-4">
+          <div class="flex align-items-center gap-3">
+            <i class="pi pi-whatsapp text-2xl text-green-500"></i>
+            <div>
+              <h5 class="mb-1">¿Tienes alguna duda?</h5>
+              <p class="text-gray-600 mb-2">
+                Si tienes alguna pregunta sobre el trámite, puedes consultar al número de WhatsApp:
+              </p>
+              <div class="flex align-items-center gap-2">
+                <span class="font-semibold text-green-600">+51 999 123 456</span>
+                <Button icon="pi pi-whatsapp" size="small" severity="success" rounded @click="abrirWhatsApp"
+                  v-tooltip="'Abrir WhatsApp'" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
       <template #footer>
-        <Button label="Cancelar" icon="pi pi-times" @click="showPaymentMethod = false" 
-          class="p-button-text" />
-        <Button label="Continuar" icon="pi pi-check" @click="procesarMetodoPago" 
-          :disabled="!paymentMethod" />
+        <Button label="Entendido" icon="pi pi-check" severity="contrast" rounded @click="showInvestmentInfo = false"
+          autofocus />
       </template>
     </Dialog>
+    <Dialog v-model:visible="showInvestmentInfo" modal header="Información de Inversión" :style="{ width: '450px' }"
+      :breakpoints="{ '960px': '75vw' }">
 
-    <!-- Dialog de cuenta de garantía -->
-    <Dialog v-model:visible="showGuaranteeAccount" modal header="Cuenta de Garantía" 
-      :style="{ width: '600px' }" :breakpoints="{ '960px': '75vw' }">
-      <div class="mb-4">
-        <h4 class="mb-3">Selecciona tu cuenta de garantía:</h4>
-        
-        <div class="grid">
-          <div class="col-12 md:col-6 mb-3">
-            <Card>
-              <template #content>
-                <div class="flex align-items-center gap-3">
-                  <i class="pi pi-credit-card text-2xl text-blue-500"></i>
-                  <div>
-                    <h5 class="mb-1">Cuenta Principal</h5>
-                    <p class="text-sm text-gray-600 mb-0">**** **** **** 1234</p>
-                    <p class="text-sm text-gray-600 mb-0">Saldo: S/ 15,000.00</p>
-                  </div>
-                </div>
-              </template>
-            </Card>
-          </div>
-          
-          <div class="col-12 md:col-6 mb-3">
-            <Card>
-              <template #content>
-                <div class="flex align-items-center gap-3">
-                  <i class="pi pi-wallet text-2xl text-green-500"></i>
-                  <div>
-                    <h5 class="mb-1">Cuenta de Ahorros</h5>
-                    <p class="text-sm text-gray-600 mb-0">**** **** **** 5678</p>
-                    <p class="text-sm text-gray-600 mb-0">Saldo: S/ 8,500.00</p>
-                  </div>
-                </div>
-              </template>
-            </Card>
-          </div>
+      <div class="flex flex-col gap-6">
+        <!-- Sección 1: Información de plazo -->
+        <div>
+          <h4 class="mb-2 text-orange-600">Plazo de 24 horas</h4>
+          <p class="text-gray-700 mb-0">
+            Tienes un plazo de 24 horas para realizar el pago. Si no se completa el pago en este tiempo,
+            la propiedad pasará a estado activo.
+          </p>
         </div>
 
-        <div class="mt-4">
-          <label for="guaranteeAmount" class="block text-sm font-medium mb-2">
-            Monto de garantía:
-          </label>
-          <InputNumber 
-            v-model="guaranteeAmount" 
-            inputId="guaranteeAmount"
-            mode="currency" 
-            currency="PEN" 
-            locale="es-PE"
-            :min="0"
-            :max="50000"
-            placeholder="Ingresa el monto"
-            class="w-full"
-          />
-        </div>
-
-        <div class="mt-4">
-          <label for="guaranteeDescription" class="block text-sm font-medium mb-2">
-            Descripción (opcional):
-          </label>
-          <Textarea 
-            v-model="guaranteeDescription" 
-            inputId="guaranteeDescription"
-            rows="3" 
-            placeholder="Ingresa una descripción para la garantía..."
-            class="w-full"
-          />
+        <!-- Sección 2: WhatsApp -->
+        <div>
+          <h5 class="mb-1">¿Tienes alguna duda?</h5>
+          <p class="text-gray-600 mb-2">
+            Si tienes alguna pregunta sobre el trámite, puedes consultar al número de WhatsApp:
+          </p>
+          <div class="flex justify-end align-items-center gap-2">
+            <span class="font-semibold text-green-600">+51 999 123 456</span>
+            <Button icon="pi pi-whatsapp" size="small" severity="success" rounded @click="abrirWhatsApp"
+              v-tooltip="'Abrir WhatsApp'" />
+          </div>
         </div>
       </div>
-      
+
+      <!-- Footer del diálogo -->
       <template #footer>
-        <Button label="Cancelar" icon="pi pi-times" @click="showGuaranteeAccount = false" 
-          class="p-button-text" />
-        <Button label="Procesar Garantía" icon="pi pi-check" @click="procesarGarantia" 
-          :disabled="!guaranteeAmount || guaranteeAmount <= 0" />
+        <Button label="Entendido" icon="pi pi-check" severity="contrast" rounded @click="showInvestmentInfo = false"
+          autofocus />
       </template>
     </Dialog>
+
+
+
   </Dialog>
 </template>
 
@@ -177,10 +133,6 @@ import { simulationService } from '@/services/simulationService.js'
 import { useExport } from '@/composables/useExport.js'
 import { useToast } from 'primevue/usetoast'
 import Tag from 'primevue/tag'
-import RadioButton from 'primevue/radiobutton'
-import Card from 'primevue/card'
-import InputNumber from 'primevue/inputnumber'
-import Textarea from 'primevue/textarea'
 
 const toast = useToast()
 const visible = ref(false)
@@ -194,17 +146,10 @@ const totalRecords = ref(0)
 const loading = ref(false)
 const filters = ref({})
 
-// Variables para los diálogos de inversión
-const showConfirmInvestment = ref(false)
-const showPaymentMethod = ref(false)
-const showGuaranteeAccount = ref(false)
-const paymentMethod = ref(null)
-const guaranteeAmount = ref(null)
-const guaranteeDescription = ref('')
+const showInvestmentInfo = ref(false)
 
 const { exportLoading, exportCronogramaToExcel } = useExport()
 
-// Formateo de fechas a dd-mm-yyyy
 const formattedScheduleData = computed(() => {
   return scheduleData.value?.map(item => ({
     ...item,
@@ -216,11 +161,10 @@ const formattedScheduleData = computed(() => {
   })) || []
 })
 
-// Función para mostrar el estado con color dinámico
 const getEstadoSeverity = (estado) => {
   switch (estado?.toLowerCase()) {
     case 'pendiente':
-      return 'warning'
+      return 'warn'
     case 'pagado':
       return 'success'
     case 'vencido':
@@ -230,7 +174,6 @@ const getEstadoSeverity = (estado) => {
   }
 }
 
-// Abrir modal y cargar data
 const open = async (id) => {
   propertyId.value = id
   visible.value = true
@@ -258,7 +201,6 @@ const open = async (id) => {
   }
 }
 
-// Manejo de paginación
 const onPage = async (event) => {
   currentPage.value = (event.page ?? 0) + 1
   rows.value = event.rows
@@ -287,93 +229,17 @@ const onPage = async (event) => {
   }
 }
 
-// Funciones para el flujo de inversión
-const confirmarInversion = () => {
-  showConfirmInvestment.value = true
+const mostrarMensajeInversion = () => {
+  showInvestmentInfo.value = true
 }
 
-const confirmarSi = () => {
-  showConfirmInvestment.value = false
-  showPaymentMethod.value = true
-  paymentMethod.value = null
+const abrirWhatsApp = () => {
+  const phoneNumber = '51999123456' 
+  const message = 'Hola, tengo una consulta sobre el trámite de inversión en una propiedad.'
+  const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
+  window.open(url, '_blank')
 }
 
-const procesarMetodoPago = () => {
-  if (paymentMethod.value === 'guarantee') {
-    showPaymentMethod.value = false
-    showGuaranteeAccount.value = true
-    guaranteeAmount.value = null
-    guaranteeDescription.value = ''
-  } else if (paymentMethod.value === 'automatic') {
-    showPaymentMethod.value = false
-    procesarPagoAutomatico()
-  } else if (paymentMethod.value === 'deposit') {
-    showPaymentMethod.value = false
-    procesarDeposito()
-  }
-}
-
-const procesarGarantia = () => {
-  // Aquí implementarías la lógica para procesar la garantía
-  console.log('Procesando garantía:', {
-    amount: guaranteeAmount.value,
-    description: guaranteeDescription.value,
-    propertyId: propertyId.value
-  })
-  
-  toast.add({
-    severity: 'success',
-    summary: 'Garantía Procesada',
-    detail: `Se ha procesado la garantía por S/ ${guaranteeAmount.value?.toFixed(2)}`,
-    life: 5000
-  })
-  
-  showGuaranteeAccount.value = false
-  resetInvestmentFlow()
-}
-
-const procesarPagoAutomatico = () => {
-  // Aquí implementarías la lógica para pago automático
-  console.log('Procesando pago automático para propiedad:', propertyId.value)
-  
-  toast.add({
-    severity: 'success',
-    summary: 'Pago Automático Configurado',
-    detail: 'Se ha configurado el pago automático desde tu cuenta',
-    life: 5000
-  })
-  
-  resetInvestmentFlow()
-}
-
-const procesarDeposito = () => {
-  // Aquí implementarías la lógica para depósito manual
-  console.log('Procesando depósito manual para propiedad:', propertyId.value)
-  
-  toast.add({
-    severity: 'info',
-    summary: 'Depósito Manual',
-    detail: 'Redirigiendo a la sección de depósitos para subir tu voucher',
-    life: 5000
-  })
-  
-  resetInvestmentFlow()
-}
-
-const resetInvestmentFlow = () => {
-  paymentMethod.value = null
-  guaranteeAmount.value = null
-  guaranteeDescription.value = ''
-}
-
-// Botón: invertir orden (función original)
-const invertirOrden = () => {
-  if (scheduleData.value && scheduleData.value.length > 0) {
-    scheduleData.value = [...scheduleData.value].reverse()
-  }
-}
-
-// Botón: exportar a Excel
 const handleExportToExcel = async () => {
   if (!scheduleData.value) return
 
@@ -417,7 +283,6 @@ const handleExportToExcel = async () => {
   }
 }
 
-// Botón: exportar a PDF (placeholder)
 const handleExportToPDF = () => {
   toast.add({
     severity: 'info',

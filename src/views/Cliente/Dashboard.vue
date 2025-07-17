@@ -102,10 +102,10 @@
 import { ref, onMounted } from "vue";
 import profileService from '@/services/profileService';
 import reportsService from '@/services/reportsService';
-import NotificationsWidget from "@/components/dashboard/NotificationsWidget.vue";
-import RevenueStreamWidget from "@/components/dashboard/RevenueStreamWidget.vue";
 import AddDeposito from "./EstadoCuenta/Desarrollo/AddDeposito.vue";
 import AddRetiro from "./EstadoCuenta/Desarrollo/AddRetiro.vue";
+import NotificationsWidget from "@/components/dashboardCliente/NotificationsWidget.vue";
+import RevenueStreamWidget from "@/components/dashboardCliente/RevenueStreamWidget.vue";
 
 const home = ref({ icon: 'pi pi-home' });
 const items = ref([{ label: 'Subasta hipotecas' }, { label: 'Mi billetera' }]);

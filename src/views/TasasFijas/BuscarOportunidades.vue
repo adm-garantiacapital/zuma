@@ -147,49 +147,25 @@ const formatMoney = (amount) => {
     }).format(amount);
 };
 
-// Función para descargar PDF
-const downloadPDF = (pdfUrl, cooperativaName) => {
-    if (!pdfUrl) {
-        toast.add({
-            severity: 'warn',
-            summary: 'Atención',
-            detail: 'No hay documento PDF disponible para esta entidad',
-            life: 3000
-        });
-        return;
-    }
+function verPDF(item) {
+  if (!item.pdf_url) {
+    toast.add({
+      severity: 'warn',
+      summary: 'Advertencia',
+      detail: 'Esta cooperativa no tiene un PDF asociado',
+      life: 3000
+    })
+    return
+  }
 
-    try {
-        // Construir la URL completa del PDF
-        const fullUrl = `/storage/pdfs/${pdfUrl}`;
-        
-        // Crear un enlace temporal para descargar
-        const link = document.createElement('a');
-        link.href = fullUrl;
-        link.download = `${cooperativaName}_documento.pdf`;
-        link.target = '_blank';
-        
-        // Agregar el enlace al DOM, hacer clic y removerlo
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+  const link = document.createElement('a')
+  link.href = `/storage/pdfs/${item.pdf_url}`
+  link.download = `${item.cooperativa || 'documento'}.pdf`
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
 
-        toast.add({
-            severity: 'success',
-            summary: 'Descarga iniciada',
-            detail: 'El documento PDF se está descargando',
-            life: 3000
-        });
-    } catch (error) {
-        console.error('Error descargando PDF:', error);
-        toast.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Error al descargar el documento PDF',
-            life: 5000
-        });
-    }
-};
 
 const simulateByAmount = async () => {
     if (!simulationForm.value.amount || simulationForm.value.amount < 100) {
@@ -432,13 +408,13 @@ const createInvestment = async () => {
                             <div class="flex items-center justify-between">
                                 <span>{{ item.nombre }}</span>
                                 <Button 
-                                    v-if="item.pdf_url" 
-                                    @click="downloadPDF(item.pdf_url, item.nombre)"
-                                    icon="pi pi-download" 
-                                    aria-label="Descargar PDF" 
+                                    @click="verPDF(item)"
+                                    label="Más información"
+                                    aria-label="Ver documento PDF" 
                                     variant="link"
-                                    v-tooltip.top="'Descargar documento PDF'"
-                                    class="!text-[#FF4929] !w-[30px] !h-[30px] hover:!text-[#6790FF] focus:!text-[#FF4929] !transition !duration-100 !ease-in !ml-2" />
+                                    v-tooltip.top="'Ver más información en PDF'"
+                                    class="!text-[#FF4929] hover:!text-[#6790FF] focus:!text-[#FF4929] !transition !duration-100 !ease-in !ml-2 !font-bold !text-sm" />
+
                             </div>
                         </th>
                         <td v-for="subitem in item.tea" :key="subitem.id" class="px-3 py-3">

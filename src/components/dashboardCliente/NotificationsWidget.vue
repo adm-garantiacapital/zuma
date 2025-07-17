@@ -194,7 +194,6 @@ onMounted(async () => {
     console.error('Error al cargar la inversión:', error)
   }
 })
-
 const getSeverity = (riesgo) => {
   switch (riesgo) {
     case 'A+':
