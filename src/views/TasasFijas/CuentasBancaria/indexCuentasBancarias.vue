@@ -2,9 +2,12 @@
     <div>
         <br>
         <Breadcrumb :home="home" :model="items" />
-        <div class="card">
+        <div class="border rounded-3xl py-6">
+            <div class="p-10">
+            <h4 class="text-[#171717]">Mis cuentas bancaria</h4>
             <AddCuentaBancaria @account-created="handleAccountCreated" />
             <ListCuentaBancaria ref="listCuentaBancariaRef" />
+            </div>
         </div>
     </div>
 </template>

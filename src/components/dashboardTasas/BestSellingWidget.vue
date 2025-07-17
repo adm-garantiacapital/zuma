@@ -1,5 +1,6 @@
 <template>
-    <div class="col-span-2 lg:col-span-1">
+    <div class="col-span-2 lg:col-span-1 border rounded-3xl">
+
         <div class="border-general-grey rounded-3xl bg-white relative p-10">
             <h5 class="text-[#171717] mt-0 mb-3 font-semibold w-full">Ranking top 6 inversionistas</h5>
 
@@ -73,11 +74,12 @@ const colors = [
 ]
 
 const getInvestorStyle = (index) => {
-    if (index < 3) {
-        return `bg-[${colors[index]}]`
-    }
-    return 'border-general-grey'
-}
+    if (index === 0) return 'bg-[#EAB40A]';
+    if (index === 1) return 'bg-[#FF4929]';
+    if (index === 2) return 'bg-[#6790FF]';
+    return 'border border-general-grey'; // Asegúrate de que tenga `border-...`
+};
+
 
 const getInitialsStyle = (index) => {
     if (index < 3) {

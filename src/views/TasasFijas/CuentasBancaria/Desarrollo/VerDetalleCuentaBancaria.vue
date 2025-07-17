@@ -10,20 +10,6 @@
             </template>
 
             <div class="flex flex-col gap-6">
-                <!-- Subtítulo -->
-                <div class="text-center text-sm mb-1">
-                    Titular de la cuenta
-                </div>
-                <div class="text-center text-base -mt-4">
-                    JEFERSON GRABIEL COVEÑAS ROMAN
-                </div>
-
-                <!-- Estado de la cuenta -->
-                <div class="text-center">
-                    <Tag :value="accountData?.status" 
-                         :severity="accountData?.status === 'valid' ? 'success' : 'warn'" />
-                </div>
-
                 <!-- Formulario -->
                 <div>
                     <label class="block font-bold mb-1">Banco <span class="text-red-500">*</span></label>

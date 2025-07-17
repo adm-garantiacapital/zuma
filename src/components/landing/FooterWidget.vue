@@ -1,5 +1,5 @@
 <template>
-    <footer class="bg-[#6790FF] text-white pt-10">
+    <footer class="bg-[#171717] text-white pt-10">
         <div class="max-w-7xl mx-auto px-10 lg:px-20 grid grid-cols-12 gap-10">
 
             <!-- Columna 1: Logo + contacto + redes -->
@@ -130,7 +130,7 @@
         </div>
 
         <!-- Línea inferior -->
-        <div class="bg-[#6790FF] mt-10 text-center py-4 text-sm text-white/80">
+        <div class="bg-[#171717] mt-10 text-center py-4 text-sm text-white/80">
             <span class="relative">
                 <img src="/imagenes/landing/logo-zuma-blanco.svg" alt="Logo Zuma" class="inline-block w-12" />
                 <div class="absolute -bottom-2 left-0 w-full h-1 bg-slate-200 rounded-full opacity-30"></div>

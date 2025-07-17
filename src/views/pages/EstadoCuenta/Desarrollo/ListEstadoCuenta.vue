@@ -27,15 +27,15 @@
             </div>
           </template>
           <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
-          <Column field="created_at" header="Fecha de solicitud" sortable style="min-width: 140px">
+          <Column field="created_at" header="Fecha de solicitud" sortable style="min-width: 200px">
             <template #body="slotProps">
-              <div class="text-sm">
-                <div class="font-medium text-gray-800">
+              <div class="flex items-center gap-2 text-sm">
+                <span class="font-medium text-gray-800">
                   {{ formatDate(slotProps.data.created_at).date }}
-                </div>
-                <div class="text-gray-500 text-xs">
+                </span>
+                <span class="text-gray-500 text-xs">
                   {{ formatDate(slotProps.data.created_at).time }}
-                </div>
+                </span>
               </div>
             </template>
           </Column>
@@ -51,7 +51,7 @@
                 </div>
 
                 <div>
-                  <div class="font-medium text-sm text-gray-800">
+                  <div class="font-medium">
                     {{ getMovementLabel(slotProps.data.type) }}
                   </div>
                   <div v-if="slotProps.data.description" class="text-xs text-gray-500 truncate max-w-32">
@@ -64,9 +64,9 @@
 
           <Column field="amount" header="Monto" sortable style="min-width: 120px" dataType="numeric">
             <template #body="slotProps">
-              <div class="text-right">
+              <div>
                 <div :class="[
-                  'font-bold text-sm',
+                  'font-bold',
                   getAmountColor(slotProps.data.type)
                 ]">
                   {{ getAmountPrefix(slotProps.data.type) }}{{ currentCurrency }} {{ formatAmount(slotProps.data.amount)
@@ -76,18 +76,18 @@
             </template>
           </Column>
 
-          <Column field="status" header="Estado" sortable style="min-width: 100px">
+          <Column field="status" header="Estado" sortable>
             <template #body="slotProps">
-              <div class="flex flex-col gap-1">
-                <Badge :value="getStatusLabel(slotProps.data.status)"
-                  :severity="getStatusSeverity(slotProps.data.status)" class="text-xs" />
-
-                <Badge v-if="slotProps.data.confirm_status && slotProps.data.confirm_status !== slotProps.data.status"
+              <div>
+                <Tag :value="getStatusLabel(slotProps.data.status)"
+                  :severity="getStatusSeverity(slotProps.data.status)" />
+                <Tag v-if="slotProps.data.confirm_status && slotProps.data.confirm_status !== slotProps.data.status"
                   :value="getConfirmStatusLabel(slotProps.data.confirm_status)"
-                  :severity="getConfirmStatusSeverity(slotProps.data.confirm_status)" class="text-xs" />
+                  :severity="getConfirmStatusSeverity(slotProps.data.confirm_status)" />
               </div>
             </template>
           </Column>
+
         </DataTable>
       </div>
 
@@ -303,7 +303,7 @@ const getStatusLabel = (status) => {
 // Obtener severidad de estado
 const getStatusSeverity = (status) => {
   const severityMap = {
-    'pending': 'warning',
+    'pending': 'warn',
     'approved': 'info',
     'rejected': 'danger',
     'completed': 'success'
@@ -324,7 +324,7 @@ const getConfirmStatusLabel = (confirmStatus) => {
 // Obtener severidad de estado de confirmación
 const getConfirmStatusSeverity = (confirmStatus) => {
   const severityMap = {
-    'pending': 'warning',
+    'pending': 'warn',
     'confirmed': 'success',
     'rejected': 'danger'
   }

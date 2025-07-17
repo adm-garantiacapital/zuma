@@ -16,3 +16,20 @@ export const createDeposit = (formData) => {
 export const createWithdraw = (data) => {
     return apiAdmin2.post('/movements/withdraw/create', data);
 };
+
+export const createFixedRateDeposit = (formData) => {
+    return apiAdmin2.post('/movements/deposits/tasas-fijas', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+};
+
+export const createMortgageDeposit = (formData) => {
+    return apiAdmin2.post('/movements/deposits/hipotecas', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+};
+

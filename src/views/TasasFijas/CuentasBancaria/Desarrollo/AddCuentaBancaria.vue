@@ -1,6 +1,18 @@
 <template>
     <div>
-        <Button label="Nueva Cuenta" severity="contrast" rounded @click="openNew"/>
+        <br>
+        <div class="flex items-center gap-3">
+            <Button label="Nueva Cuenta" severity="contrast" rounded @click="openNew" />
+
+            <span class="text-[#171717] font-semibold">
+                Ir a
+                <RouterLink to="/tasas-fijas/Cuenta-Bancaria"
+                    class="text-[#FF4929] underline cursor-pointer font-semibold">
+                    estados de cuentas
+                </RouterLink>
+                para depositar o retirar
+            </span>
+        </div>
         <Dialog :visible="visible" @update:visible="updateVisible" modal :style="{ width: '450px' }"
             :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <!-- Título centrado con color personalizado -->
@@ -12,13 +24,6 @@
 
             <div class="flex flex-col gap-6">
                 <!-- Subtítulo -->
-                <div class="text-center text-sm mb-1">
-                    Titular de la cuenta
-                </div>
-                <div class="text-center text-base -mt-4">
-                    JEFERSON GRABIEL COVEÑAS ROMAN
-                </div>
-
                 <!-- Formulario -->
                 <div>
                     <label class="block font-bold mb-1">Banco <span class="text-red-500">*</span></label>
@@ -30,7 +35,8 @@
                 <div>
                     <label class="block font-bold mb-1">Tipo de Cuenta <span class="text-red-500">*</span></label>
                     <Select id="tipoCuenta" v-model="form.tipoCuenta" :options="tiposCuenta" optionLabel="name"
-                        placeholder="Selecciona tipo de cuenta" class="w-full" :class="{ 'p-invalid': errors.tipoCuenta }" />
+                        placeholder="Selecciona tipo de cuenta" class="w-full"
+                        :class="{ 'p-invalid': errors.tipoCuenta }" />
                     <small v-if="errors.tipoCuenta" class="p-error">{{ errors.tipoCuenta }}</small>
                 </div>
 
@@ -43,21 +49,21 @@
 
                 <div>
                     <label class="block font-bold mb-1">CC <span class="text-red-500">*</span></label>
-                    <InputNumber id="cc" v-model="form.cc" placeholder="Número de cuenta (CC)" class="w-full"
-                        :useGrouping="false" :minFractionDigits="0" :class="{ 'p-invalid': errors.cc }" />
+                    <InputText id="cc" v-model="form.cc" placeholder="Número de cuenta (10 dígitos)" class="w-full"
+                        maxlength="10" @input="onCCInput" :class="{ 'p-invalid': errors.cc }" />
                     <small v-if="errors.cc" class="p-error">{{ errors.cc }}</small>
                 </div>
 
                 <div>
                     <label class="block font-bold mb-1">CCI <span class="text-red-500">*</span></label>
-                    <InputNumber id="cci" v-model="form.cci" placeholder="Código interbancario (CCI)" class="w-full"
-                        :useGrouping="false" :minFractionDigits="0" :class="{ 'p-invalid': errors.cci }" />
+                    <InputText id="cci" v-model="form.cci" placeholder="Código interbancario (20 dígitos)"
+                        class="w-full" maxlength="20" @input="onCCIInput" :class="{ 'p-invalid': errors.cci }" />
                     <small v-if="errors.cci" class="p-error">{{ errors.cci }}</small>
                 </div>
 
                 <div>
                     <label class="block font-bold mb-1">Alias <span class="text-red-500">*</span></label>
-                    <InputText id="alias" v-model="form.alias" placeholder="Nombre o alias de la cuenta" class="w-full" 
+                    <InputText id="alias" v-model="form.alias" placeholder="Nombre o alias de la cuenta" class="w-full"
                         :class="{ 'p-invalid': errors.alias }" />
                     <small v-if="errors.alias" class="p-error">{{ errors.alias }}</small>
                 </div>
@@ -66,14 +72,16 @@
             <!-- Footer -->
             <template #footer>
                 <div class="flex justify-end gap-3">
-                    <Button label="Cancelar" icon="pi pi-times" @click="closeDialog" text severity="secondary" rounded/>
-                    <Button label="Enviar Notificación" icon="pi pi-check" @click="enviarNotificacion" :loading="loading" severity="contrast" rounded/>
+                    <Button label="Cancelar" icon="pi pi-times" @click="closeDialog" text severity="secondary"
+                        rounded />
+                    <Button label="Enviar" icon="pi pi-check" @click="enviarNotificacion" :loading="loading"
+                        severity="contrast" rounded />
                 </div>
             </template>
         </Dialog>
 
         <!-- Dialog de confirmación -->
-        <Dialog :visible="showConfirmDialog" @update:visible="updateConfirmDialog" modal :style="{ width: '500px' }" 
+        <Dialog :visible="showConfirmDialog" @update:visible="updateConfirmDialog" modal :style="{ width: '500px' }"
             :closable="false" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <template #header>
                 <div class="w-full text-center">
@@ -86,16 +94,16 @@
 
             <div class="text-center py-4">
                 <p class="text-gray-700 leading-relaxed">
-                    Tu notificación se ha enviado correctamente. El proceso puede tomar un 
-                    <strong>máximo de 48 horas</strong>, terminado el cual recibirás un 
+                    Tu notificación se ha enviado correctamente. El proceso puede tomar un
+                    <strong>máximo de 48 horas</strong>, terminado el cual recibirás un
                     <strong>correo de confirmación</strong>.
                 </p>
             </div>
 
             <template #footer>
                 <div class="flex justify-center">
-                    <Button label="Aceptar" icon="pi pi-check" @click="closeConfirmDialog" 
-                        class="px-6 py-2" severity="success" />
+                    <Button label="Aceptar" icon="pi pi-check" @click="closeConfirmDialog" class="px-6 py-2"
+                        severity="success" />
                 </div>
             </template>
         </Dialog>
@@ -108,7 +116,6 @@ import { useToast } from 'primevue/usetoast';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import InputNumber from 'primevue/inputnumber';
 import Select from 'primevue/select';
 import { bankAccountService } from '@/services/bankAccountService.js';
 
@@ -120,7 +127,7 @@ const visible = ref(false);
 const loading = ref(false);
 const showConfirmDialog = ref(false);
 
-// Emits para comunicar con el componente padre - CORREGIDO
+// Emits para comunicar con el componente padre
 const emit = defineEmits(['account-created']);
 
 // Errores para validación
@@ -138,8 +145,8 @@ const form = reactive({
     banco: null,
     tipoCuenta: null,
     moneda: null,
-    cc: null,
-    cci: null,
+    cc: '',
+    cci: '',
     alias: ''
 });
 
@@ -165,6 +172,31 @@ const monedas = ref([
     { name: 'Dólares (USD)', code: 'USD' }
 ]);
 
+// Métodos para validar entrada solo números
+const onCCInput = (event) => {
+    const value = event.target.value;
+    // Solo permitir números
+    const numericValue = value.replace(/[^0-9]/g, '');
+    form.cc = numericValue;
+
+    // Limpiar error si se está escribiendo
+    if (errors.cc) {
+        errors.cc = '';
+    }
+};
+
+const onCCIInput = (event) => {
+    const value = event.target.value;
+    // Solo permitir números
+    const numericValue = value.replace(/[^0-9]/g, '');
+    form.cci = numericValue;
+
+    // Limpiar error si se está escribiendo
+    if (errors.cci) {
+        errors.cci = '';
+    }
+};
+
 // Métodos
 const openNew = () => {
     resetForm();
@@ -189,7 +221,7 @@ const closeDialog = () => {
 const closeConfirmDialog = () => {
     showConfirmDialog.value = false;
     closeDialog();
-    // Emitir evento para actualizar la lista - CORREGIDO
+    // Emitir evento para actualizar la lista
     emit('account-created');
 };
 
@@ -197,8 +229,8 @@ const resetForm = () => {
     form.banco = null;
     form.tipoCuenta = null;
     form.moneda = null;
-    form.cc = null;
-    form.cci = null;
+    form.cc = '';
+    form.cci = '';
     form.alias = '';
 };
 
@@ -214,12 +246,55 @@ const clearErrors = () => {
 // Validaciones
 const isAlpha = (val) => /^[A-Za-z\s]+$/.test(val);
 
+// Función para manejar errores del backend
+const handleBackendErrors = (error) => {
+    // Limpiar errores previos
+    clearErrors();
+
+    if (error.response && error.response.data) {
+        const backendErrors = error.response.data;
+
+        // Si hay errores de validación específicos
+        if (backendErrors.errors) {
+            // Mapear errores del backend a los campos del formulario
+            const fieldMapping = {
+                bank: 'banco',
+                type: 'tipoCuenta',
+                currency: 'moneda',
+                cc: 'cc',
+                cci: 'cci',
+                alias: 'alias'
+            };
+
+            Object.keys(backendErrors.errors).forEach(field => {
+                const localField = fieldMapping[field] || field;
+                if (errors.hasOwnProperty(localField)) {
+                    errors[localField] = Array.isArray(backendErrors.errors[field])
+                        ? backendErrors.errors[field][0]
+                        : backendErrors.errors[field];
+                }
+            });
+        }
+        // Si hay un mensaje de error general
+        else if (backendErrors.message) {
+            errors.alias = backendErrors.message;
+        }
+        // Si hay errores en formato diferente
+        else if (typeof backendErrors === 'string') {
+            errors.alias = backendErrors;
+        }
+    } else {
+        // Error de red o conexión
+        errors.alias = 'Error de conexión. Verifica tu conexión a internet.';
+    }
+};
+
 const enviarNotificacion = async () => {
     loading.value = true;
     clearErrors();
 
     try {
-        // Validaciones con errores en campos
+        // Validaciones frontend
         let hasErrors = false;
 
         if (!form.banco) {
@@ -240,16 +315,22 @@ const enviarNotificacion = async () => {
         if (!form.cc) {
             errors.cc = 'Ingresa el número de cuenta';
             hasErrors = true;
-        } else if (String(form.cc).length < 10) {
-            errors.cc = 'El número de cuenta debe tener al menos 10 dígitos';
+        } else if (form.cc.length !== 10) {
+            errors.cc = 'El número de cuenta debe tener exactamente 10 dígitos';
+            hasErrors = true;
+        } else if (!/^\d{10}$/.test(form.cc)) {
+            errors.cc = 'El número de cuenta debe contener solo números';
             hasErrors = true;
         }
 
         if (!form.cci) {
             errors.cci = 'Ingresa el código CCI';
             hasErrors = true;
-        } else if (String(form.cci).length < 14) {
-            errors.cci = 'El CCI debe tener al menos 14 dígitos';
+        } else if (form.cci.length !== 20) {
+            errors.cci = 'El CCI debe tener exactamente 20 dígitos';
+            hasErrors = true;
+        } else if (!/^\d{20}$/.test(form.cci)) {
+            errors.cci = 'El CCI debe contener solo números';
             hasErrors = true;
         }
 
@@ -270,22 +351,32 @@ const enviarNotificacion = async () => {
             bank: form.banco?.code || form.banco,
             type: form.tipoCuenta?.code?.toLowerCase() || form.tipoCuenta,
             currency: form.moneda?.code || form.moneda,
-            cc: String(form.cc),
-            cci: String(form.cci),
+            cc: form.cc,
+            cci: form.cci,
             alias: form.alias
         };
 
-        // Enviar solicitud a la API usando el mismo servicio
+        // Enviar solicitud a la API
         const response = await bankAccountService.createBankAccount(payload);
-        console.log('Respuesta:', response.data);
-        
+        console.log('Respuesta exitosa:', response.data);
+
         // Mostrar dialog de confirmación
         showConfirmDialog.value = true;
 
-    } catch (e) {
-        console.error('Error al enviar notificación', e);
-        // Mostrar error general si es necesario
-        errors.alias = 'Error al procesar la notificación. Intenta de nuevo.';
+    } catch (error) {
+        console.error('Error al enviar notificación:', error);
+
+        // Manejar errores del backend
+        handleBackendErrors(error);
+
+        // Mostrar toast de error general
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Error al procesar la solicitud. Revisa los campos marcados.',
+            life: 3000
+        });
+
     } finally {
         loading.value = false;
     }

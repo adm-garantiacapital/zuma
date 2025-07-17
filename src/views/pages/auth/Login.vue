@@ -1,9 +1,10 @@
 <script setup>
-import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
-import { authService } from '@/services/auth.js'; // Asegúrate que la ruta es correcta
+import { authService } from '@/services/auth.js';
+import FooterWidget from '@/components/landing/FooterWidget.vue';
+import TopbarWidget from '@/components/landing/TopbarWidget.vue';
 
 const router = useRouter();
 const toast = useToast();
@@ -13,34 +14,26 @@ const password = ref('');
 const checked = ref(false);
 const loading = ref(false);
 
+// ✅ Valor por defecto para los radios
+const ingredient = ref('inversionista');
+
 const login = async () => {
   loading.value = true;
   try {
     console.log('🔄 Iniciando login...');
-    
     const response = await authService.login('admin2', {
       document: document.value,
       password: password.value,
     });
-    
-    console.log('✅ Login exitoso:', response);
-    console.log('🔍 Token guardado:', authService.getToken());
-    console.log('🔍 Customer guardado:', authService.getCustomer());
-    console.log('🔍 ¿Está autenticado?:', authService.isAuthenticated());
-    
+
     toast.add({
       severity: 'success',
       summary: 'Éxito',
       detail: 'Sesión iniciada correctamente',
       life: 3000
     });
-    
-    console.log('🚀 Intentando redirigir a /hipotecas...');
-    
-    // Probar diferentes métodos de redirección
-    const result = await router.push('/hipotecas');
-    console.log('🔍 Resultado de router.push:', result);
-    
+
+    await router.push('/hipotecas');
   } catch (error) {
     console.error('❌ Login error:', error);
     toast.add({
@@ -56,63 +49,78 @@ const login = async () => {
 </script>
 
 <template>
-  <FloatingConfigurator />
-  <Toast />
+  <div class="min-h-screen bg-white flex flex-col">
+    <Toast />
+    <TopbarWidget />
 
-  <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
-    <div class="flex flex-col items-center justify-center">
-      <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
-        <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
-          <div class="text-center mb-8">
-            <!-- Logo -->
-            
-            <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Bienvenido a PrimeLand!</div>
-            <span class="text-muted-color font-medium">Inicia sesión para continuar</span>
+    <!-- Contenido centrado -->
+    <div class="flex-1 flex flex-col items-center justify-center p-4 bg-white">
+
+      <!-- Perfil de Inversionista -->
+      <div class="w-full max-w-md flex justify-between items-center mb-6 py-8 px-6">
+        <div class="flex items-center gap-2 hover:text-[#FF4929] transition-colors">
+          <RadioButton v-model="ingredient" inputId="ingredient1" name="perfil" value="inversionista" />
+          <label for="ingredient1" class="text-sm cursor-pointer hover:text-[#FF4929]">Perfil inversionista</label>
+        </div>
+        <div class="flex items-center gap-2 hover:text-[#FF4929] transition-colors">
+          <RadioButton v-model="ingredient" inputId="ingredient2" name="perfil" value="empresa" />
+          <label for="ingredient2" class="text-sm cursor-pointer hover:text-[#FF4929]">Perfil empresa</label>
+        </div>
+      </div>
+
+      <!-- Formulario de login -->
+      <div class="w-full max-w-xl">
+        <div class="border border-gray-200 p-10 rounded-3xl shadow-sm">
+          <!-- Header -->
+          <div class="mb-6">
+            <h4 class="text-[#171717] text-xl font-semibold">Bienvenido</h4>
+            <h5 class="text-sm text-gray-600">Inicia sesión para continuar</h5>
           </div>
 
-          <div>
-            <label for="document" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Documento</label>
-            <InputText id="document" type="text" placeholder="Número de documento" class="w-full md:w-[30rem] mb-8" v-model="document" />
-
-            <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">Contraseña</label>
-            <Password
-              id="password1"
-              v-model="password"
-              placeholder="Contraseña"
-              :toggleMask="true"
-              class="mb-4"
-              fluid
-              :feedback="false"
-            ></Password>
-
-            <div class="flex items-center justify-between mt-2 mb-8 gap-8">
-              <div class="flex items-center">
-                <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
-                <label for="rememberme1">Recuérdame</label>
-              </div>
-              <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">¿Olvidaste tu contraseña?</span>
+          <!-- Formulario -->
+          <div class="space-y-6">
+            <div>
+              <label for="document" class="block text-sm font-medium text-gray-700 mb-2">
+                Número de documento de identidad
+              </label>
+              <InputText id="document" type="text" placeholder="Número de documento" v-model="document"
+                class="w-full" />
             </div>
 
-            <Button
-              label="Iniciar Sesión"
-              class="w-full"
-              :loading="loading"
-              @click="login"
-            />
+            <div>
+              <label for="password1" class="block text-sm font-medium text-gray-700 mb-2">
+                Contraseña
+              </label>
+              <Password id="password1" v-model="password" placeholder="Contraseña" :toggleMask="true" fluid
+                :feedback="false" />
+            </div>
+
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <Checkbox v-model="checked" id="rememberme1" binary class="mr-2" />
+                <label for="rememberme1" class="text-sm text-gray-700">Recuérdame</label>
+              </div>
+              <button type="button" class="text-sm text-[#FF4929] hover:text-blue-800 transition-colors">
+                Recuperar contraseña
+              </button>
+            </div>
+
+            <Button label="Iniciar sesión" class="w-full" severity="contrast" rounded :loading="loading"
+              @click="login" />
+          </div>
+
+          <div class="mt-8 text-center">
+            <p class="text-sm text-gray-600">
+              ¿No tienes cuenta?
+              <button type="button" class="text-[#FF4929] hover:text-blue-800 font-medium transition-colors"   @click="router.push('/registro')">
+                Regístrate
+              </button>
+            </p>
           </div>
         </div>
       </div>
     </div>
+    <br>
+    <FooterWidget />
   </div>
 </template>
-
-<style scoped>
-.pi-eye {
-  transform: scale(1.6);
-  margin-right: 1rem;
-}
-.pi-eye-slash {
-  transform: scale(1.6);
-  margin-right: 1rem;
-}
-</style>
