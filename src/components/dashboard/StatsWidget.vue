@@ -4,10 +4,10 @@
             <div class="col-span-12 lg:col-span-6 xl:col-span-4">
                 <div class="rounded-3xl bg-[#FF4929] relative overflow-hidden">
                     <a class="px-5 py-3 mt-[7rem] rounded-3xl bg-[#FF4929] inline-block relative superior"
-                        href="https://fondeo.apros.global/" target="_blank">
+                        href="https://zuma.com.pe/factoring" target="_blank">
                         <h5 class="text-white m-0 font-semibold">Factoring</h5>
                     </a>
-                    <a class="mask absolute -top-16 -right-5" href="https://fondeo.apros.global/" target="_blank">
+                    <a class="mask absolute -top-16 -right-5" href="https://zuma.com.pe/factoring" target="_blank">
                         <img src="/imagenes/zuma/imagen-2.png" alt="Logo Zuma"
                             class="inline-block w-80 hover:scale-110 transition duration-100 ease-in" />
                     </a>
@@ -16,10 +16,10 @@
             <div class="col-span-12 lg:col-span-6 xl:col-span-4">
                 <div class="rounded-3xl bg-[#F0F1F9] relative overflow-hidden">
                     <a class="px-5 py-3 mt-[7rem] rounded-3xl bg-[#F0F1F9] inline-block relative superior"
-                        href="https://fondeo.apros.global/" target="_blank">
+                        href="https://zuma.com.pe/tasas-fijas" target="_blank">
                         <h5 class="text-[#171717] m-0 font-semibold">Tasas Fijas</h5>
                     </a>
-                    <a class="mask absolute -top-16 -right-5" href="https://fondeo.apros.global/" target="_blank">
+                    <a class="mask absolute -top-16 -right-5" href="https://zuma.com.pe/tasas-fijas" target="_blank">
                         <img src="/imagenes/zuma/imagen-3.png" alt="Logo Zuma"
                             class="inline-block w-80 hover:scale-110 transition duration-100 ease-in" />
                     </a>
@@ -28,10 +28,10 @@
             <div class="col-span-12 lg:col-span-6 xl:col-span-4">
                 <div class="rounded-3xl bg-[#171717] relative overflow-hidden">
                     <a class="px-5 py-3 mt-[7rem] rounded-3xl bg-[#171717] inline-block relative superior"
-                        href="https://fondeo.apros.global/" target="_blank">
+                        href="https://zuma.com.pe/hipotecas" target="_blank">
                         <h5 class="text-white m-0 font-semibold">Hipotecas</h5>
                     </a>
-                    <a class="mask absolute -top-16 -right-5" href="https://fondeo.apros.global/" target="_blank">
+                    <a class="mask absolute -top-16 -right-5" href="https://zuma.com.pe/hipotecas" target="_blank">
                         <img src="/imagenes/zuma/imagen-4.png" alt="Logo Zuma"
                             class="inline-block w-80 hover:scale-110 transition duration-100 ease-in" />
                     </a>

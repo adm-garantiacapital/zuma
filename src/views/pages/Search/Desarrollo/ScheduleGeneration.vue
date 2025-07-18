@@ -23,7 +23,7 @@
                 @click="handleExportToPDF" />
 
               <Button label="Invertir" severity="contrast" variant="outlined" rounded
-                @click="mostrarMensajeInversion" />
+                @click="handleInvertir" :loading="inversionLoading" />
             </div>
           </div>
         </template>
@@ -51,43 +51,6 @@
     </div>
 
     <!-- Dialog de información de inversión -->
-    <Dialog v-model:visible="showInvestmentInfo" modal header="Información de Inversión" :style="{ width: '450px' }"
-      :breakpoints="{ '960px': '75vw' }">
-      <div class="flex flex-column gap-4">
-        <div class="flex align-items-center gap-3 mb-3">
-          <i class="pi pi-clock text-3xl text-orange-500"></i>
-          <div>
-            <h4 class="mb-2 text-orange-600">Plazo de 24 horas</h4>
-            <p class="text-gray-700 mb-0">
-              Tienes un plazo de 24 horas para realizar el pago. Si no se completa el pago en este tiempo,
-              la propiedad pasará a estado activo.
-            </p>
-          </div>
-        </div>
-
-        <div class="border-top-1 border-gray-200 pt-4">
-          <div class="flex align-items-center gap-3">
-            <i class="pi pi-whatsapp text-2xl text-green-500"></i>
-            <div>
-              <h5 class="mb-1">¿Tienes alguna duda?</h5>
-              <p class="text-gray-600 mb-2">
-                Si tienes alguna pregunta sobre el trámite, puedes consultar al número de WhatsApp:
-              </p>
-              <div class="flex align-items-center gap-2">
-                <span class="font-semibold text-green-600">+51 999 123 456</span>
-                <Button icon="pi pi-whatsapp" size="small" severity="success" rounded @click="abrirWhatsApp"
-                  v-tooltip="'Abrir WhatsApp'" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <template #footer>
-        <Button label="Entendido" icon="pi pi-check" severity="contrast" rounded @click="showInvestmentInfo = false"
-          autofocus />
-      </template>
-    </Dialog>
     <Dialog v-model:visible="showInvestmentInfo" modal header="Información de Inversión" :style="{ width: '450px' }"
       :breakpoints="{ '960px': '75vw' }">
 
@@ -122,14 +85,13 @@
       </template>
     </Dialog>
 
-
-
   </Dialog>
 </template>
 
 <script setup>
 import { ref, computed, defineExpose } from 'vue'
 import { simulationService } from '@/services/simulationService.js'
+import { propertyReservationService } from '@/services/propertyReservationService.js'
 import { useExport } from '@/composables/useExport.js'
 import { useToast } from 'primevue/usetoast'
 import Tag from 'primevue/tag'
@@ -137,6 +99,9 @@ import Tag from 'primevue/tag'
 const toast = useToast()
 const visible = ref(false)
 const propertyId = ref(null)
+const configId = ref(null)
+const amount = ref(null)
+const inversionLoading = ref(false)
 
 const scheduleData = ref(null)
 const selectedCuotas = ref([])
@@ -174,14 +139,24 @@ const getEstadoSeverity = (estado) => {
   }
 }
 
-const open = async (id) => {
-  propertyId.value = id
+const open = async (propertyData) => {
+  // Recibir el objeto completo de la propiedad
+  if (typeof propertyData === 'string') {
+    // Mantener compatibilidad con el código anterior
+    propertyId.value = propertyData
+  } else {
+    // Nuevo formato: recibir el objeto completo
+    propertyId.value = propertyData.property_id
+    configId.value = propertyData.id // El id de la configuración
+    amount.value = propertyData.requerido
+  }
+
   visible.value = true
   scheduleData.value = null
   currentPage.value = 1
 
   try {
-    const response = await simulationService.getSchedules(id)
+    const response = await simulationService.getSchedules(propertyId.value)
     const responseData = response.data
 
     if (responseData.data && Array.isArray(responseData.data) && responseData.data.length > 0) {
@@ -229,8 +204,61 @@ const onPage = async (event) => {
   }
 }
 
-const mostrarMensajeInversion = () => {
-  showInvestmentInfo.value = true
+const handleInvertir = async () => {
+  try {
+    inversionLoading.value = true
+
+    const payload = {
+      property_id: propertyId.value,
+      config_id: configId.value,
+      amount: amount.value
+    }
+
+    const response = await propertyReservationService.createReservation(payload)
+
+    if (response.success) {
+      toast.add({
+        severity: 'success',
+        summary: 'Inversión Exitosa',
+        detail: 'Tu reserva ha sido creada exitosamente. La propiedad ha pasado a estado de espera.',
+        life: 5000
+      })
+
+      // Mostrar el dialog de información después de la inversión exitosa
+      showInvestmentInfo.value = true
+      
+      // Opcional: cerrar el modal principal después de un tiempo
+      setTimeout(() => {
+        visible.value = false
+      }, 2000)
+    } else {
+      toast.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No se pudo completar la inversión. Intenta nuevamente.',
+        life: 3000
+      })
+    }
+  } catch (error) {
+    console.error('Error al invertir:', error)
+    
+    let errorMessage = 'Error al procesar la inversión. Intenta nuevamente.'
+    
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message
+    } else if (error.message) {
+      errorMessage = error.message
+    }
+
+    toast.add({
+      severity: 'error',
+      summary: 'Error de Inversión',
+      detail: errorMessage,
+      life: 3000
+    })
+  } finally {
+    inversionLoading.value = false
+  }
 }
 
 const abrirWhatsApp = () => {

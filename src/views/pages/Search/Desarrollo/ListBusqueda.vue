@@ -59,7 +59,7 @@
         <Column field="detalles" header="">
           <template #body="slotProps">
             <Button label="Revisar detalles" outlined severity="contrast" size="small"
-              @click="scheduleRef?.open(slotProps.data.id)" />
+              @click="scheduleRef?.open(slotProps.data)" />
           </template>
         </Column>
       </DataTable>
@@ -153,7 +153,6 @@ const onPage = (event) => {
   rows.value = event.rows;
   loadProperties(currentPage.value);
 };
-
 
 onMounted(() => {
   loadCurrencies();
