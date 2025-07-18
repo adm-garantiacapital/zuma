@@ -1,7 +1,6 @@
 <template>
     <Dialog :visible="visible" @update:visible="updateVisible" modal :style="{ width: '450px' }"
         :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-        <!-- Título centrado con color personalizado -->
         <template #header>
             <div class="w-full text-center text-xl font-bold" style="color: #FF4929;">
                 Detalle de cuenta bancaria
@@ -9,15 +8,6 @@
         </template>
 
         <div class="flex flex-col gap-6">
-            <!-- Subtítulo -->
-            <div class="text-center text-sm mb-1">
-                Titular de la cuenta
-            </div>
-            <div class="text-center text-base -mt-4">
-                JEFERSON GRABIEL COVEÑAS ROMAN
-            </div>
-
-            <!-- Formulario -->
             <div>
                 <label class="block font-bold mb-1">Banco <span class="text-red-500">*</span></label>
                 <Select id="banco" v-model="form.banco" :options="bancos" optionLabel="name"
@@ -41,15 +31,21 @@
 
             <div>
                 <label class="block font-bold mb-1">CC <span class="text-red-500">*</span></label>
-                <InputNumber id="cc" v-model="form.cc" placeholder="Número de cuenta (CC)" class="w-full"
-                    :useGrouping="false" :minFractionDigits="0" :class="{ 'p-invalid': errors.cc }" />
+                <InputText id="cc" v-model="form.cc" placeholder="Número de cuenta (CC)" class="w-full"
+                    :class="{ 'p-invalid': errors.cc }" 
+                    @input="validateCC" 
+                    maxlength="10" 
+                    @keypress="onlyNumbers" />
                 <small v-if="errors.cc" class="p-error">{{ errors.cc }}</small>
             </div>
 
             <div>
                 <label class="block font-bold mb-1">CCI <span class="text-red-500">*</span></label>
-                <InputNumber id="cci" v-model="form.cci" placeholder="Código interbancario (CCI)" class="w-full"
-                    :useGrouping="false" :minFractionDigits="0" :class="{ 'p-invalid': errors.cci }" />
+                <InputText id="cci" v-model="form.cci" placeholder="Código interbancario (CCI)" class="w-full"
+                    :class="{ 'p-invalid': errors.cci }" 
+                    @input="validateCCI" 
+                    maxlength="20" 
+                    @keypress="onlyNumbers" />
                 <small v-if="errors.cci" class="p-error">{{ errors.cci }}</small>
             </div>
 
@@ -61,7 +57,6 @@
             </div>
         </div>
 
-        <!-- Footer -->
         <template #footer>
             <div class="flex justify-end gap-3">
                 <Button label="Cancelar" icon="pi pi-times" @click="closeDialog" text severity="secondary" rounded/>
@@ -70,7 +65,6 @@
         </template>
     </Dialog>
 
-    <!-- Dialog de confirmación -->
     <Dialog :visible="showConfirmDialog" @update:visible="updateConfirmDialog" modal :style="{ width: '500px' }" 
         :closable="false" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
         <template #header>
@@ -101,17 +95,18 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import InputNumber from 'primevue/inputnumber';
+import Select from 'primevue/select';
+
 import { bankAccountService } from '@/services/bankAccountService.js';
-// Toast service
+import { bankService } from '@/services/bankService.js';
+
 const toast = useToast();
 
-// Props
 const props = defineProps({
     visible: {
         type: Boolean,
@@ -119,12 +114,10 @@ const props = defineProps({
     }
 });
 
-// Emits
 const emit = defineEmits(['update:visible']);
 const loading = ref(false);
 const showConfirmDialog = ref(false);
 
-// Errores para validación
 const errors = reactive({
     banco: '',
     tipoCuenta: '',
@@ -134,28 +127,16 @@ const errors = reactive({
     alias: ''
 });
 
-// Formulario
 const form = reactive({
     banco: null,
     tipoCuenta: null,
     moneda: null,
-    cc: null,
-    cci: null,
+    cc: '',
+    cci: '',
     alias: ''
 });
 
-// Opciones para selects
-const bancos = ref([
-    { name: 'Banco de la Nación', code: 'BN' },
-    { name: 'Banco de Crédito del Perú', code: 'BCP' },
-    { name: 'BBVA', code: 'BBVA' },
-    { name: 'Scotiabank', code: 'SCOTIA' },
-    { name: 'Interbank', code: 'INTERBANK' },
-    { name: 'Banco Falabella', code: 'FALABELLA' },
-    { name: 'Banco Ripley', code: 'RIPLEY' },
-    { name: 'Otro', code: 'OTRO' }
-]);
-
+const bancos = ref([]);
 const tiposCuenta = ref([
     { name: 'Cuenta de Ahorros', code: 'AHORRO' },
     { name: 'Cuenta Corriente', code: 'CORRIENTE' },
@@ -166,7 +147,18 @@ const monedas = ref([
     { name: 'Dólares (USD)', code: 'USD' }
 ]);
 
-// Métodos
+onMounted(async () => {
+    try {
+        const response = await bankService.getBanks();
+        bancos.value = response.data.data.map(bank => ({
+            name: bank.name,
+            code: bank.id
+        }));
+    } catch (error) {
+        console.error('Error al cargar bancos:', error);
+    }
+});
+
 const updateVisible = (value) => {
     emit('update:visible', value);
 };
@@ -190,94 +182,123 @@ const resetForm = () => {
     form.banco = null;
     form.tipoCuenta = null;
     form.moneda = null;
-    form.cc = null;
-    form.cci = null;
+    form.cc = '';
+    form.cci = '';
     form.alias = '';
 };
 
 const clearErrors = () => {
-    errors.banco = '';
-    errors.tipoCuenta = '';
-    errors.moneda = '';
-    errors.cc = '';
-    errors.cci = '';
-    errors.alias = '';
+    Object.keys(errors).forEach(k => errors[k] = '');
 };
 
-// Validaciones
 const isAlpha = (val) => /^[A-Za-z\s]+$/.test(val);
+
+const onlyNumbers = (event) => {
+    const key = event.key;
+    if (!/[0-9]/.test(key) && key !== 'Backspace' && key !== 'Delete' && key !== 'ArrowLeft' && key !== 'ArrowRight' && key !== 'Tab') {
+        event.preventDefault();
+    }
+};
+
+const validateCC = (event) => {
+    const value = event.target.value;
+    // Solo números y máximo 10 dígitos
+    const numericValue = value.replace(/\D/g, '');
+    if (numericValue.length <= 10) {
+        form.cc = numericValue;
+    } else {
+        // No permitir más de 10 dígitos
+        event.target.value = form.cc;
+    }
+    
+    // Limpiar error si existe
+    if (errors.cc) {
+        errors.cc = '';
+    }
+};
+
+const validateCCI = (event) => {
+    const value = event.target.value;
+    // Solo números y máximo 20 dígitos
+    const numericValue = value.replace(/\D/g, '');
+    if (numericValue.length <= 20) {
+        form.cci = numericValue;
+    } else {
+        // No permitir más de 20 dígitos
+        event.target.value = form.cci;
+    }
+    
+    // Limpiar error si existe
+    if (errors.cci) {
+        errors.cci = '';
+    }
+};
 
 const agregarCuenta = async () => {
     loading.value = true;
     clearErrors();
 
+    let hasErrors = false;
+
+    if (!form.banco) {
+        errors.banco = 'Selecciona un banco';
+        hasErrors = true;
+    }
+
+    if (!form.tipoCuenta) {
+        errors.tipoCuenta = 'Selecciona el tipo de cuenta';
+        hasErrors = true;
+    }
+
+    if (!form.moneda) {
+        errors.moneda = 'Selecciona una moneda';
+        hasErrors = true;
+    }
+
+    if (!form.cc) {
+        errors.cc = 'Ingresa el número de cuenta';
+        hasErrors = true;
+    } else if (form.cc.length < 10) {
+        errors.cc = 'El número de cuenta debe tener exactamente 10 dígitos';
+        hasErrors = true;
+    }
+
+    if (!form.cci) {
+        errors.cci = 'Ingresa el código CCI';
+        hasErrors = true;
+    } else if (form.cci.length < 14) {
+        errors.cci = 'El CCI debe tener al menos 14 dígitos';
+        hasErrors = true;
+    }
+
+    if (!form.alias) {
+        errors.alias = 'Ingresa un alias para la cuenta';
+        hasErrors = true;
+    } else if (!isAlpha(form.alias)) {
+        errors.alias = 'El alias debe contener solo letras y espacios';
+        hasErrors = true;
+    }
+
+    if (hasErrors) {
+        loading.value = false;
+        return;
+    }
+
     try {
-        // Validaciones con errores en campos
-        let hasErrors = false;
-
-        if (!form.banco) {
-            errors.banco = 'Selecciona un banco';
-            hasErrors = true;
-        }
-
-        if (!form.tipoCuenta) {
-            errors.tipoCuenta = 'Selecciona el tipo de cuenta';
-            hasErrors = true;
-        }
-
-        if (!form.moneda) {
-            errors.moneda = 'Selecciona una moneda';
-            hasErrors = true;
-        }
-
-        if (!form.cc) {
-            errors.cc = 'Ingresa el número de cuenta';
-            hasErrors = true;
-        } else if (String(form.cc).length < 10) {
-            errors.cc = 'El número de cuenta debe tener al menos 10 dígitos';
-            hasErrors = true;
-        }
-
-        if (!form.cci) {
-            errors.cci = 'Ingresa el código CCI';
-            hasErrors = true;
-        } else if (String(form.cci).length < 14) {
-            errors.cci = 'El CCI debe tener al menos 14 dígitos';
-            hasErrors = true;
-        }
-
-        if (!form.alias) {
-            errors.alias = 'Ingresa un alias para la cuenta';
-            hasErrors = true;
-        } else if (!isAlpha(form.alias)) {
-            errors.alias = 'El alias debe contener solo letras y espacios';
-            hasErrors = true;
-        }
-
-        if (hasErrors) {
-            return;
-        }
-
-        // Preparar datos para envío
         const payload = {
-            bank: form.banco?.code || form.banco,
-            type: form.tipoCuenta?.code?.toLowerCase() || form.tipoCuenta,
-            currency: form.moneda?.code || form.moneda,
-            cc: String(form.cc),
-            cci: String(form.cci),
+            bank: form.banco?.code,
+            type: form.tipoCuenta?.code.toLowerCase(),
+            currency: form.moneda?.code,
+            cc: form.cc,
+            cci: form.cci,
             alias: form.alias
         };
 
-        // Enviar solicitud a la API usando el servicio
         const response = await bankAccountService.createBankAccount(payload);
         console.log('Respuesta:', response.data);
-        
-        // Mostrar dialog de confirmación
         showConfirmDialog.value = true;
-
     } catch (e) {
         console.error('Error al registrar cuenta', e);
-        // Mostrar error general si es necesario
         errors.alias = 'Error al procesar la cuenta. Intenta de nuevo.';
     } finally {
         loading.value = false;

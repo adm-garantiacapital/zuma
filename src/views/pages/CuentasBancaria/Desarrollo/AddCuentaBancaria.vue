@@ -111,26 +111,23 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import { bankAccountService } from '@/services/bankAccountService.js';
+import { bankService } from '@/services/bankService.js';
 
-// Toast service
 const toast = useToast();
 
-// Estados del componente
 const visible = ref(false);
 const loading = ref(false);
 const showConfirmDialog = ref(false);
 
-// Emits para comunicar con el componente padre
 const emit = defineEmits(['account-created']);
 
-// Errores para validación
 const errors = reactive({
     banco: '',
     tipoCuenta: '',
@@ -140,7 +137,6 @@ const errors = reactive({
     alias: ''
 });
 
-// Formulario
 const form = reactive({
     banco: null,
     tipoCuenta: null,
@@ -150,54 +146,42 @@ const form = reactive({
     alias: ''
 });
 
-// Opciones para selects
-const bancos = ref([
-    { name: 'Banco de la Nación', code: 'BN' },
-    { name: 'Banco de Crédito del Perú', code: 'BCP' },
-    { name: 'BBVA', code: 'BBVA' },
-    { name: 'Scotiabank', code: 'SCOTIA' },
-    { name: 'Interbank', code: 'INTERBANK' },
-    { name: 'Banco Falabella', code: 'FALABELLA' },
-    { name: 'Banco Ripley', code: 'RIPLEY' },
-    { name: 'Otro', code: 'OTRO' }
-]);
-
+// Opciones dinámicas
+const bancos = ref([]);
 const tiposCuenta = ref([
     { name: 'Cuenta de Ahorros', code: 'AHORRO' },
     { name: 'Cuenta Corriente', code: 'CORRIENTE' },
 ]);
-
 const monedas = ref([
     { name: 'Soles (PEN)', code: 'PEN' },
     { name: 'Dólares (USD)', code: 'USD' }
 ]);
 
-// Métodos para validar entrada solo números
-const onCCInput = (event) => {
-    const value = event.target.value;
-    // Solo permitir números
-    const numericValue = value.replace(/[^0-9]/g, '');
-    form.cc = numericValue;
-
-    // Limpiar error si se está escribiendo
-    if (errors.cc) {
-        errors.cc = '';
+// Cargar bancos desde la API
+onMounted(async () => {
+    try {
+        const response = await bankService.getBanks();
+        bancos.value = response.data.data.map(bank => ({
+            name: bank.name,
+            code: bank.id // el ID real del banco
+        }));
+    } catch (error) {
+        console.error('Error al cargar bancos:', error);
     }
+});
+
+const onCCInput = (event) => {
+    const numericValue = event.target.value.replace(/[^0-9]/g, '');
+    form.cc = numericValue;
+    if (errors.cc) errors.cc = '';
 };
 
 const onCCIInput = (event) => {
-    const value = event.target.value;
-    // Solo permitir números
-    const numericValue = value.replace(/[^0-9]/g, '');
+    const numericValue = event.target.value.replace(/[^0-9]/g, '');
     form.cci = numericValue;
-
-    // Limpiar error si se está escribiendo
-    if (errors.cci) {
-        errors.cci = '';
-    }
+    if (errors.cci) errors.cci = '';
 };
 
-// Métodos
 const openNew = () => {
     resetForm();
     clearErrors();
@@ -221,7 +205,6 @@ const closeDialog = () => {
 const closeConfirmDialog = () => {
     showConfirmDialog.value = false;
     closeDialog();
-    // Emitir evento para actualizar la lista
     emit('account-created');
 };
 
@@ -235,28 +218,18 @@ const resetForm = () => {
 };
 
 const clearErrors = () => {
-    errors.banco = '';
-    errors.tipoCuenta = '';
-    errors.moneda = '';
-    errors.cc = '';
-    errors.cci = '';
-    errors.alias = '';
+    Object.keys(errors).forEach(key => errors[key] = '');
 };
 
-// Validaciones
 const isAlpha = (val) => /^[A-Za-z\s]+$/.test(val);
 
-// Función para manejar errores del backend
 const handleBackendErrors = (error) => {
-    // Limpiar errores previos
     clearErrors();
 
-    if (error.response && error.response.data) {
+    if (error.response?.data) {
         const backendErrors = error.response.data;
 
-        // Si hay errores de validación específicos
         if (backendErrors.errors) {
-            // Mapear errores del backend a los campos del formulario
             const fieldMapping = {
                 bank: 'banco',
                 type: 'tipoCuenta',
@@ -266,25 +239,18 @@ const handleBackendErrors = (error) => {
                 alias: 'alias'
             };
 
-            Object.keys(backendErrors.errors).forEach(field => {
+            Object.entries(backendErrors.errors).forEach(([field, messages]) => {
                 const localField = fieldMapping[field] || field;
                 if (errors.hasOwnProperty(localField)) {
-                    errors[localField] = Array.isArray(backendErrors.errors[field])
-                        ? backendErrors.errors[field][0]
-                        : backendErrors.errors[field];
+                    errors[localField] = Array.isArray(messages) ? messages[0] : messages;
                 }
             });
-        }
-        // Si hay un mensaje de error general
-        else if (backendErrors.message) {
+        } else if (backendErrors.message) {
             errors.alias = backendErrors.message;
-        }
-        // Si hay errores en formato diferente
-        else if (typeof backendErrors === 'string') {
+        } else if (typeof backendErrors === 'string') {
             errors.alias = backendErrors;
         }
     } else {
-        // Error de red o conexión
         errors.alias = 'Error de conexión. Verifica tu conexión a internet.';
     }
 };
@@ -293,90 +259,71 @@ const enviarNotificacion = async () => {
     loading.value = true;
     clearErrors();
 
+    let hasErrors = false;
+
+    if (!form.banco) {
+        errors.banco = 'Selecciona un banco';
+        hasErrors = true;
+    }
+
+    if (!form.tipoCuenta) {
+        errors.tipoCuenta = 'Selecciona el tipo de cuenta';
+        hasErrors = true;
+    }
+
+    if (!form.moneda) {
+        errors.moneda = 'Selecciona una moneda';
+        hasErrors = true;
+    }
+
+    if (!form.cc) {
+        errors.cc = 'Ingresa el número de cuenta';
+        hasErrors = true;
+    } else if (form.cc.length !== 10) {
+        errors.cc = 'El número de cuenta debe tener exactamente 10 dígitos';
+        hasErrors = true;
+    }
+
+    if (!form.cci) {
+        errors.cci = 'Ingresa el código CCI';
+        hasErrors = true;
+    } else if (form.cci.length !== 20) {
+        errors.cci = 'El CCI debe tener exactamente 20 dígitos';
+        hasErrors = true;
+    }
+
+    if (!form.alias) {
+        errors.alias = 'Ingresa un alias';
+        hasErrors = true;
+    } else if (!isAlpha(form.alias)) {
+        errors.alias = 'El alias debe contener solo letras y espacios';
+        hasErrors = true;
+    }
+
+    if (hasErrors) return;
+
     try {
-        // Validaciones frontend
-        let hasErrors = false;
-
-        if (!form.banco) {
-            errors.banco = 'Selecciona un banco';
-            hasErrors = true;
-        }
-
-        if (!form.tipoCuenta) {
-            errors.tipoCuenta = 'Selecciona el tipo de cuenta';
-            hasErrors = true;
-        }
-
-        if (!form.moneda) {
-            errors.moneda = 'Selecciona una moneda';
-            hasErrors = true;
-        }
-
-        if (!form.cc) {
-            errors.cc = 'Ingresa el número de cuenta';
-            hasErrors = true;
-        } else if (form.cc.length !== 10) {
-            errors.cc = 'El número de cuenta debe tener exactamente 10 dígitos';
-            hasErrors = true;
-        } else if (!/^\d{10}$/.test(form.cc)) {
-            errors.cc = 'El número de cuenta debe contener solo números';
-            hasErrors = true;
-        }
-
-        if (!form.cci) {
-            errors.cci = 'Ingresa el código CCI';
-            hasErrors = true;
-        } else if (form.cci.length !== 20) {
-            errors.cci = 'El CCI debe tener exactamente 20 dígitos';
-            hasErrors = true;
-        } else if (!/^\d{20}$/.test(form.cci)) {
-            errors.cci = 'El CCI debe contener solo números';
-            hasErrors = true;
-        }
-
-        if (!form.alias) {
-            errors.alias = 'Ingresa un alias para la cuenta';
-            hasErrors = true;
-        } else if (!isAlpha(form.alias)) {
-            errors.alias = 'El alias debe contener solo letras y espacios';
-            hasErrors = true;
-        }
-
-        if (hasErrors) {
-            return;
-        }
-
-        // Preparar datos para envío
         const payload = {
-            bank: form.banco?.code || form.banco,
-            type: form.tipoCuenta?.code?.toLowerCase() || form.tipoCuenta,
-            currency: form.moneda?.code || form.moneda,
+            bank: form.banco?.code,
+            type: form.tipoCuenta?.code.toLowerCase(),
+            currency: form.moneda?.code,
             cc: form.cc,
             cci: form.cci,
             alias: form.alias
         };
 
-        // Enviar solicitud a la API
         const response = await bankAccountService.createBankAccount(payload);
         console.log('Respuesta exitosa:', response.data);
-
-        // Mostrar dialog de confirmación
         showConfirmDialog.value = true;
-
     } catch (error) {
         console.error('Error al enviar notificación:', error);
-
-        // Manejar errores del backend
         handleBackendErrors(error);
-
-        // Mostrar toast de error general
         toast.add({
             severity: 'error',
             summary: 'Error',
-            detail: 'Error al procesar la solicitud. Revisa los campos marcados.',
+            detail: 'Error al procesar la solicitud.',
             life: 3000
         });
-
     } finally {
         loading.value = false;
     }

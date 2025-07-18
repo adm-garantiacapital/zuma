@@ -112,7 +112,7 @@ const login = async () => {
           <div class="mt-8 text-center">
             <p class="text-sm text-gray-600">
               ¿No tienes cuenta?
-              <button type="button" class="text-[#FF4929] hover:text-blue-800 font-medium transition-colors"   @click="router.push('/registro')">
+              <button type="button" class="text-[#FF4929] hover:text-blue-800 font-medium transition-colors"   @click="router.push('/registrarte')">
                 Regístrate
               </button>
             </p>
