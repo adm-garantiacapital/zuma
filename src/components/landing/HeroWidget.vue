@@ -38,7 +38,7 @@
     <div class="flex flex-col md:flex-row items-center justify-center gap-6 max-w-3xl px-5" data-aos="fade-up" data-aos-delay="800">
 
       <!-- Botón 1 -->
-      <a href="https://fondeo.apros.global/iniciar-sesion?redirect=%2F" target="_blank" rel="noopener noreferrer">
+      <a href="https://zuma.com.pe/factoring" target="_blank" rel="noopener noreferrer">
         <div class="w-96 h-28 bg-white hover:bg-[#6790FF] hover:text-white transition-all duration-300 rounded-full flex items-center gap-6 shadow-md cursor-pointer px-8 hover:scale-110 group">
           <div class="w-24 h-24 rounded-full relative items-center justify-center transition-all duration-300 group-hover:scale-110">
             <img src="/imagenes/landing/circulo.svg" alt="Factoring" class="w-14 h-14 absolute top-4 left-5 group-hover:scale-110 group-hover:opacity-0" />
