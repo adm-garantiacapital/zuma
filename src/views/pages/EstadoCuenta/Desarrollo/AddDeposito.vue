@@ -32,14 +32,14 @@
       <!-- Selección de cooperativa con inversiones pendientes -->
       <div>
         <label class="block text-sm font-semibold mb-2 text-gray-700">
-          Cooperativas con depósitos pendientes
+          Hipotecas con depósitos pendientes
         </label>
-        <Select v-model="selectedPendingInvestment" :options="pendingCooperatives" optionLabel="entidad"
+        <Select v-model="selectedPendingInvestment" :options="pendingCooperatives" optionLabel="propiedad"
           optionValue="id" placeholder="Seleccionar cooperativa" class="w-full">
           <!-- Cómo se muestran las opciones -->
           <template #option="slotProps">
             <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-800">{{ slotProps.option.entidad }}</span>
+              <span class="text-sm text-gray-800">{{ slotProps.option.propiedad }}</span>
               <Tag value="Pendiente" severity="warn" />
             </div>
           </template>
@@ -216,7 +216,7 @@ import { bankAccountService } from '@/services/bankAccountService'
 import { useToast } from 'primevue/usetoast'
 import { ocrService } from '@/services/ocrService'
 import { fixedTermInvestmentService } from '@/services/fixedTermInvestmentService'
-import { createFixedRateDeposit } from '@/services/movementsservice'
+import { createMortgageDeposit } from '@/services/movementsservice'
 
 const selectedPaymentSource = ref(null)
 
@@ -257,7 +257,7 @@ const detectedAmount = ref(null)
 
 const getCooperativeName = (id) => {
   const item = pendingCooperatives.value.find(p => p.id === id)
-  return item ? item.entidad : ''
+  return item ? item.propiedad : ''
 }
 
 // Computed
@@ -447,7 +447,7 @@ const openPdfModal = () => {
 onMounted(async () => {
   // Cargar cooperativas pendientes
   try {
-    const response = await fixedTermInvestmentService.getPending()
+    const response = await fixedTermInvestmentService.getReservasPendientes()
     // FIX: Acceder correctamente a los datos
     pendingCooperatives.value = response.data.data || []
     console.log('Cooperativas pendientes cargadas:', pendingCooperatives.value)
@@ -494,14 +494,14 @@ const handleSubmit = async () => {
 
   const formData = new FormData()
   // ✅ CORREGIDO: Cambiar 'investment_id' por 'fixed_term_investment_id'
-  formData.append('fixed_term_investment_id', selectedPendingInvestment.value)
+  formData.append('property_reservations_id', selectedPendingInvestment.value) // 👈 CAMBIADO
   formData.append('payment_source', selectedPaymentSource.value)
   formData.append('nro_operation', operationNumber.value)
   formData.append('amount', amount.value)
   formData.append('voucher', voucherFile.value)
 
   try {
-    const response = await createFixedRateDeposit(formData)
+    const response = await createMortgageDeposit(formData)
 
     toast.add({
       severity: 'success',

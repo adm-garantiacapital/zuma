@@ -33,3 +33,10 @@ export const createMortgageDeposit = (formData) => {
     });
 };
 
+export const createZumaDeposit = (formData) => {
+    return apiAdmin2.post('/movements/deposits/zuma', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+};

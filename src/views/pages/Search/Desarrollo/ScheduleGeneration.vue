@@ -22,8 +22,8 @@
               <Button label="Exportar a PDF" icon="pi pi-file-pdf" severity="danger" rounded
                 @click="handleExportToPDF" />
 
-              <Button label="Invertir" severity="contrast" variant="outlined" rounded
-                @click="handleInvertir" :loading="inversionLoading" />
+              <Button label="Invertir" severity="contrast" variant="outlined" rounded @click="handleInvertir"
+                :loading="inversionLoading" />
             </div>
           </div>
         </template>
@@ -226,7 +226,7 @@ const handleInvertir = async () => {
 
       // Mostrar el dialog de información después de la inversión exitosa
       showInvestmentInfo.value = true
-      
+
       // Opcional: cerrar el modal principal después de un tiempo
       setTimeout(() => {
         visible.value = false
@@ -241,9 +241,9 @@ const handleInvertir = async () => {
     }
   } catch (error) {
     console.error('Error al invertir:', error)
-    
+
     let errorMessage = 'Error al procesar la inversión. Intenta nuevamente.'
-    
+
     if (error.response?.data?.message) {
       errorMessage = error.response.data.message
     } else if (error.message) {
@@ -262,7 +262,7 @@ const handleInvertir = async () => {
 }
 
 const abrirWhatsApp = () => {
-  const phoneNumber = '51999123456' 
+  const phoneNumber = '51999123456'
   const message = 'Hola, tengo una consulta sobre el trámite de inversión en una propiedad.'
   const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
   window.open(url, '_blank')

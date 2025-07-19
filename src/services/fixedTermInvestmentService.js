@@ -34,5 +34,10 @@ export const fixedTermInvestmentService = {
   // 🆕 Obtener todas las cooperativas/inversiones pendientes del usuario
   getPending() {
     return apiAdmin1.get('/tasas-fijas/fixed-term-investments/pendientes');
+  },
+
+  // ✅ Obtener todas las reservas pendientes del usuario autenticado
+  getReservasPendientes() {
+    return apiAdmin1.get('/reservas');
   }
 };

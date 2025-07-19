@@ -108,7 +108,7 @@ import NotificationsWidget from "@/components/dashboardCliente/NotificationsWidg
 import RevenueStreamWidget from "@/components/dashboardCliente/RevenueStreamWidget.vue";
 
 const home = ref({ icon: 'pi pi-home' });
-const items = ref([{ label: 'Subasta hipotecas' }, { label: 'Mi billetera' }]);
+const items = ref([{ label: 'Cliente' }, { label: 'Mi billetera' }]);
 const profile = ref(null);
 const fullName = ref('');
 const wallet = ref(false);
