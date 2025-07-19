@@ -153,7 +153,7 @@ const formatDate = (dateString) => {
 const getStatusSeverity = (status) => {
     switch (status?.toLowerCase()) {
         case 'pendiente':
-            return 'warning';
+            return 'warn';
         case 'pagado':
             return 'success';
         case 'vencido':

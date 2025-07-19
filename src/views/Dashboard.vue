@@ -88,7 +88,7 @@
     <h3 class="text-[#171717] font-bold text-2xl mb-4">Descubre nuevas oportunidades de inversión</h3>
     <p class="text-[#555] mb-6">Explora hipotecas disponibles desde la más alta hasta la menor.</p>
 
-    <router-link to="/Search">
+    <router-link to="/hipotecas/buscar">
       <Button label="Explorar Hipotecas" icon="pi pi-search" iconPos="left"
         class="!bg-[#171717] hover:!bg-[#6790FF] !border-none !text-white font-bold !px-6 !py-3 rounded-3xl text-base transition duration-150 ease-in-out" />
     </router-link>

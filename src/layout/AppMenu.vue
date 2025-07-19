@@ -79,6 +79,18 @@ const tasasFijasMenu = [
 const clienteMenu = [
     {
         items: [{ label: 'Mi billetera', icon: 'billetera', to: '/cliente' }]
+    },
+    {
+        items: [
+            {
+                label: 'Información bancaria',
+                icon: 'informacion',
+                items: [
+                    { label: 'Cuentas', icon: 'cuentas', to: '/cliente/Cuenta-Bancaria' },
+                    { label: 'Estados de cuenta', icon: 'estados', to: '/cliente/Estado-Cuenta' }
+                ]
+            }
+        ]
     }
 ];
 

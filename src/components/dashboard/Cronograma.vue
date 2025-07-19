@@ -262,11 +262,6 @@ const getTagSeverity = (estado) => {
 const formatDate = (date) => new Date(date).toLocaleDateString('es-PE')
 const formatCurrency = (amount) => new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' }).format(amount)
 
-const openPaymentDialog = (payment) => {
-  selectedPayment.value = payment
-  paymentDialogVisible.value = true
-}
-
 const onPaymentSuccess = (id) => {
   const i = cronograma.value.findIndex(c => c.id === id)
   if (i !== -1) cronograma.value[i].estado = 'pagado'
@@ -274,7 +269,4 @@ const onPaymentSuccess = (id) => {
   loadSummary()
 }
 
-const downloadReceipt = (payment) => {
-  toast.add({ severity: 'info', summary: 'Descargando', detail: 'Recibo en proceso...', life: 3000 })
-}
 </script>

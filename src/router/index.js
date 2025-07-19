@@ -136,6 +136,18 @@ const router = createRouter({
                     name: 'cliente',
                     component: () => import('@/views/Cliente/Dashboard.vue'),
                     meta: { requiresAuth: true }
+                },
+                {
+                    path: 'Cuenta-Bancaria',
+                    name: 'tasas-fijas-Cuenta-Bancaria',
+                    component: () => import('@/views/TasasFijas/CuentasBancaria/indexCuentasBancarias.vue'),
+                    meta: { requiresAuth: true }
+                },
+                {
+                    path: 'Estado-Cuenta',
+                    name: 'tasas-fijas-Estado-Cuenta',
+                    component: () => import('@/views/TasasFijas/EstadoCuenta/indexEstadoCuenta.vue'),
+                    meta: { requiresAuth: true }
                 }
             ]
         },

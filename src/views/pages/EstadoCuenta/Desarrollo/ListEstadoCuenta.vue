@@ -10,11 +10,25 @@
 
       <!-- Tabla de movimientos -->
       <div v-else>
-        <DataTable ref="dt" :value="movements" dataKey="id" :paginator="true" :rows="10" :filters="filters"
+        <DataTable
+          ref="dt"
+          :value="movements"
+          dataKey="id"
+          lazy
+          :loading="loading"
+          :paginator="true"
+          :rows="pagination.perPage"
+          :first="pagination.first"
+          :totalRecords="pagination.total"
+          @page="onPage"
           paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
           :rowsPerPageOptions="[5, 10, 25]"
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords} movements"
-          :emptyMessage="`No hay movimientos en ${currentCurrency}`" stripedRows responsiveLayout="scroll">
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} movimientos"
+          :emptyMessage="`No hay movimientos en ${currentCurrency}`"
+          stripedRows
+          responsiveLayout="scroll"
+        >
+
           <template #header>
             <div class="flex flex-wrap gap-2 items-center justify-between">
               <h4 class="m-0">Movimientos ({{ currentCurrency }})</h4>
@@ -131,6 +145,13 @@ const filters = ref({
 const toast = ref()
 const dt = ref()
 
+const pagination = ref({
+  page: 1,
+  perPage: 10,
+  total: 0,
+  first: 0
+})
+
 // Computed para saldo disponible (solo movimientos confirmados)
 const availableBalance = computed(() => {
   let balance = 0
@@ -181,13 +202,18 @@ const loadMovements = async () => {
 
     const params = {
       currency: currentCurrency.value,
-      per_page: 1000
+      page: pagination.value.page,
+      per_page: pagination.value.perPage
     }
 
     const response = await MovementService.getMovements(params)
 
     if (response.data.success) {
-      movements.value = response.data.data.data || response.data.data
+      const paginatedData = response.data.data
+
+      movements.value = paginatedData.data
+      pagination.value.total = paginatedData.total
+      pagination.value.first = (paginatedData.current_page - 1) * paginatedData.per_page
     } else {
       throw new Error(response.data.message || 'Error al cargar movimientos')
     }
@@ -205,9 +231,18 @@ const loadMovements = async () => {
   }
 }
 
+const onPage = (event) => {
+  pagination.value.page = Math.floor(event.first / event.rows) + 1
+  pagination.value.perPage = event.rows
+  pagination.value.first = event.first
+  loadMovements()
+}
+
 // Watch para cambios de moneda
 watch(() => props.currency, (newCurrency) => {
   currentCurrency.value = newCurrency
+  pagination.value.page = 1
+  pagination.value.first = 0
   loadMovements()
 }, { immediate: true })
 
