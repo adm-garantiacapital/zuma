@@ -3,67 +3,71 @@ import { RouterLink } from 'vue-router'
 </script>
 
 <template>
+  <div class="py-4 px-6 md:px-12 lg:px-20 flex items-center justify-between bg-[#6790FF] rounded-b-2xl shadow-lg relative lg:static">
+    
+    <!-- Logo -->
+    <RouterLink to="/" class="flex items-center">
+      <img src="/imagenes/landing/logo-zuma.svg" alt="Logo Zuma" class="w-28" />
+    </RouterLink>
+
+    <!-- Botón hamburguesa solo en móvil -->
+    <Button
+      class="lg:!hidden"
+      text
+      severity="secondary"
+      rounded
+      v-styleclass="{
+        selector: '@next',
+        enterFromClass: 'hidden',
+        enterActiveClass: 'animate-scalein',
+        leaveToClass: 'hidden',
+        leaveActiveClass: 'animate-fadeout',
+        hideOnOutsideClick: true
+      }"
+    >
+      <i class="pi pi-bars text-white text-2xl"></i>
+    </Button>
+
+    <!-- Menú -->
     <div
-        class="py-6 px-10 md:px-15 lg:px-20 flex items-center justify-between relative lg:static bg-[#6790FF] rounded-b-xl drop-shadow-lg">
+      class="absolute lg:static w-full top-full left-0 lg:w-auto lg:flex hidden flex-col lg:flex-row bg-white lg:bg-transparent shadow-md lg:shadow-none rounded-xl lg:rounded-none z-30 px-6 lg:px-0 backdrop-blur-md"
+    >
+      <div class="ml-auto flex flex-col lg:flex-row items-center gap-4 lg:gap-8 w-full lg:w-auto py-4 lg:py-0">
 
-        <RouterLink to="/" class="flex items-center">
-            <img src="/imagenes/landing/logo-zuma.svg" alt="Logo Zuma" class="inline-block w-28" />
-        </RouterLink>
+        <!-- Enlaces -->
+        <ul class="flex flex-col lg:flex-row items-center gap-4 lg:gap-8 text-center">
+          <li>
+            <RouterLink to="/nosotros" class="text-[#171717] font-semibold text-lg hover:text-[#ffffff] transition duration-300">
+              Nosotros
+            </RouterLink>
+          </li>
+          <li>
+            <RouterLink to="/productos" class="text-[#171717] font-semibold text-lg hover:text-[#ffffff] transition duration-300">
+              Productos
+            </RouterLink>
+          </li>
+          <li>
+            <RouterLink to="/contactanos" class="text-[#171717] font-semibold text-lg hover:text-[#ffffff] transition duration-300">
+              Contáctanos
+            </RouterLink>
+          </li>
+          <li>
+            <RouterLink to="/blog" class="text-[#171717] font-semibold text-lg hover:text-[#ffffff] transition duration-300">
+              Blog
+            </RouterLink>
+          </li>
+        </ul>
 
-        <Button class="lg:!hidden" text severity="secondary" rounded v-styleclass="{
-            selector: '@next',
-            enterFromClass: 'hidden',
-            enterActiveClass: 'animate-scalein',
-            leaveToClass: 'hidden',
-            leaveActiveClass: 'animate-fadeout',
-            hideOnOutsideClick: true
-        }">
-            <i class="pi pi-bars !text-2xl"></i>
-        </Button>
-
-        <div
-            class="items-center grow hidden lg:flex absolute lg:static w-full left-0 top-full px-12 lg:px-0 z-20 rounded-border">
-            <div class="ml-auto flex items-center gap-8">
-                <!-- Menú -->
-                <ul
-                    class="list-none p-0 m-0 flex lg:items-center select-none flex-col lg:flex-row cursor-pointer gap-8">
-
-                    <li>
-                        <RouterLink to="/nosotros" class="px-0 py-4 text-[#171717] font-medium text-xl">
-                            <span>Nosotros</span>
-                        </RouterLink>
-                    </li>
-
-                    <li>
-                        <RouterLink to="/productos" class="px-0 py-4 text-[#171717] font-medium text-xl">
-                            <span>Productos</span>
-                        </RouterLink>
-                    </li>
-
-                    <li>
-                        <RouterLink to="/contactanos" class="px-0 py-4 text-[#171717] font-medium text-xl">
-                            <span>Contáctanos</span>
-                        </RouterLink>
-                    </li>
-
-                    <li>
-                        <RouterLink to="/blog" class="px-0 py-4 text-[#171717] font-medium text-xl">
-                            <span>Blog</span>
-                        </RouterLink>
-                    </li>
-                </ul>
-
-                <div class="flex border-t lg:border-t-0 border-surface py-4 lg:py-0 mt-4 lg:mt-0 gap-2">
-                    <RouterLink to="/login">
-                        <Button label="Iniciar Sesión" severity="contrast" variant="text" rounded
-                            class="bg-white !text-[#171717]" />
-                    </RouterLink>
-
-                    <RouterLink to="/registrarte">
-                        <Button label="Regístrate" severity="secondary" rounded class="bg-white !text-[#171717]" />
-                    </RouterLink>
-                </div>
-            </div>
+        <!-- Botones -->
+        <div class="flex flex-col lg:flex-row gap-3 w-full lg:w-auto mt-4 lg:mt-0 border-t lg:border-0 pt-4 lg:pt-0">
+          <RouterLink to="/login" class="w-full lg:w-auto">
+            <Button label="Iniciar Sesión" text rounded severity="contrast" class="hover:bg-white hover:!text-[#6790FF] transition-all duration-300 w-full" />
+          </RouterLink>
+          <RouterLink to="/registrarte" class="w-full lg:w-auto" >
+            <Button label="Regístrate" severity="warn" rounded  class="bg-white text-[#6790FF] hover:bg-[#ffffffcc] transition-all duration-300 w-full" />
+          </RouterLink>
         </div>
+      </div>
     </div>
+  </div>
 </template>
