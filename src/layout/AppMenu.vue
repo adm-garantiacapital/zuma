@@ -8,12 +8,17 @@ import profileService from '@/services/profileService';
 const route = useRoute();
 const profile = ref(null);
 const fullName = ref('');
+const initials = ref('');
 
 const loadProfile = async () => {
     try {
         const response = await profileService.getProfile();
         profile.value = response.data.data;
-        fullName.value = profile.value.alias;
+
+        const { name, first_last_name, second_last_name } = profile.value;
+
+        fullName.value = `${name} ${first_last_name} ${second_last_name}`;
+        initials.value = `${name?.[0] ?? ''}${first_last_name?.[0] ?? ''}`.toUpperCase();
     } catch (error) {
         console.error('Error cargando el perfil:', error);
     }
@@ -22,7 +27,7 @@ const loadProfile = async () => {
 onMounted(loadProfile);
 const { toggleMenu } = useLayout();
 
-// Menú HIPOTECAS
+// Menús
 const hipotecasMenu = [
     {
         items: [{ label: 'Mi billetera', icon: 'billetera', to: '/hipotecas' }]
@@ -50,7 +55,6 @@ const hipotecasMenu = [
     }
 ];
 
-// Menú TASAS FIJAS
 const tasasFijasMenu = [
     {
         items: [{ label: 'Mi billetera', icon: 'billetera', to: '/tasas-fijas' }]
@@ -75,7 +79,6 @@ const tasasFijasMenu = [
     }
 ];
 
-// Menú CLIENTE
 const clienteMenu = [
     {
         items: [{ label: 'Mi billetera', icon: 'billetera', to: '/cliente' }]
@@ -94,7 +97,6 @@ const clienteMenu = [
     }
 ];
 
-// Escoge el modelo según la ruta
 const model = computed(() => {
     if (route.path.startsWith('/tasas-fijas')) return tasasFijasMenu;
     if (route.path.startsWith('/cliente')) return clienteMenu;
@@ -103,6 +105,7 @@ const model = computed(() => {
 </script>
 
 <template>
+    <br>
     <ul class="layout-menu">
         <div class="layout-topbar-logo-container pt-5">
             <router-link to="/" class="layout-topbar-logo inline-block">
@@ -118,16 +121,21 @@ const model = computed(() => {
                 <path d="M5.39844 11.1711H7.79163" stroke="#171717" stroke-width="2" stroke-linecap="round" />
             </svg>
         </div>
+
+        <!-- Avatar y nombre -->
         <div class="py-20">
-            <div class="avatar-zuma w-[104px] h-[116px] bg-[#F0F1F9] relative mx-auto rounded-[40px] overflow-hidden">
-                <img src="/imagenes/zuma/hombre.svg" alt="Logo Zuma" class="w-[96px] absolute -bottom-1 left-1" />
+            <div class="avatar-zuma w-[104px] h-[116px] bg-[#F0F1F9] relative mx-auto rounded-[40px] overflow-hidden flex items-center justify-center text-[#171717] text-3xl font-bold">
+                {{ initials }}
             </div>
             <h3 class="name-zuma text-center mt-2 mb-0 text-[#171717]">{{ fullName }}</h3>
         </div>
+
+        <!-- Menú dinámico -->
         <template v-for="(item, i) in model" :key="item">
             <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
         </template>
 
+        <!-- Sección final -->
         <div class="announce-zuma">
             <div class="mt-20 p-5 rounded-3xl bg-[#FF4929] text-center">
                 <img src="/imagenes/landing/logo-zuma.svg" alt="Logo Zuma" class="inline-block w-14" />
@@ -150,6 +158,5 @@ const model = computed(() => {
                 <span class="inline-block align-middle">Preguntas frecuentes</span>
             </button>
         </div>
-
     </ul>
 </template>

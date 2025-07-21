@@ -6,12 +6,16 @@
     <div class="px-10 py-20 relative superior inline-block">
       <h2 class="m-0 text-[#171717]">Bienvenido {{ fullName }} a tu perfil del inversionista</h2>
     </div>
-    <div class="mask absolute -top-14 -right-8">
-      <img src="/imagenes/zuma/imagen-1.png" alt="Logo Zuma"
-        class="inline-block w-49 hover:scale-110 transition duration-100 ease-in" />
+    <div class="mask absolute -top-14 -right-8 max-w-[160px] sm:max-w-[200px] md:max-w-[250px]">
+      <img
+        src="/imagenes/zuma/imagen-1.png"
+        alt="Logo Zuma"
+        class="w-full h-auto hover:scale-110 transition duration-100 ease-in"
+      />
     </div>
   </div>
-    <StatsWidget />
+
+  <StatsWidget />
 
   <div class="p-10 my-10 rounded-3xl bg-[#F0F1F9]">
     <div class="grid grid-cols-8 gap-0">
@@ -36,7 +40,7 @@
         <!-- PEN -->
         <button type="button"
           class="text-[#171717] bg-white focus:outline-none hover:bg-[#6790FF] focus:bg-[#FF4929] font-bold rounded-3xl px-5 py-3 me-3 transition duration-100 ease-in">
-          <img src="/imagenes/zuma/pen.png" alt="Logo Zuma" class="inline-block me-2" width="20" />
+          <img src="/imagenes/zuma/pen.png" alt="Logo Zuma" class="inline-block me-2 w-5 h-5 object-contain" />
           <span class="inline-block align-middle">PEN</span>
         </button>
 
@@ -56,7 +60,7 @@
         <!-- USD -->
         <button type="button"
           class="text-[#171717] bg-white focus:outline-none hover:bg-[#6790FF] focus:bg-[#FF4929] font-bold rounded-3xl px-5 py-3 me-3 transition duration-100 ease-in">
-          <img src="/imagenes/zuma/usd.png" alt="Logo Zuma" class="inline-block me-2" width="20" />
+          <img src="/imagenes/zuma/usd.png" alt="Logo Zuma" class="inline-block me-2 w-5 h-5 object-contain" />
           <span class="inline-block align-middle">USD</span>
         </button>
 
@@ -76,6 +80,7 @@
       </div>
     </div>
   </div>
+
   <div class="grid grid-cols-12 gap-8">
     <div class="col-span-12 xl:col-span-6">
       <NotificationsWidget />
@@ -84,6 +89,7 @@
       <RevenueStreamWidget />
     </div>
   </div>
+
   <div class="text-center py-10">
     <h3 class="text-[#171717] font-bold text-2xl mb-4">Descubre nuevas oportunidades de inversión</h3>
     <p class="text-[#555] mb-6">Explora hipotecas disponibles desde la más alta hasta la menor.</p>
@@ -112,8 +118,8 @@ const items = ref([{ label: 'Subasta hipotecas' }, { label: 'Mi billetera' }]);
 const profile = ref(null);
 const fullName = ref('');
 const wallet = ref(false);
-const showDepositoDialog = ref(false)
-const showRetiroDialog = ref(false)
+const showDepositoDialog = ref(false);
+const showRetiroDialog = ref(false);
 
 // Labels para las tarjetas
 const penLabels = {
@@ -121,20 +127,12 @@ const penLabels = {
   invested_amount: { title: "Total invertido", icon: "pi pi-building-columns" },
   expected_amount: { title: "Retorno esperado", icon: "pi pi-money-bill" }
 };
-const usdLabels = penLabels; // Reutilizamos los mismos textos e íconos
+const usdLabels = penLabels;
 
 // Balance reactivo
 const balances = ref({
-  PEN: {
-    amount: 0,
-    invested_amount: 0,
-    expected_amount: 0
-  },
-  USD: {
-    amount: 0,
-    invested_amount: 0,
-    expected_amount: 0
-  }
+  PEN: { amount: 0, invested_amount: 0, expected_amount: 0 },
+  USD: { amount: 0, invested_amount: 0, expected_amount: 0 }
 });
 
 const showWallet = () => {
@@ -146,7 +144,7 @@ const loadProfile = async () => {
   try {
     const response = await profileService.getProfile();
     profile.value = response.data.data;
-    fullName.value = profile.value.alias;
+    fullName.value = `${profile.value.name} ${profile.value.first_last_name} ${profile.value.second_last_name}`;
   } catch (error) {
     console.error('Error cargando el perfil:', error);
   }
@@ -173,18 +171,15 @@ const loadBalances = async () => {
   }
 };
 
-
-// Éxito en depósito
 const handleDepositSuccess = () => {
-  emit('deposit-success')
-  fetchBalances()
-}
+  emit('deposit-success');
+  loadBalances();
+};
 
-// Éxito en retiro
 const handleWithdrawSuccess = () => {
-  emit('withdraw-success')
-  fetchBalances()
-}
+  emit('withdraw-success');
+  loadBalances();
+};
 
 onMounted(() => {
   loadProfile();

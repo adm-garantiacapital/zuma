@@ -1,36 +1,38 @@
+<script setup></script>
+
 <template>
     <footer class="bg-[#171717] text-white pt-10">
-        <div class="max-w-7xl mx-auto px-10 lg:px-20 grid grid-cols-12 gap-10">
+        <div class="px-10 lg:px-20 grid grid-cols-12 gap-10">
 
             <!-- Columna 1: Logo + contacto + redes -->
             <div class="col-span-12 md:col-span-3 text-sm">
                 <div class="mb-6">
                     <h1>
                         <span class="relative">
-                            <img src="/imagenes/landing/logo-zuma-blanco.svg" alt="Logo Zuma" class="inline-block w-28" />
-                            <div class="absolute mb-2 left-0 w-full h-1 bg-slate-200 rounded-full opacity-30"></div>
+                            <img src="/imagenes/landing/logo-zuma-blanco.svg" alt="Logo Zuma"
+                                class="inline-block w-28" />
                         </span>
                     </h1>
                 </div>
                 <div class="flex space-x-3 text-xl mb-6">
                     <div
-                        class="bg-white text-[#6790FF] hover:bg-[#FF4929] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
+                        class="bg-white text-[#171717] hover:bg-[#6790FF] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
                         <i class="pi pi-facebook"></i>
                     </div>
                     <div
-                        class="bg-white text-[#6790FF] hover:bg-[#FF4929] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
+                        class="bg-white text-[#171717] hover:bg-[#6790FF] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
                         <i class="pi pi-instagram"></i>
                     </div>
                     <div
-                        class="bg-white text-[#6790FF] hover:bg-[#FF4929] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
+                        class="bg-white text-[#171717] hover:bg-[#6790FF] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
                         <i class="pi pi-whatsapp"></i>
                     </div>
                     <div
-                        class="bg-white text-[#6790FF] hover:bg-[#FF4929] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
+                        class="bg-white text-[#171717] hover:bg-[#6790FF] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
                         <i class="pi pi-linkedin"></i>
                     </div>
                     <div
-                        class="bg-white text-[#6790FF] hover:bg-[#FF4929] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
+                        class="bg-white text-[#171717] hover:bg-[#6790FF] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
                         <i class="pi pi-video"></i> <!-- TikTok or video icon -->
                     </div>
                 </div>
@@ -49,7 +51,7 @@
                 <ul class="space-y-2">
                     <li class="flex items-center space-x-2 group cursor-pointer">
                         <div
-                            class="bg-white text-[#6790FF] group-hover:bg-[#FF4929] group-hover:text-white transition rounded-full w-8 h-8 flex items-center justify-center">
+                            class="bg-white text-[#171717] group-hover:bg-[#6790FF] group-hover:text-white transition rounded-full w-8 h-8 flex items-center justify-center">
                             <i class="pi pi-car"></i>
                         </div>
                         <span class="text-[#EDEAE4] group-hover:text-white font-medium">Préstamo con garantía
@@ -57,14 +59,14 @@
                     </li>
                     <li class="flex items-center space-x-2 group cursor-pointer">
                         <div
-                            class="bg-white text-[#6790FF] group-hover:bg-[#FF4929] group-hover:text-white transition rounded-full w-8 h-8 flex items-center justify-center">
+                            class="bg-white text-[#171717] group-hover:bg-[#6790FF] group-hover:text-white transition rounded-full w-8 h-8 flex items-center justify-center">
                             <i class="pi pi-home"></i>
                         </div>
                         <span class="text-[#EDEAE4] group-hover:text-white font-medium">Préstamo hipotecario</span>
                     </li>
                     <li class="flex items-center space-x-2 group cursor-pointer">
                         <div
-                            class="bg-white text-[#6790FF] group-hover:bg-[#FF4929] group-hover:text-white transition rounded-full w-8 h-8 flex items-center justify-center">
+                            class="bg-white text-[#171717] group-hover:bg-[#6790FF] group-hover:text-white transition rounded-full w-8 h-8 flex items-center justify-center">
                             <i class="pi pi-building"></i>
                         </div>
                         <span class="text-[#EDEAE4] group-hover:text-white font-medium">Préstamo constructor</span>
@@ -75,7 +77,7 @@
                 <ul class="space-y-2">
                     <li class="flex items-center space-x-2 group cursor-pointer">
                         <div
-                            class="bg-white text-[#6790FF] group-hover:bg-[#FF4929] group-hover:text-white transition rounded-full w-8 h-8 flex items-center justify-center">
+                            class="bg-white text-[#171717] group-hover:bg-[#6790FF] group-hover:text-white transition rounded-full w-8 h-8 flex items-center justify-center">
                             <i class="pi pi-wallet"></i>
                         </div>
                         <span class="text-[#EDEAE4] group-hover:text-white font-medium">Renta fija</span>
@@ -102,7 +104,7 @@
                 <ul class="space-y-2">
                     <li class="flex items-center space-x-2 group cursor-pointer">
                         <div
-                            class="bg-white text-[#6790FF] group-hover:bg-[#FF4929] group-hover:text-white transition rounded-full w-8 h-8 flex items-center justify-center">
+                            class="bg-white text-[#171717] group-hover:bg-[#6790FF] group-hover:text-white transition rounded-full w-8 h-8 flex items-center justify-center">
                             <i class="pi pi-exclamation-triangle"></i>
                         </div>
                         <span class="text-[#EDEAE4] group-hover:text-white font-medium">Canal de denuncias</span>
@@ -113,7 +115,7 @@
                 <ul class="space-y-2">
                     <li class="flex items-center space-x-2 group cursor-pointer">
                         <div
-                            class="bg-white text-[#6790FF] group-hover:bg-[#FF4929] group-hover:text-white transition rounded-full w-8 h-8 flex items-center justify-center">
+                            class="bg-white text-[#171717] group-hover:bg-[#6790FF] group-hover:text-white transition rounded-full w-8 h-8 flex items-center justify-center">
                             <i class="pi pi-file"></i>
                         </div>
                         <span class="text-[#EDEAE4] group-hover:text-white font-medium">Términos y condiciones</span>
@@ -122,7 +124,7 @@
                 <!-- Botón libro de reclamaciones -->
                 <div class="mt-6">
                     <button
-                        class="border border-white text-white px-4 py-2 rounded hover:bg-white hover:text-[#6790FF] transition">
+                        class="border border-white text-white px-4 py-2 rounded hover:bg-white hover:text-[#171717] transition">
                         <i class="pi pi-book mr-2"></i> <strong>Libro de reclamaciones</strong>
                     </button>
                 </div>
@@ -133,7 +135,6 @@
         <div class="bg-[#171717] mt-10 text-center py-4 text-sm text-white/80">
             <span class="relative">
                 <img src="/imagenes/landing/logo-zuma-blanco.svg" alt="Logo Zuma" class="inline-block w-12" />
-                <div class="absolute -bottom-2 left-0 w-full h-1 bg-slate-200 rounded-full opacity-30"></div>
             </span> - Todos los derechos reservados 2025
         </div>
     </footer>

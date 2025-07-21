@@ -21,6 +21,16 @@ const router = createRouter({
             component: () => import('@/views/pages/auth/Registro.vue')
         },
         {
+            path: '/recuperacion',
+            name: 'recuperacion',
+            component: () => import('@/views/pages/auth/Recuperacion.vue')
+        },
+        {
+            path: '/terminos-y-condiciones',
+            name: 'terminoscondicones',
+            component: () => import('@/views/pages/auth/TerminoCondiciones.vue')
+        },
+        {
             path: '/nosotros',
             name: 'nosotros',
             component: () => import('@/views/pages/auth/Nosotros/indexNosotros.vue')

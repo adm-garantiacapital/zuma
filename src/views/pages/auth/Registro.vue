@@ -11,7 +11,6 @@ const router = useRouter();
 const toast = useToast();
 const nombre = ref('');
 
-// Datos del formulario
 const document = ref('');
 const apellidoMaterno = ref('');
 const apellidoPaterno = ref('');
@@ -23,10 +22,8 @@ const numeroTelefono = ref('');
 const checked = ref(false);
 const loading = ref(false);
 
-// Perfil seleccionado
 const ingredient = ref('inversionista');
 
-// Dialog para empresas
 const showEmpresaDialog = ref(false);
 
 
@@ -55,14 +52,12 @@ watch(document, async (newVal) => {
       });
     }
   } else {
-    // Limpiar campos si se borra o cambia a menos de 8 dígitos
     apellidoPaterno.value = '';
     apellidoMaterno.value = '';
     nombre.value = '';
   }
 });
 
-// Validaciones de contraseña
 const passwordValidations = computed(() => {
   const pwd = password.value;
   return {
@@ -83,25 +78,21 @@ const passwordsMatch = computed(() => {
   return password.value === confirmarPassword.value && confirmarPassword.value !== '';
 });
 
-// Validar formulario completo
 const isFormValid = computed(() => {
   return document.value && apellidoMaterno.value && apellidoPaterno.value &&
     alias.value && correoElectronico.value && isPasswordValid.value &&
     passwordsMatch.value && numeroTelefono.value && checked.value;
 });
 
-// Manejar cambio de perfil
 const handlePerfilChange = (value) => {
   if (value === 'empresa') {
     showEmpresaDialog.value = true;
-    // Resetear a inversionista después de mostrar el dialog
     setTimeout(() => {
       ingredient.value = 'inversionista';
     }, 100);
   }
 };
 
-// Función de registro
 const handleRegister = async () => {
   if (!isFormValid.value) {
     toast.add({
@@ -136,7 +127,6 @@ const handleRegister = async () => {
       life: 4000
     });
 
-    // Redirigir o limpiar formulario
     router.push('/login');
   } catch (error) {
     const msg = error?.response?.data?.message || 'Ocurrió un error al registrarte.';
@@ -151,15 +141,16 @@ const handleRegister = async () => {
   }
 };
 
-// Ir al login
 const goToLogin = () => {
   router.push('/login');
 };
 
-// Contactar especialista
+const goTerminos = () => {
+  router.push('/terminos-y-condiciones');
+};
+
 const contactarEspecialista = () => {
   showEmpresaDialog.value = false;
-  // Aquí puedes agregar la lógica para contactar al especialista
   toast.add({
     severity: 'info',
     summary: 'Contacto',
@@ -177,7 +168,6 @@ const contactarEspecialista = () => {
     <!-- Contenido centrado -->
     <div class="flex-1 flex flex-col items-center justify-center p-4 bg-white">
 
-      <!-- Perfil de Inversionista -->
       <div class="w-full max-w-md flex justify-between items-center mb-6 py-8 px-6">
         <div class="flex items-center gap-2 hover:text-[#FF4929] transition-colors">
           <RadioButton v-model="ingredient" inputId="ingredient1" name="perfil" value="inversionista"
@@ -195,7 +185,6 @@ const contactarEspecialista = () => {
         </div>
       </div>
 
-      <!-- Formulario de registro -->
       <div class="w-full max-w-xl">
         <div class="border border-gray-200 p-10 rounded-3xl shadow-sm">
           <!-- Header -->
@@ -212,7 +201,7 @@ const contactarEspecialista = () => {
             <!-- DNI/Documento -->
             <div class="space-y-2">
               <label class="text-sm font-medium text-gray-700">
-                Documento (DNI) *
+                Documento (DNI) <span class="text-red-500">*</span>
               </label>
               <InputText v-model="document" fluid placeholder="Ingresa tu DNI"
                 :class="{ 'p-invalid': document && document.length < 8 }" />
@@ -220,7 +209,7 @@ const contactarEspecialista = () => {
 
             <!-- Nombre -->
             <div class="space-y-2">
-              <label class="text-sm font-medium text-gray-700">Nombre *</label>
+              <label class="text-sm font-medium text-gray-700">Nombre <span class="text-red-500">*</span></label>
               <InputText v-model="nombre" fluid disabled placeholder="Ingresa tu nombre" />
             </div>
 
@@ -229,13 +218,13 @@ const contactarEspecialista = () => {
             <div class="grid grid-cols-2 gap-4">
               <div class="space-y-2">
                 <label class="text-sm font-medium text-gray-700">
-                  Apellido Paterno *
+                  Apellido Paterno <span class="text-red-500">*</span>
                 </label>
                 <InputText v-model="apellidoPaterno" placeholder="Apellido paterno" disabled fluid />
               </div>
               <div class="space-y-2">
                 <label class="text-sm font-medium text-gray-700">
-                  Apellido Materno *
+                  Apellido Materno <span class="text-red-500">*</span>
                 </label>
                 <InputText v-model="apellidoMaterno" placeholder="Apellido materno" fluid disabled />
               </div>
@@ -244,7 +233,7 @@ const contactarEspecialista = () => {
             <!-- Alias -->
             <div class="space-y-2">
               <label class="text-sm font-medium text-gray-700">
-                Alias *
+                Alias <span class="text-red-500">*</span>
               </label>
               <InputText v-model="alias" placeholder="Ingresa tu alias" fluid />
             </div>
@@ -252,7 +241,7 @@ const contactarEspecialista = () => {
             <!-- Correo electrónico -->
             <div class="space-y-2">
               <label class="text-sm font-medium text-gray-700">
-                Correo electrónico *
+                Correo electrónico <span class="text-red-500">*</span>
               </label>
               <InputText v-model="correoElectronico" type="email" placeholder="correo@ejemplo.com" fluid />
             </div>
@@ -260,7 +249,7 @@ const contactarEspecialista = () => {
             <!-- Contraseña -->
             <div class="space-y-2">
               <label class="text-sm font-medium text-gray-700">
-                Contraseña *
+                Contraseña <span class="text-red-500">*</span>
               </label>
               <Password v-model="password" placeholder="Ingresa tu contraseña" :feedback="false" toggleMask fluid />
 
@@ -300,7 +289,7 @@ const contactarEspecialista = () => {
             <!-- Confirmar contraseña -->
             <div class="space-y-2">
               <label class="text-sm font-medium text-gray-700">
-                Confirmar contraseña *
+                Confirmar contraseña <span class="text-red-500">*</span>
               </label>
               <Password v-model="confirmarPassword" placeholder="Confirma tu contraseña" :feedback="false" toggleMask
                 fluid :class="{ 'p-invalid': confirmarPassword && !passwordsMatch }" />
@@ -317,7 +306,7 @@ const contactarEspecialista = () => {
             <!-- Número de teléfono -->
             <div class="space-y-2">
               <label class="text-sm font-medium text-gray-700">
-                Número de teléfono *
+                Número de teléfono <span class="text-red-500">*</span>
               </label>
               <InputText v-model="numeroTelefono" placeholder="Ingresa tu número de teléfono" fluid />
             </div>
@@ -326,7 +315,7 @@ const contactarEspecialista = () => {
             <div class="flex items-start gap-3">
               <Checkbox v-model="checked" inputId="terms" binary />
               <label for="terms" class="text-sm text-gray-600 cursor-pointer">
-                Acepto los <a href="#" class="text-[#FF4929] hover:underline">términos y condiciones</a>
+                Acepto los <a @click.prevent="goTerminos" class="text-[#FF4929] hover:underline">términos y condiciones</a>
               </label>
             </div>
 
