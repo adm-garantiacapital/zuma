@@ -26,6 +26,10 @@ const router = createRouter({
             component: () => import('@/views/pages/auth/Recuperacion.vue')
         },
         {
+            path: '/email/verify/:id?/:hash?',
+            component: () => import('@/views/pages/auth/verificacion.vue')
+        },
+        {
             path: '/terminos-y-condiciones',
             name: 'terminoscondicones',
             component: () => import('@/views/pages/auth/TerminoCondiciones.vue')
