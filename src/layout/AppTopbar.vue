@@ -15,8 +15,8 @@
       </div>
 
       <!-- Componente de notificaciones separado -->
-      <Notificacion 
-        v-model:showMobileNotifications="showMobileNotifications" 
+      <Notificacion
+        v-model:showMobileNotifications="showMobileNotifications"
         @close-user-menu="showUserMenu = false" 
       />
 
@@ -30,6 +30,7 @@
             <span v-else-if="userInitials" class="text-xs font-semibold text-gray-700">{{ userInitials }}</span>
             <i v-else class="pi pi-user text-gray-600 text-sm"></i>
           </div>
+
           <!-- Nombre completo - responsivo -->
           <span class="text-sm font-medium text-gray-800 hidden sm:inline">{{ fullName }}</span>
           <i class="pi pi-chevron-down text-xs text-gray-600 transition-transform duration-200 hidden sm:inline"
@@ -248,25 +249,33 @@ const loadProfile = async () => {
     const secondLastName = user.second_last_name || '';
 
     const fullNameParts = [name, firstLastName, secondLastName].filter(part => part.trim());
-
-    if (fullNameParts.length > 0) {
-      fullName.value = fullNameParts.join(' ');
-    } else {
-      fullName.value = 'Usuario';
-    }
-
+    fullName.value = fullNameParts.length > 0 ? fullNameParts.join(' ') : 'Usuario';
     userEmail.value = user.email || '';
-    profilePhoto.value = user.profile_photo_url || '';
+
+    // ✅ Set avatar si existe path
+    profilePhoto.value = user.profile_photo_path ? user.profile_photo_path : '';
 
   } catch (error) {
     console.error('Error cargando perfil:', error);
     fullName.value = 'Usuario';
     userEmail.value = '';
+    profilePhoto.value = '';
+  }
+};
+
+const loadAvatar = async () => {
+  try {
+    const response = await profileService.getAvatar();
+    profilePhoto.value = response.data?.data?.url || '';
+  } catch (error) {
+    console.error('Error cargando avatar:', error);
+    profilePhoto.value = '';
   }
 };
 
 onMounted(() => {
   loadProfile();
+  loadAvatar();
   document.addEventListener('click', handleClickOutside);
 });
 

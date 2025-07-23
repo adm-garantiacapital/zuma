@@ -9,25 +9,27 @@ const route = useRoute();
 const profile = ref(null);
 const fullName = ref('');
 const initials = ref('');
+const profilePhoto = ref('');
 
 const loadProfile = async () => {
     try {
         const response = await profileService.getProfile();
         profile.value = response.data.data;
 
-        const { name, first_last_name, second_last_name } = profile.value;
+        const { name, first_last_name, second_last_name, profile_photo_path } = profile.value;
 
         fullName.value = `${name} ${first_last_name} ${second_last_name}`;
         initials.value = `${name?.[0] ?? ''}${first_last_name?.[0] ?? ''}`.toUpperCase();
+        profilePhoto.value = profile_photo_path ? profile_photo_path : '';
     } catch (error) {
         console.error('Error cargando el perfil:', error);
     }
 };
 
 onMounted(loadProfile);
+
 const { toggleMenu } = useLayout();
 
-// Menús
 const hipotecasMenu = [
     {
         items: [{ label: 'Mi billetera', icon: 'billetera', to: '/hipotecas' }]
@@ -124,8 +126,15 @@ const model = computed(() => {
 
         <!-- Avatar y nombre -->
         <div class="py-20">
-            <div class="avatar-zuma w-[104px] h-[116px] bg-[#F0F1F9] relative mx-auto rounded-[40px] overflow-hidden flex items-center justify-center text-[#171717] text-3xl font-bold">
-                {{ initials }}
+            <div
+                class="avatar-zuma w-[104px] h-[116px] bg-[#F0F1F9] relative mx-auto rounded-[40px] overflow-hidden flex items-center justify-center text-[#171717] text-3xl font-bold">
+                <img
+                    v-if="profilePhoto"
+                    :src="profilePhoto"
+                    alt="Avatar"
+                    class="w-full h-full object-cover"
+                />
+                <span v-else>{{ initials }}</span>
             </div>
             <h3 class="name-zuma text-center mt-2 mb-0 text-[#171717]">{{ fullName }}</h3>
         </div>

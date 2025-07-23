@@ -1,6 +1,7 @@
 <template>
   <Toast />
-  <div class="card p-6 space-y-6">
+  <br>
+  <div class="card p-6 space-y-6 border p-3 rounded-lg">
     <!-- Título con Nombre -->
     <div class="text-center">
       <h2 class="text-2xl font-bold text-gray-800">
@@ -11,15 +12,15 @@
 
     <!-- Preguntas PEP -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <label class="block font-medium mb-2">¿Eres o has sido Persona Expuesta Políticamente (PEP)?</label>
-        <ToggleSwitch v-model="form.is_pep" />
-      </div>
-      <div>
-        <label class="block font-medium mb-2">¿Eres pariente, cónyuge o conviviente de alguna persona PEP?</label>
-        <ToggleSwitch v-model="form.has_relationship_pep" />
-      </div>
-    </div>
+  <div class="border p-3 rounded-lg">
+    <label class="block font-medium mb-2">¿Eres o has sido Persona Expuesta Políticamente (PEP)?</label>
+    <ToggleSwitch v-model="form.is_pep" />
+  </div>
+  <div class="border p-3 rounded-lg">
+    <label class="block font-medium mb-2">¿Eres pariente, cónyuge o conviviente de alguna persona PEP?</label>
+    <ToggleSwitch v-model="form.has_relationship_pep" />
+  </div>
+</div>
 
     <!-- Ubigeo -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -194,7 +195,7 @@
     <!-- Contrato y botón -->
     <div class="flex items-center space-x-4">
       <Checkbox v-model="form.contractAccepted" :binary="true" inputId="contract" />
-      <label for="contract" class="text-sm">He leído y acepto el contrato de Inversionista</label>
+      <label for="contract" class="text-sm">He leído y acepto el <span class="text-[#FF4929] font-semibold">contrato de Inversionista</span></label>
     </div>
 
     <div class="text-center">

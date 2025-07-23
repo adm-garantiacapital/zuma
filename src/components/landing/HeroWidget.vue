@@ -58,7 +58,7 @@
       </a>
 
       <!-- Botón 2 -->
-      <a href="https://hipotecas-main-ctqfss.laravel.cloud/login" target="_blank" rel="noopener noreferrer">
+      <a href="https://zuma.com.pe/hipotecas" target="_blank" rel="noopener noreferrer">
         <div
           class="w-96 h-28 bg-white hover:bg-[#6790FF] hover:text-white transition-all duration-300 rounded-full flex items-center gap-6 shadow-md cursor-pointer px-8 hover:scale-110 group">
           <div
@@ -75,7 +75,7 @@
       </a>
 
       <!-- Botón 3 -->
-      <a href="https://landing-main-p1nnxs.laravel.cloud/login" target="_blank" rel="noopener noreferrer">
+      <a href="https://zuma.com.pe/tasas-fijas" target="_blank" rel="noopener noreferrer">
         <div
           class="w-96 h-28 bg-white hover:bg-[#6790FF] hover:text-white transition-all duration-300 rounded-full flex items-center gap-6 shadow-md cursor-pointer px-8 hover:scale-110 group">
           <div
