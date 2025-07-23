@@ -56,7 +56,7 @@ import { ref } from 'vue';
                 <Button
                     label="Actualizar"
                     type="submit"
-                    severity="primary"
+                    severity="contrast"
                 />
                 <transition
                     enter-active-class="transition-opacity duration-300"

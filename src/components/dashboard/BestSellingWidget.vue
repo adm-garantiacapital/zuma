@@ -127,13 +127,10 @@ const openScheduleDialog = async (auction) => {
 
         loading.value = true;
 
-        // ✅ Aquí se realiza correctamente la petición
         const response = await paymentScheduleService.getByPropertyInvestor(auction.property_investor_id);
 
-        // ✅ Verifica si response.data contiene un array o un objeto con array
         scheduleData.value = Array.isArray(response.data) ? response.data : response.data.data;
 
-        // Abre el diálogo con los datos listos
         selectedAuction.value = auction;
         scheduleDialog.value = true;
 
@@ -213,7 +210,7 @@ onMounted(() => {
                         <div class="grid grid-cols-2 gap-3 mb-4">
                             <!-- Valor estimado -->
                             <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                                <p class="text-xs text-blue-600 font-medium uppercase tracking-wide">Valor Estimado</p>
+                                <p class="text-xs text-blue-600 font-medium uppercase tracking-wide">Valor</p>
                                 <p class="text-lg font-bold text-blue-700">{{ formatCurrency(auction.valor_estimado) }}
                                 </p>
                             </div>
@@ -251,6 +248,12 @@ onMounted(() => {
 
                     <!-- COLUMNA DERECHA: Oferta actual e inversionistas -->
                     <div class="bg-gray-50 p-6 flex flex-col">
+                        <div class="bg-red-50 p-4 rounded-lg border border-red-200 mb-4">
+                            <p class="text-sm text-red-600 font-medium uppercase tracking-wide text-center">Valor Requerido</p>
+                            <p class="text-2xl font-bold text-red-700 text-center">{{
+                                formatCurrency(auction.valor_requerido) }}</p>
+                            <p class="text-sm text-red-600 text-center">PEN</p>
+                        </div>
                         <!-- Header con tiempo -->
                         <div class="mb-4 text-center">
                             <Tag :value="getTimeRemaining(auction.subasta.tiempo_finalizacion).text"
@@ -463,7 +466,7 @@ onMounted(() => {
                                 formatCurrency(selectedAuction.monto_actual_mayor) }}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="font-medium">Valor Estimado:</span>
+                            <span class="font-medium">Valor:</span>
                             <span class="font-bold text-blue-600">{{ formatCurrency(selectedAuction.valor_estimado)
                                 }}</span>
                         </div>
@@ -568,7 +571,7 @@ onMounted(() => {
                         <Column header="Posición">
                             <template #body="slotProps">
                                 <Tag :value="`#${slotProps.index + 1}`"
-                                    :severity="slotProps.index === 0 ? 'success' : slotProps.index === 1 ? 'warning' : 'secondary'" />
+                                    :severity="slotProps.index === 0 ? 'success' : slotProps.index === 1 ? 'warn' : 'secondary'" />
                             </template>
                         </Column>
                     </DataTable>
