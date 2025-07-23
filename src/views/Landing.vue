@@ -7,9 +7,9 @@ import TopbarWidget from '@/components/landing/TopbarWidget.vue';
 </script>
 
 <template>
-    <div class="bg-surface-0 dark:bg-surface-900">
+    <div class="bg-[#edeae4]">
         <div id="home" class="landing-wrapper">
-            <TopbarWidget/>
+            <TopbarWidget />
             <HeroWidget />
             <FeaturesWidget />
             <HighlightsWidget />
