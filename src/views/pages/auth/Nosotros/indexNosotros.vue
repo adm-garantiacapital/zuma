@@ -3,13 +3,19 @@
     <TopbarWidget />
     <section class="pt-0 pb-10">
 
-      <div class="max-w-7xl mx-auto lg:px-20 grid grid-cols-12 gap-10">
-        <div class="col-span-4 py-20">
-          <img src="/imagenes/landing/nosotros.svg" alt="Imagen nosotros" class="w-full" />
+      <div class="max-w-7xl mx-auto lg:px-20 grid grid-cols-12 gap-0">
+        <div class="col-span-4 flex items-center justify-center">
+          <img src="/imagenes/landing/nosotros.svg" alt="Imagen nosotros"
+            class="w-[20rem] md:w-[20.3rem] lg:w-[20.7rem] ps-4" />
         </div>
-        <div class="col-span-8 bg-[url(/imagenes/landing/cuadrado-girado.svg)] bg-cover bg-center py-20">
-          <h1 class="pt-4 px-20 text-center text-white font-normal font-noto">Nuestro <b>propósito</b> es <b
-              class="text-[#FF4929]">democratizar</b> el acceso a instrumentos de <b>inversión</b></h1>
+        <div
+          class="col-span-8 bg-[url(/imagenes/landing/cuadrado-girado.svg)] bg-cover bg-center p-10 md:p-20 flex items-center justify-center">
+          <h1
+            class="m-0 text-center text-white font-normal font-noto text-[1.4rem] sm:text-[1.8rem] md:text-[2.4rem] lg:text-[2.7rem]">
+            Nuestro
+            <b>propósito</b> es
+            <b class="text-[#FF4929]">democratizar</b> el acceso a instrumentos de <b>inversión</b>
+          </h1>
         </div>
       </div>
 
@@ -42,20 +48,26 @@
         <div class="grid grid-cols-12 gap-[3rem]">
           <div class="col-span-12 md:col-span-6 relative">
             <div class="bg-[#171717] rounded-[30px] py-1 px-10 text-white absolute top-3 -left-8">
-              <h3 class="m-0 text-white font-normal text-center">Misión</h3>
+              <h3 class="m-0 text-white font-normal text-center">Misión
+              </h3>
             </div>
             <div class="bg-[#FF4929] rounded-[70px] py-10 px-2 lg:px-10">
-              <h3 class="m-0 text-[#171717] font-normal text-center font-noto">Brindar el acceso<br>a alternativas
+              <h3
+                class="m-0 text-[#171717] font-normal text-center font-noto text-[1.4rem] sm:text-[1.8rem] md:text-[1.8rem]  leading-snug">
+                Brindar el acceso<br>a alternativas
                 de<br>
                 forma <b>ágil, fácil y<br> confiable</b>.</h3>
             </div>
           </div>
           <div class="col-span-12 md:col-span-6 relative">
             <div class="bg-[#171717] rounded-[30px] py-1 px-10 text-white absolute top-3 -left-8">
-              <h3 class="m-0 text-white font-normal text-center">Visión</h3>
+              <h3 class="m-0 text-white font-normal text-center">Visión
+              </h3>
             </div>
             <div class="bg-[#FF4929] rounded-[70px] py-10 px-2 lg:px-10">
-              <h3 class="m-0 text-[#171717] font-normal text-center font-noto">Convertirnos en el<br> Marketplace
+              <h3
+                class="m-0 text-[#171717] font-normal text-center font-noto text-[1.4rem] sm:text-[1.8rem] md:text-[1.8rem]  leading-snug">
+                Convertirnos en el<br> Marketplace
                 <b>líder</b> de<br> <b>inversiones</b> alternativas<br> en Latinoamérica.
               </h3>
             </div>
