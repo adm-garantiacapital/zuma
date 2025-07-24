@@ -244,17 +244,9 @@ const loadProfile = async () => {
     const response = await profileService.getProfile();
     const user = response.data.data;
 
-    const name = user.name || '';
-    const firstLastName = user.first_last_name || '';
-    const secondLastName = user.second_last_name || '';
-
-    const fullNameParts = [name, firstLastName, secondLastName].filter(part => part.trim());
-    fullName.value = fullNameParts.length > 0 ? fullNameParts.join(' ') : 'Usuario';
+    fullName.value = [user.name, user.first_last_name, user.second_last_name].filter(Boolean).join(' ');
     userEmail.value = user.email || '';
-
-    // ✅ Set avatar si existe path
-    profilePhoto.value = user.profile_photo_path ? user.profile_photo_path : '';
-
+    profilePhoto.value = user.profile_photo_path || '';
   } catch (error) {
     console.error('Error cargando perfil:', error);
     fullName.value = 'Usuario';
