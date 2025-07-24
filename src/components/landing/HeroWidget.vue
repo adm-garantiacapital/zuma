@@ -1,6 +1,5 @@
 <template>
-  <div id="hero" class="flex flex-col items-center px-6 lg:px-20 pb-16 pt-5 space-y-12"
-    style="background-color: #EDEAE4;">
+  <div id="hero" class="flex flex-col items-center px-6 lg:px-20 pb-16 pt-5 space-y-12">
     <div class="max-w-7xl mx-auto px-10 lg:px-20 grid grid-cols-12 gap-10"></div>
     <!-- HERO PRINCIPAL -->
     <div class="flex flex-col md:flex-row items-center justify-between w-full max-w-6xl px-4" data-aos="fade-up"

@@ -1,15 +1,15 @@
 <template>
-  <div class="bg-surface-0 dark:bg-surface-900">
-    <div id="home" class="landing-wrapper">
-      <TopbarWidget />
- 
 
-      <FooterWidget />
-    </div>
+  <div id="home" class="landing-wrapper bg-[#edeae4]">
+    <TopbarWidget />
+
+
+    <FooterWidget />
   </div>
+
 </template>
 
 <script setup>
-import TopbarWidget from '@/components/landing/TopbarWidget.vue'
-import FooterWidget from '@/components/landing/FooterWidget.vue'
+import FooterWidget from '@/components/landing/FooterWidget.vue';
+import TopbarWidget from '@/components/landing/TopbarWidget.vue';
 </script>
