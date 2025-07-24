@@ -9,7 +9,6 @@
             <TabList>
                 <Tab value="0">Perfil</Tab>
                 <Tab value="1">Contraseña</Tab>
-                <Tab value="2">Historial</Tab>
             </TabList>
             <TabPanels>
                 <TabPanel value="0">
@@ -17,9 +16,6 @@
                 </TabPanel>
                 <TabPanel value="1">
                     <Password/>
-                </TabPanel>
-                <TabPanel value="2">
-                    <Historial/>
                 </TabPanel>
             </TabPanels>
         </Tabs>

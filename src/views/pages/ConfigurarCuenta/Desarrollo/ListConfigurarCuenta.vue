@@ -1,6 +1,7 @@
 <template>
   <Toast />
-  <div class="card p-6 space-y-6">
+  <br>
+  <div class="card p-6 space-y-6 border p-3 rounded-lg">
     <!-- Título con Nombre -->
     <div class="text-center">
       <h2 class="text-2xl font-bold text-gray-800">
@@ -11,15 +12,15 @@
 
     <!-- Preguntas PEP -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <label class="block font-medium mb-2">¿Eres o has sido Persona Expuesta Políticamente (PEP)?</label>
-        <ToggleSwitch v-model="form.is_pep" />
-      </div>
-      <div>
-        <label class="block font-medium mb-2">¿Eres pariente, cónyuge o conviviente de alguna persona PEP?</label>
-        <ToggleSwitch v-model="form.has_relationship_pep" />
-      </div>
-    </div>
+  <div class="border p-3 rounded-lg">
+    <label class="block font-medium mb-2">¿Eres o has sido Persona Expuesta Políticamente (PEP)?</label>
+    <ToggleSwitch v-model="form.is_pep" />
+  </div>
+  <div class="border p-3 rounded-lg">
+    <label class="block font-medium mb-2">¿Eres pariente, cónyuge o conviviente de alguna persona PEP?</label>
+    <ToggleSwitch v-model="form.has_relationship_pep" />
+  </div>
+</div>
 
     <!-- Ubigeo -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -194,7 +195,7 @@
     <!-- Contrato y botón -->
     <div class="flex items-center space-x-4">
       <Checkbox v-model="form.contractAccepted" :binary="true" inputId="contract" />
-      <label for="contract" class="text-sm">He leído y acepto el contrato de Inversionista</label>
+      <label for="contract" class="text-sm">He leído y acepto el <span class="text-[#FF4929] font-semibold">contrato de Inversionista</span></label>
     </div>
 
     <div class="text-center">
@@ -330,6 +331,14 @@ const onUploadFront = async (event) => {
     return
   }
 
+  console.log('=== Front File Upload Debug ===')
+  console.log('File selected:', {
+    name: file.name,
+    size: file.size,
+    type: file.type,
+    lastModified: file.lastModified
+  })
+
   // Validar tipo de archivo
   if (!file.type.startsWith('image/')) {
     toast.add({
@@ -338,18 +347,19 @@ const onUploadFront = async (event) => {
       detail: 'Solo se permiten imágenes (JPG, PNG, WEBP)',
       life: 4000
     })
+    event.target.value = '' // Limpiar input
     return
   }
 
   // Validar tamaño
   if (!validateFileSize(file)) {
+    event.target.value = '' // Limpiar input
     return
   }
 
-  console.log('Front file selected:', file.name, file.size, file.type)
-
-  // Guardar el archivo original
+  // IMPORTANTE: Asignar directamente el archivo File original
   form.value.document_front = file
+  console.log('File assigned to form.document_front:', form.value.document_front)
 
   // Crear preview
   const reader = new FileReader()
@@ -371,8 +381,9 @@ const onUploadFront = async (event) => {
   // Validar con OCR
   await validateDniWithOCR(file)
   
-  // Limpiar el input para permitir seleccionar el mismo archivo nuevamente
+  // Limpiar el input
   event.target.value = ''
+  console.log('=== End Front File Upload Debug ===')
 }
 
 const onUploadBack = (event) => {
@@ -383,6 +394,14 @@ const onUploadBack = (event) => {
     return
   }
 
+  console.log('=== Back File Upload Debug ===')
+  console.log('File selected:', {
+    name: file.name,
+    size: file.size,
+    type: file.type,
+    lastModified: file.lastModified
+  })
+
   // Validar tipo de archivo
   if (!file.type.startsWith('image/')) {
     toast.add({
@@ -391,18 +410,19 @@ const onUploadBack = (event) => {
       detail: 'Solo se permiten imágenes (JPG, PNG, WEBP)',
       life: 4000
     })
+    event.target.value = '' // Limpiar input
     return
   }
 
   // Validar tamaño
   if (!validateFileSize(file)) {
+    event.target.value = '' // Limpiar input
     return
   }
 
-  console.log('Back file selected:', file.name, file.size, file.type)
-
-  // Guardar el archivo original
+  // IMPORTANTE: Asignar directamente el archivo File original
   form.value.document_back = file
+  console.log('File assigned to form.document_back:', form.value.document_back)
 
   // Crear preview
   const reader = new FileReader()
@@ -421,9 +441,10 @@ const onUploadBack = (event) => {
   }
   reader.readAsDataURL(file)
   
-  // Limpiar el input para permitir seleccionar el mismo archivo nuevamente
+  // Limpiar el input
   event.target.value = ''
-}
+  console.log('=== End Back File Upload Debug ===')
+} 
 
 const removeFrontImage = () => {
   form.value.document_front = null
@@ -449,7 +470,13 @@ const guardarPerfil = async () => {
     return
   }
 
-  // Validar específicamente las imágenes
+  // Validación más robusta de archivos
+  console.log('Validando archivos antes del envío:')
+  console.log('document_front:', form.value.document_front)
+  console.log('document_back:', form.value.document_back)
+  console.log('Es document_front un File?', form.value.document_front instanceof File)
+  console.log('Es document_back un File?', form.value.document_back instanceof File)
+
   if (!form.value.document_front || !form.value.document_back) {
     toast.add({
       severity: 'warn',
@@ -460,8 +487,12 @@ const guardarPerfil = async () => {
     return
   }
 
-  // Verificar que son archivos File válidos
+  // Verificación adicional de que los archivos existen y son válidos
   if (!(form.value.document_front instanceof File) || !(form.value.document_back instanceof File)) {
+    console.error('Los archivos no son válidos:', {
+      front: form.value.document_front,
+      back: form.value.document_back
+    })
     toast.add({
       severity: 'error',
       summary: 'Error en archivos',
@@ -471,25 +502,19 @@ const guardarPerfil = async () => {
     return
   }
 
-  console.log('Starting to save profile...')
-  console.log('Front file:', form.value.document_front)
-  console.log('Back file:', form.value.document_back)
-
   isSaving.value = true
 
   try {
     const payload = new FormData()
     
-    // Enviar como boolean (0 o 1) NO como string
+    // Datos booleanos
     payload.append('is_pep', form.value.is_pep ? '1' : '0')
     payload.append('has_relationship_pep', form.value.has_relationship_pep ? '1' : '0')
     
-    // Formatear los IDs del ubigeo para que sean exactamente 2 dígitos
+    // Ubigeo
     const formatUbigeoId = (id) => {
       if (!id) return ''
       const idStr = String(id)
-      // Si el ID tiene más de 2 dígitos, tomar los últimos 2
-      // Si tiene menos de 2 dígitos, rellenar con ceros a la izquierda
       return idStr.length >= 2 ? idStr.slice(-2) : idStr.padStart(2, '0')
     }
     
@@ -498,26 +523,37 @@ const guardarPerfil = async () => {
     payload.append('district', formatUbigeoId(form.value.district?.ubigeo_id))
     payload.append('address', form.value.address || '')
 
-    // Asegurar que las imágenes se envíen correctamente con nombres únicos
-    const frontFile = form.value.document_front
-    const backFile = form.value.document_back
-    
-    // Generar nombres únicos para evitar conflictos
-    const timestamp = Date.now()
-    const frontFileName = `dni_front_${timestamp}.${frontFile.name.split('.').pop()}`
-    const backFileName = `dni_back_${timestamp}.${backFile.name.split('.').pop()}`
-    
-    payload.append('document_front', frontFile, frontFileName)
-    payload.append('document_back', backFile, backFileName)
+    // CRÍTICO: Agregar archivos SIN modificar el nombre
+    // El servidor espera los nombres exactos 'document_front' y 'document_back'
+    payload.append('document_front', form.value.document_front)
+    payload.append('document_back', form.value.document_back)
 
-    // Debug: verificar el contenido del FormData
-    console.log('FormData contents:')
+    // Debug mejorado del FormData
+    console.log('=== FormData Debug ===')
     for (let [key, value] of payload.entries()) {
       if (value instanceof File) {
-        console.log(key, `File: ${value.name}, Size: ${value.size}, Type: ${value.type}`)
+        console.log(`${key}:`, {
+          name: value.name,
+          size: value.size,
+          type: value.type,
+          lastModified: value.lastModified
+        })
       } else {
-        console.log(key, value)
+        console.log(`${key}:`, value)
       }
+    }
+    console.log('=== Fin FormData Debug ===')
+
+    // Verificar que los archivos están realmente en el FormData
+    const frontFile = payload.get('document_front')
+    const backFile = payload.get('document_back')
+    
+    console.log('Archivos en FormData después de append:')
+    console.log('Front file from FormData:', frontFile)
+    console.log('Back file from FormData:', backFile)
+    
+    if (!frontFile || !backFile || !(frontFile instanceof File) || !(backFile instanceof File)) {
+      throw new Error('Los archivos no se agregaron correctamente al FormData')
     }
 
     const response = await profileService.updateConfirmAccount(payload)
@@ -547,6 +583,7 @@ const guardarPerfil = async () => {
     isSaving.value = false
   }
 }
+
 </script>
 
 <style scoped>

@@ -48,7 +48,7 @@
 
       <!-- Botón de actualización -->
       <div class="pt-4">
-        <Button label="Actualizar perfil" icon="pi pi-save" @click="updateProfile" />
+        <Button label="Actualizar perfil" severity="contrast" icon="pi pi-save" @click="updateProfile" />
       </div>
     </div>
   </div>
