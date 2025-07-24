@@ -54,7 +54,7 @@
       <div class="col-span-12 text-center">
         <h4 class="text-lg font-medium">Descubre tu perfil de inversionista</h4>
         <Button label="Accede al quiz" severity="warn" rounded
-          class="!text-2xl !px-20 !py-5 !relative !mx-auto !bg-[#171717] !text-white hover:!bg-[#6790FF] transition-all duration-300" />
+          class="!border-none !text-2xl !px-20 !py-5 !relative !mx-auto !bg-[#171717] !text-white hover:!bg-[#6790FF] transition-all duration-300" />
 
       </div>
     </div>
