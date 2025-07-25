@@ -154,10 +154,12 @@ const notificationsCount = computed(() => {
   return notificacionRef.value?.notificationsCount || 0;
 });
 
-// Computed para determinar la sección actual
+// Computed para determinar la sección actual - ahora incluye cliente
 const currentSection = computed(() => {
   if (route.path.startsWith('/tasas-fijas')) {
     return 'tasas-fijas';
+  } else if (route.path.startsWith('/cliente')) {
+    return 'cliente';
   }
   return 'hipotecas';
 });
@@ -275,12 +277,20 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside);
 });
 
+// Función actualizada para manejar las 3 secciones
 const goToProfile = () => {
   showUserMenu.value = false;
-  if (currentSection.value === 'tasas-fijas') {
-    router.push('/tasas-fijas/Perfil');
-  } else {
-    router.push('/hipotecas/Perfil');
+  
+  switch (currentSection.value) {
+    case 'tasas-fijas':
+      router.push('/tasas-fijas/Perfil');
+      break;
+    case 'cliente':
+      router.push('/cliente/Perfil');
+      break;
+    default: // hipotecas
+      router.push('/hipotecas/Perfil');
+      break;
   }
 };
 </script>

@@ -28,8 +28,14 @@
           class="!border-none !text-white !bg-[#171717] hover:!bg-[#6790FF] focus:!border-none focus:!bg-[#FF4929] !font-bold !rounded-3xl !px-5 !py-3 !me-3 !transition !duration-100 !ease-in"
           rounded @click="showDepositoDialog = true" />
         <Button label="Retiro" icon="pi pi-minus" iconPos="left"
-          class="border-button-black !border-none !text-[#171717] !bg-transparent hover:!bg-[#6790FF] focus:!border-none focus:!bg-[#FF4929] !font-bold !rounded-3xl !px-5 !py-3 !transition !duration-100 !ease-in"
+          class="border-button-black !border-none !text-[#171717] !bg-transparent hover:!bg-[#6790FF] focus:!border-none focus:!bg-[#FF4929] !font-bold !rounded-3xl !px-5 !py-3 !me-3 !transition !duration-100 !ease-in"
           rounded @click="showRetiroDialog = true" />
+        
+        <!-- Botón para mostrar/ocultar montos -->
+        <Button :icon="showAmounts ? 'pi pi-eye' : 'pi pi-eye-slash'" severity="contrast" variant="outlined"
+          rounded @click="toggleAmounts" :title="showAmounts ? 'Ocultar montos' : 'Mostrar montos'" 
+          class="!me-3" />
+        
         <Button v-if="wallet" @click="showWallet" icon="pi pi-angle-up" aria-label="Mostrar Billetera" variant="link"
           class="!text-black" />
         <Button v-else @click="showWallet" icon="pi pi-angle-down" aria-label="Mostrar Billetera" variant="link"
@@ -50,7 +56,9 @@
               <i :class="label.icon" class="text-[#171717] !text-[2.8rem] inline-block align-top mt-5 mb-3 me-10"></i>
               <div class="inline-block">
                 <h5 class="text-[#171717] m-0 font-semibold">{{ label.title }}</h5>
-                <h3 class="text-[#171717] m-0 font-bold">S/ {{ balances.PEN[key].toFixed(2) }}</h3>
+                <h3 class="text-[#171717] m-0 font-bold">
+                  {{ showAmounts ? `S/ ${balances.PEN[key].toFixed(2)}` : 'S/ ••••••' }}
+                </h3>
                 <a class="text-[#6790FF] m-0 font-medium">Ver más...</a>
               </div>
             </div>
@@ -70,7 +78,9 @@
               <i :class="label.icon" class="text-[#171717] !text-[2.8rem] inline-block align-top mt-5 mb-3 me-10"></i>
               <div class="inline-block">
                 <h5 class="text-[#171717] m-0 font-semibold">{{ label.title }}</h5>
-                <h3 class="text-[#171717] m-0 font-bold">$ {{ balances.USD[key].toFixed(2) }}</h3>
+                <h3 class="text-[#171717] m-0 font-bold">
+                  {{ showAmounts ? `$ ${balances.USD[key].toFixed(2)}` : '$ ••••••' }}
+                </h3>
                 <a class="text-[#6790FF] m-0 font-medium">Ver más...</a>
               </div>
             </div>
@@ -121,6 +131,9 @@ const wallet = ref(false);
 const showDepositoDialog = ref(false);
 const showRetiroDialog = ref(false);
 
+// Nueva variable para controlar la visibilidad de los montos
+const showAmounts = ref(true);
+
 // Labels para las tarjetas
 const penLabels = {
   amount: { title: "Saldo disponible", icon: "pi pi-wallet" },
@@ -139,12 +152,18 @@ const showWallet = () => {
   wallet.value = !wallet.value;
 };
 
+// Función para alternar la visibilidad de los montos
+const toggleAmounts = () => {
+  showAmounts.value = !showAmounts.value;
+  localStorage.setItem('showAmounts', showAmounts.value.toString());
+};
+
 // Cargar perfil
 const loadProfile = async () => {
   try {
     const response = await profileService.getProfile();
     profile.value = response.data.data;
-    fullName.value = `${profile.value.name} ${profile.value.first_last_name} ${profile.value.second_last_name}`;
+    fullName.value = `${profile.value.alias}`;
   } catch (error) {
     console.error('Error cargando el perfil:', error);
   }
@@ -184,5 +203,11 @@ const handleWithdrawSuccess = () => {
 onMounted(() => {
   loadProfile();
   loadBalances();
+  
+  // Cargar la preferencia desde localStorage
+  const savedShowAmounts = localStorage.getItem('showAmounts');
+  if (savedShowAmounts !== null) {
+    showAmounts.value = savedShowAmounts === 'true';
+  }
 });
 </script>

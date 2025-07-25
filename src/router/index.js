@@ -127,6 +127,12 @@ const router = createRouter({
                     meta: { requiresAuth: true }
                 },
                 {
+                    path: 'dashboard',
+                    name: 'tasas-fijas-dashboard',
+                    component: () => import('@/views/TasasFijas/Dashboard.vue'),
+                    meta: { requiresAuth: true }
+                },
+                {
                     path: 'Cuenta-Bancaria',
                     name: 'tasas-fijas-Cuenta-Bancaria',
                     component: () => import('@/views/TasasFijas/CuentasBancaria/indexCuentasBancarias.vue'),
@@ -136,6 +142,12 @@ const router = createRouter({
                     path: 'Estado-Cuenta',
                     name: 'tasas-fijas-Estado-Cuenta',
                     component: () => import('@/views/TasasFijas/EstadoCuenta/indexEstadoCuenta.vue'),
+                    meta: { requiresAuth: true }
+                },
+                {
+                    path: 'Confirmar-Cuenta',
+                    name: 'tasas-fijas-confirmar-cuenta',
+                    component: () => import('@/views/TasasFijas/ConfigurarCuenta/index.vue'),
                     meta: { requiresAuth: true }
                 }
             ]
@@ -152,15 +164,27 @@ const router = createRouter({
                     meta: { requiresAuth: true }
                 },
                 {
+                    path: 'dashboard',
+                    name: 'cliente-dashboard',
+                    component: () => import('@/views/Cliente/Dashboard.vue'),
+                    meta: { requiresAuth: true }
+                },
+                {
                     path: 'Cuenta-Bancaria',
-                    name: 'tasas-fijas-Cuenta-Bancaria',
-                    component: () => import('@/views/TasasFijas/CuentasBancaria/indexCuentasBancarias.vue'),
+                    name: 'cliente-Cuenta-Bancaria',
+                    component: () => import('@/views/Cliente/CuentasBancaria/indexCuentasBancarias.vue'),
                     meta: { requiresAuth: true }
                 },
                 {
                     path: 'Estado-Cuenta',
-                    name: 'tasas-fijas-Estado-Cuenta',
-                    component: () => import('@/views/TasasFijas/EstadoCuenta/indexEstadoCuenta.vue'),
+                    name: 'cliente-Estado-Cuenta',
+                    component: () => import('@/views/Cliente/EstadoCuenta/indexEstadoCuenta.vue'),
+                    meta: { requiresAuth: true }
+                },
+                {
+                    path: 'Confirmar-Cuenta',
+                    name: 'cliente-confirmar-cuenta',
+                    component: () => import('@/views/Cliente/ConfigurarCuenta/index.vue'),
                     meta: { requiresAuth: true }
                 }
             ]

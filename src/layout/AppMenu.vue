@@ -16,10 +16,10 @@ const loadProfile = async () => {
         const response = await profileService.getProfile();
         profile.value = response.data.data;
 
-        const { name, first_last_name, second_last_name, profile_photo_path } = profile.value;
-
-        fullName.value = `${name} ${first_last_name} ${second_last_name}`;
-        initials.value = `${name?.[0] ?? ''}${first_last_name?.[0] ?? ''}`.toUpperCase();
+        const { alias, first_last_name, second_last_name, profile_photo_path } = profile.value;
+        
+        fullName.value = alias;
+        initials.value = `${alias?.[0] ?? ''}${first_last_name?.[0] ?? ''}`.toUpperCase();
         profilePhoto.value = profile_photo_path ? profile_photo_path : '';
     } catch (error) {
         console.error('Error cargando el perfil:', error);
@@ -65,7 +65,7 @@ const tasasFijasMenu = [
         items: [{ label: 'Oportunidades', icon: 'buscar', to: '/tasas-fijas/Search' }]
     },
     {
-        items: [{ label: 'Mi dashboard', icon: 'dashboard', to: '/tasas-fija' }]
+        items: [{ label: 'Mi dashboard', icon: 'dashboard', to: '/tasas-fijas/dashboard' }]
     },
     {
         items: [
