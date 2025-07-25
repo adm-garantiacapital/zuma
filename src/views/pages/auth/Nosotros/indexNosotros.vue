@@ -45,31 +45,37 @@
           </p>
         </div>
 
-        <div class="grid grid-cols-12 gap-[3rem]">
-          <div class="col-span-12 md:col-span-6 relative">
-            <div class="bg-[#171717] rounded-[30px] py-1 px-10 text-white absolute top-3 -left-8">
-              <h3 class="m-0 text-white font-normal text-center">Misión
-              </h3>
-            </div>
-            <div class="bg-[#FF4929] rounded-[70px] py-10 px-2 lg:px-10">
-              <h3
-                class="m-0 text-[#171717] font-normal text-center font-noto text-[1.4rem] sm:text-[1.8rem] md:text-[1.8rem]  leading-snug">
-                Brindar el acceso<br>a alternativas
-                de<br>
-                forma <b>ágil, fácil y<br> confiable</b>.</h3>
+        <div class="grid grid-cols-12 gap-8">
+          <div class="col-span-12 md:col-span-6">
+            <div class="relative w-full">
+              <div class="bg-[#171717] rounded-[30px] py-1 px-10 text-white absolute top-3 -left-8">
+                <h3 class="m-0 text-white font-normal text-center text-[1.4rem] sm:text-[1.8rem] md:text-[1.8rem]">
+                  Misión
+                </h3>
+              </div>
+              <div class="bg-[#FF4929] rounded-[70px] py-10">
+                <h3
+                  class="m-0 text-[#171717] font-normal text-center font-noto text-[1.4rem] sm:text-[1.8rem] md:text-[1.8rem] leading-tight">
+                  Brindar el acceso<br>a alternativas
+                  de<br>
+                  forma <b>ágil, fácil y<br> confiable</b>.</h3>
+              </div>
             </div>
           </div>
-          <div class="col-span-12 md:col-span-6 relative">
-            <div class="bg-[#171717] rounded-[30px] py-1 px-10 text-white absolute top-3 -left-8">
-              <h3 class="m-0 text-white font-normal text-center">Visión
-              </h3>
-            </div>
-            <div class="bg-[#FF4929] rounded-[70px] py-10 px-2 lg:px-10">
-              <h3
-                class="m-0 text-[#171717] font-normal text-center font-noto text-[1.4rem] sm:text-[1.8rem] md:text-[1.8rem]  leading-snug">
-                Convertirnos en el<br> Marketplace
-                <b>líder</b> de<br> <b>inversiones</b> alternativas<br> en Latinoamérica.
-              </h3>
+          <div class="col-span-12 md:col-span-6">
+            <div class="relative w-full">
+              <div class="bg-[#171717] rounded-[30px] py-1 px-10 text-white absolute top-3 -left-8">
+                <h3 class="m-0 text-white font-normal text-center text-[1.4rem] sm:text-[1.8rem] md:text-[1.8rem]">
+                  Visión
+                </h3>
+              </div>
+              <div class="bg-[#FF4929] rounded-[70px] py-10">
+                <h3
+                  class="m-0 text-[#171717] font-normal text-center font-noto text-[1.4rem] sm:text-[1.8rem] md:text-[1.8rem] leading-tight">
+                  Convertirnos en el<br> Marketplace
+                  <b>líder</b> de<br> <b>inversiones</b> alternativas<br> en Latinoamérica.
+                </h3>
+              </div>
             </div>
           </div>
         </div>

@@ -153,8 +153,8 @@
     <FooterWidget />
   </div>
 
-  <Dialog v-model:visible="facturas" modal class="!bg-white !overflow-hidden !rounded-[50px]"
-    :style="{ width: '40rem' }">
+  <Dialog v-model:visible="facturas" modal class="!bg-white !overflow-hidden !rounded-[50px] !px-5"
+    :style="{ width: '40rem', marginLeft: '20px', marginRight: '20px' }">
     <template #header>
       <div class="inline-flex"></div>
     </template>
@@ -180,7 +180,7 @@
   </Dialog>
 
   <Dialog v-model:visible="prestamos" modal class="!bg-white !overflow-hidden !rounded-[50px]"
-    :style="{ width: '40rem' }">
+    :style="{ width: '40rem', marginLeft: '20px', marginRight: '20px' }">
     <template #header>
       <div class="inline-flex"></div>
     </template>
@@ -206,7 +206,7 @@
   </Dialog>
 
   <Dialog v-model:visible="depositos" modal class="!bg-white !overflow-hidden !rounded-[50px]"
-    :style="{ width: '40rem' }">
+    :style="{ width: '40rem', marginLeft: '20px', marginRight: '20px' }">
     <template #header>
       <div class="inline-flex"></div>
     </template>
