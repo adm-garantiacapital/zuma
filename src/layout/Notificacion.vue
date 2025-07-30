@@ -35,26 +35,28 @@
         <!-- Lista de notificaciones -->
         <div :class="{ 'max-h-[400px] overflow-y-auto': notifications.length >= 4 }" class="p-4 space-y-3 bg-white">
           <div v-for="notification in notifications" :key="notification.id"
-            @click="irADetalleNotificacion(notification.type)"
+            @click="irADetalleNotificacion(notification.type, $event)"
             class="bg-white border-l-4 p-4 rounded-xl shadow-sm transition hover:shadow-md cursor-pointer" :class="{
               'border-blue-500': notification.type === 'personal',
               'border-yellow-500': notification.type === 'cuenta',
               'border-green-500': notification.type === 'deposito',
-              'border-gray-300': !['personal', 'cuenta', 'deposito'].includes(notification.type)
+              'border-orange-500': notification.type === 'reserva_pendiente',
+              'border-gray-300': !['personal', 'cuenta', 'deposito', 'reserva_pendiente'].includes(notification.type)
             }">
             <div class="flex items-start gap-4">
               <div class="w-10 h-10 rounded-full flex items-center justify-center" :class="{
                 'bg-blue-100 text-blue-600': notification.type === 'personal',
                 'bg-yellow-100 text-yellow-600': notification.type === 'cuenta',
                 'bg-green-100 text-green-600': notification.type === 'deposito',
-                'bg-gray-100 text-gray-600': !['personal', 'cuenta', 'deposito'].includes(notification.type)
+                'bg-orange-100 text-orange-600': notification.type === 'reserva_pendiente',
+                'bg-gray-100 text-gray-600': !['personal', 'cuenta', 'deposito', 'reserva_pendiente'].includes(notification.type)
               }">
                 <i :class="notification.icon + ' text-lg'" />
               </div>
               <div class="flex-1">
                 <p class="text-sm text-gray-800 mb-2 leading-snug">{{ notification.text }}</p>
                 <div class="flex justify-end">
-                  <button @click.stop="completarNotificacion(notification.id)"
+                  <button @click.stop="completarNotificacion(notification.id, $event)"
                     class="text-xs font-semibold px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
                     {{ notification.action }}
                   </button>
@@ -73,7 +75,7 @@
         </div>
 
         <div class="p-4 border-t bg-gray-50">
-          <button
+          <button @click="verTodasNotificaciones($event)"
             class="w-full text-sm font-semibold text-gray-700 border border-gray-300 rounded-xl py-2 hover:bg-gray-100 transition">
             <i class="pi pi-external-link mr-2 text-sm" />
             Ver todas las notificaciones
@@ -110,26 +112,28 @@
         <!-- Notifications list -->
         <div class="p-4 space-y-3 bg-white overflow-y-auto max-h-[calc(80vh-120px)]">
           <div v-for="notification in notifications" :key="notification.id"
-            @click="irADetalleNotificacionMobile(notification.type)"
+            @click="irADetalleNotificacionMobile(notification.type, $event)"
             class="bg-white border-l-4 p-4 rounded-xl shadow-sm transition hover:shadow-md cursor-pointer" :class="{
               'border-blue-500': notification.type === 'personal',
               'border-yellow-500': notification.type === 'cuenta',
               'border-green-500': notification.type === 'deposito',
-              'border-gray-300': !['personal', 'cuenta', 'deposito'].includes(notification.type)
+              'border-orange-500': notification.type === 'reserva_pendiente',
+              'border-gray-300': !['personal', 'cuenta', 'deposito', 'reserva_pendiente'].includes(notification.type)
             }">
             <div class="flex items-start gap-4">
               <div class="w-10 h-10 rounded-full flex items-center justify-center" :class="{
                 'bg-blue-100 text-blue-600': notification.type === 'personal',
                 'bg-yellow-100 text-yellow-600': notification.type === 'cuenta',
                 'bg-green-100 text-green-600': notification.type === 'deposito',
-                'bg-gray-100 text-gray-600': !['personal', 'cuenta', 'deposito'].includes(notification.type)
+                'bg-orange-100 text-orange-600': notification.type === 'reserva_pendiente',
+                'bg-gray-100 text-gray-600': !['personal', 'cuenta', 'deposito', 'reserva_pendiente'].includes(notification.type)
               }">
                 <i :class="notification.icon + ' text-lg'" />
               </div>
               <div class="flex-1">
                 <p class="text-sm text-gray-800 mb-3 leading-snug">{{ notification.text }}</p>
                 <div class="flex justify-end">
-                  <button @click.stop="completarNotificacionMobile(notification.id)"
+                  <button @click.stop="completarNotificacionMobile(notification.id, $event)"
                     class="text-xs font-semibold px-4 py-2 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-100 transition">
                     {{ notification.action }}
                   </button>
@@ -189,6 +193,7 @@ const mobileNotificationsModel = computed({
 
 const currentSection = computed(() => {
   if (route.path.startsWith('/tasas-fijas')) return 'tasas-fijas';
+  if (route.path.startsWith('/cliente')) return 'cliente';
   return 'hipotecas';
 });
 
@@ -201,50 +206,143 @@ const closeMobileNotifications = () => {
   mobileNotificationsModel.value = false;
 };
 
-const completarNotificacion = async (id) => {
+const completarNotificacion = async (id, event) => {
+  // Prevenir que se cierre el panel inmediatamente
+  event?.stopPropagation();
+  
   try {
+    // Buscar la notificación antes de eliminarla
+    const notification = notifications.value.find(n => n.id === id);
+    
     await notificationService.markAsCompleted(id);
     notifications.value = notifications.value.filter(n => n.id !== id);
-    const n = notifications.value.find(n => n.id === id);
-    if (n?.type === 'cuenta') showAddCuentaDialog.value = true;
+    
+    // Cerrar el panel primero
+    showNotifications.value = false;
+    
+    // Navegar según el tipo de notificación después de un pequeño delay
+    setTimeout(() => {
+      const section = currentSection.value;
+      
+      if (notification?.type === 'personal') {
+        router.push(`/${section}/Confirmar-Cuenta`);
+      } else if (notification?.type === 'cuenta') {
+        router.push(`/${section}/Cuenta-Bancaria`);
+        // También mostrar el diálogo si es necesario
+        setTimeout(() => {
+          showAddCuentaDialog.value = true;
+        }, 100);
+      } else if (notification?.type === 'deposito') {
+        router.push(`/${section}/Estado-Cuenta`);
+      } else if (notification?.type === 'reserva_pendiente') {
+        // Siempre navegar a /hipotecas/Estado-Cuenta para reservas pendientes
+        router.push('/hipotecas/Estado-Cuenta');
+      }
+    }, 50);
+    
   } catch (error) {
     console.error('Error al completar notificación', error);
   }
 };
 
-const completarNotificacionMobile = async (id) => {
+const completarNotificacionMobile = async (id, event) => {
+  event?.stopPropagation();
+  
   try {
+    // Buscar la notificación antes de eliminarla
+    const notification = notifications.value.find(n => n.id === id);
+    
     await notificationService.markAsCompleted(id);
-    const noti = notifications.value.find(n => n.id === id);
     notifications.value = notifications.value.filter(n => n.id !== id);
-    if (noti?.type === 'cuenta') {
-      mobileNotificationsModel.value = false;
-      showAddCuentaDialog.value = true;
+    
+    // Cerrar el modal móvil primero
+    mobileNotificationsModel.value = false;
+    
+    // Navegar según el tipo de notificación después de un pequeño delay
+    setTimeout(() => {
+      const section = currentSection.value;
+      
+      if (notification?.type === 'personal') {
+        router.push(`/${section}/Confirmar-Cuenta`);
+      } else if (notification?.type === 'cuenta') {
+        router.push(`/${section}/Cuenta-Bancaria`);
+        // También mostrar el diálogo si es necesario
+        setTimeout(() => {
+          showAddCuentaDialog.value = true;
+        }, 100);
+      } else if (notification?.type === 'deposito') {
+        router.push(`/${section}/Estado-Cuenta`);
+      } else if (notification?.type === 'reserva_pendiente') {
+        // Siempre navegar a /hipotecas/Estado-Cuenta para reservas pendientes
+        router.push('/hipotecas/Estado-Cuenta');
+      }
+    }, 50);
+    
+  } catch (error) {
+    console.error('Error al completar notificación', error);
+  }
+};
+
+const irADetalleNotificacion = (type, event) => {
+  // Prevenir que se cierre el panel antes de navegar
+  event?.stopPropagation();
+  
+  // Cerrar el panel primero
+  showNotifications.value = false;
+  
+  // Navegar después de un pequeño delay
+  setTimeout(() => {
+    const section = currentSection.value;
+    if (type === 'personal') {
+      router.push(`/${section}/Confirmar-Cuenta`);
+    } else if (type === 'cuenta') {
+      router.push(`/${section}/Cuenta-Bancaria`);
+    } else if (type === 'deposito') {
+      router.push(`/${section}/Estado-Cuenta`);
+    } else if (type === 'reserva_pendiente') {
+      // Siempre navegar a /hipotecas/Estado-Cuenta para reservas pendientes
+      router.push('/hipotecas/Estado-Cuenta');
     }
-  } catch (error) {
-    console.error('Error al completar notificación', error);
-  }
+  }, 50);
 };
 
-const irADetalleNotificacion = (type) => {
-  const section = currentSection.value;
-  if (type === 'personal') {
-    router.push(`/${section}/Confirmar-Cuenta`);
-  } else if (type === 'cuenta') {
-    router.push(`/${section}/Cuenta-Bancaria`);
-  } else if (type === 'deposito') {
-    router.push(`/${section}/Estado-Cuenta`);
-  }
-};
-
-const irADetalleNotificacionMobile = (type) => {
+const irADetalleNotificacionMobile = (type, event) => {
+  event?.stopPropagation();
   mobileNotificationsModel.value = false;
-  irADetalleNotificacion(type);
+  
+  setTimeout(() => {
+    const section = currentSection.value;
+    if (type === 'personal') {
+      router.push(`/${section}/Confirmar-Cuenta`);
+    } else if (type === 'cuenta') {
+      router.push(`/${section}/Cuenta-Bancaria`);
+    } else if (type === 'deposito') {
+      router.push(`/${section}/Estado-Cuenta`);
+    } else if (type === 'reserva_pendiente') {
+      // Siempre navegar a /hipotecas/Estado-Cuenta para reservas pendientes
+      router.push('/hipotecas/Estado-Cuenta');
+    }
+  }, 50);
+};
+
+const verTodasNotificaciones = (event) => {
+  event?.stopPropagation();
+  showNotifications.value = false;
+  
+  setTimeout(() => {
+    const section = currentSection.value;
+    router.push(`/${section}/Notificaciones`);
+  }, 50);
 };
 
 const handleClickOutside = (event) => {
+  // Solo cerrar si el click no está dentro del contenedor de notificaciones
   const notificationsContainer = event.target.closest('.notifications-container');
-  if (!notificationsContainer) showNotifications.value = false;
+  const notificationsPanel = event.target.closest('.notifications-wrapper');
+  
+  if (!notificationsContainer && !notificationsPanel) {
+    showNotifications.value = false;
+  }
 };
 
 const fetchNotifications = async () => {

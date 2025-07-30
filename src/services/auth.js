@@ -1,4 +1,4 @@
-// services/auth.js - Versión corregida
+// services/auth.js - Versión con tipo de usuario
 import { apiAdmin1, apiAdmin2 } from './api.js';
 import router from '@/router';
 
@@ -35,7 +35,7 @@ export const authService = {
         if (!customer || typeof customer !== 'object') {
             throw new Error('Datos de cliente inválidos');
         }
-        // ✅ Filtrar datos sensibles (mantener solo lo necesario)
+        // ✅ Filtrar datos sensibles (mantener solo lo necesario) + tipo de usuario
         const safeCustomer = {
             id: customer.id,
             name: customer.name,
@@ -46,9 +46,16 @@ export const authService = {
             email: customer.email,
             telephone: customer.telephone,
             status: customer.status,
+            type: customer.type, // ✅ AGREGAR TIPO DE USUARIO
             // NO guardar passwords u otros datos sensibles
         };
         localStorage.setItem(CUSTOMER_KEY, JSON.stringify(safeCustomer));
+    },
+
+    // ✅ NUEVO: Método para obtener solo el tipo de usuario
+    getUserType() {
+        const customer = this.getCustomer();
+        return customer?.type || null;
     },
 
     isAuthenticated() {
@@ -97,6 +104,7 @@ export const authService = {
 
             console.log('✅ Token recibido:', api_token);
             console.log('✅ Datos de usuario recibidos:', userData);
+            console.log('✅ Tipo de usuario:', userData.type); // ✅ Log del tipo
 
             this.setToken(api_token);
             this.setCustomer(userData);

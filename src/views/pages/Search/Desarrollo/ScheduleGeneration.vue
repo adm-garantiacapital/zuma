@@ -22,7 +22,7 @@
               <Button label="Exportar a PDF" icon="pi pi-file-pdf" severity="danger" rounded
                 @click="handleExportToPDF" />
 
-              <Button label="Invertir" severity="contrast" variant="outlined" rounded @click="handleInvertir"
+              <Button label="Invertir" severity="contrast" variant="outlined" rounded @click="showReferralDialog"
                 :loading="inversionLoading" />
             </div>
           </div>
@@ -49,6 +49,50 @@
 
       </DataTable>
     </div>
+
+    <!-- Dialog de código de referencia -->
+    <Dialog v-model:visible="showReferralCodeDialog" modal header="Código de Referencia" :style="{ width: '400px' }"
+      :breakpoints="{ '960px': '75vw' }">
+      
+      <div class="flex flex-col gap-4">
+        <p class="text-gray-700 mb-2">
+          ¿Tienes un código de referencia? Es opcional, pero si lo tienes puedes ingresarlo para obtener beneficios adicionales.
+        </p>
+        
+        <div class="field">
+          <label for="referralCode" class="block text-sm font-medium mb-2">Código de Referencia (Opcional)</label>
+          <InputText 
+            id="referralCode" 
+            v-model="referralCode" 
+            placeholder="Ingresa tu código aquí..." 
+            class="w-full"
+            :maxlength="20"
+          />
+        </div>
+        
+        <small class="text-gray-500">
+          * Este campo es completamente opcional. Puedes continuar sin código de referencia.
+        </small>
+      </div>
+
+      <template #footer>
+        <Button 
+          label="Cancelar" 
+          icon="pi pi-times" 
+          severity="secondary" 
+          variant="outlined"
+          @click="cancelReferral" 
+        />
+        <Button 
+          label="Continuar" 
+          icon="pi pi-check" 
+          severity="contrast" 
+          @click="handleInvertir"
+          :loading="inversionLoading"
+          autofocus 
+        />
+      </template>
+    </Dialog>
 
     <!-- Dialog de información de inversión -->
     <Dialog v-model:visible="showInvestmentInfo" modal header="Información de Inversión" :style="{ width: '450px' }"
@@ -95,6 +139,7 @@ import { propertyReservationService } from '@/services/propertyReservationServic
 import { useExport } from '@/composables/useExport.js'
 import { useToast } from 'primevue/usetoast'
 import Tag from 'primevue/tag'
+import InputText from 'primevue/inputtext'
 
 const toast = useToast()
 const visible = ref(false)
@@ -102,6 +147,10 @@ const propertyId = ref(null)
 const configId = ref(null)
 const amount = ref(null)
 const inversionLoading = ref(false)
+
+// Estados para el código de referencia
+const showReferralCodeDialog = ref(false)
+const referralCode = ref('')
 
 const scheduleData = ref(null)
 const selectedCuotas = ref([])
@@ -204,6 +253,17 @@ const onPage = async (event) => {
   }
 }
 
+// Mostrar dialog de código de referencia
+const showReferralDialog = () => {
+  showReferralCodeDialog.value = true
+}
+
+// Cancelar y limpiar código de referencia
+const cancelReferral = () => {
+  showReferralCodeDialog.value = false
+  referralCode.value = ''
+}
+
 const handleInvertir = async () => {
   try {
     inversionLoading.value = true
@@ -214,18 +274,31 @@ const handleInvertir = async () => {
       amount: amount.value
     }
 
+    // Solo agregar el código de referencia si existe
+    if (referralCode.value && referralCode.value.trim() !== '') {
+      payload.referral_code = referralCode.value.trim()
+    }
+
     const response = await propertyReservationService.createReservation(payload)
 
-    if (response.success) {
+    // CORRECCIÓN: Verificar correctamente la respuesta
+    // El backend devuelve { success: true, message: "...", data: {...} }
+    if (response && (response.success === true || response.data?.success === true)) {
+      // Cerrar dialog de código de referencia
+      showReferralCodeDialog.value = false
+      
       toast.add({
         severity: 'success',
         summary: 'Inversión Exitosa',
-        detail: 'Tu reserva ha sido creada exitosamente. La propiedad ha pasado a estado de espera.',
+        detail: response.message || response.data?.message || 'Tu reserva ha sido creada exitosamente. La propiedad ha pasado a estado de espera.',
         life: 5000
       })
 
       // Mostrar el dialog de información después de la inversión exitosa
       showInvestmentInfo.value = true
+
+      // Limpiar código de referencia
+      referralCode.value = ''
 
       // Opcional: cerrar el modal principal después de un tiempo
       setTimeout(() => {
@@ -235,7 +308,7 @@ const handleInvertir = async () => {
       toast.add({
         severity: 'error',
         summary: 'Error',
-        detail: 'No se pudo completar la inversión. Intenta nuevamente.',
+        detail: response?.message || response?.data?.message || 'No se pudo completar la inversión. Intenta nuevamente.',
         life: 3000
       })
     }
@@ -244,8 +317,11 @@ const handleInvertir = async () => {
 
     let errorMessage = 'Error al procesar la inversión. Intenta nuevamente.'
 
+    // Manejar diferentes tipos de errores
     if (error.response?.data?.message) {
       errorMessage = error.response.data.message
+    } else if (error.response?.data?.error) {
+      errorMessage = error.response.data.error
     } else if (error.message) {
       errorMessage = error.message
     }

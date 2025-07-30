@@ -6,7 +6,7 @@
 
             <span class="text-[#171717] font-semibold">
                 Ir a
-                <RouterLink to="/tasas-fijas/Cuenta-Bancaria"
+                <RouterLink to="/cliente/Cuenta-Bancaria"
                     class="text-[#FF4929] underline cursor-pointer font-semibold">
                     estados de cuentas
                 </RouterLink>
@@ -29,7 +29,7 @@
                     <label class="block font-bold mb-1">Banco <span class="text-red-500">*</span></label>
                     <Select id="banco" v-model="form.banco" :options="bancos" optionLabel="name"
                         placeholder="Selecciona un banco" fluid :class="{ 'p-invalid': errors.banco }" />
-                    <small v-if="errors.banco" class="p-error">{{ errors.banco }}</small>
+                    <small v-if="errors.banco" class="p-error text-red-500">{{ errors.banco }}</small>
                 </div>
 
                 <div>
@@ -44,28 +44,28 @@
                     <label class="block font-bold mb-1">Moneda <span class="text-red-500">*</span></label>
                     <Select id="moneda" v-model="form.moneda" :options="monedas" optionLabel="name"
                         placeholder="Selecciona una moneda" class="w-full" :class="{ 'p-invalid': errors.moneda }" />
-                    <small v-if="errors.moneda" class="p-error">{{ errors.moneda }}</small>
+                    <small v-if="errors.moneda" class="p-error text-red-500">{{ errors.moneda }}</small>
                 </div>
 
                 <div>
                     <label class="block font-bold mb-1">CC <span class="text-red-500">*</span></label>
                     <InputText id="cc" v-model="form.cc" placeholder="Número de cuenta (10 dígitos)" class="w-full"
                         maxlength="10" @input="onCCInput" :class="{ 'p-invalid': errors.cc }" />
-                    <small v-if="errors.cc" class="p-error">{{ errors.cc }}</small>
+                    <small v-if="errors.cc" class="p-error text-red-500">{{ errors.cc }}</small>
                 </div>
 
                 <div>
                     <label class="block font-bold mb-1">CCI <span class="text-red-500">*</span></label>
                     <InputText id="cci" v-model="form.cci" placeholder="Código interbancario (20 dígitos)"
                         class="w-full" maxlength="20" @input="onCCIInput" :class="{ 'p-invalid': errors.cci }" />
-                    <small v-if="errors.cci" class="p-error">{{ errors.cci }}</small>
+                    <small v-if="errors.cci" class="p-error text-red-500">{{ errors.cci }}</small>
                 </div>
 
                 <div>
                     <label class="block font-bold mb-1">Alias <span class="text-red-500">*</span></label>
                     <InputText id="alias" v-model="form.alias" placeholder="Nombre o alias de la cuenta" class="w-full"
                         :class="{ 'p-invalid': errors.alias }" />
-                    <small v-if="errors.alias" class="p-error">{{ errors.alias }}</small>
+                    <small v-if="errors.alias" class="p-error text-red-500">{{ errors.alias }}</small>
                 </div>
             </div>
 

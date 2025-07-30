@@ -16,37 +16,40 @@ const toast = useToast()
 const loading = ref(false)
 const message = ref('')
 const messageType = ref('')
-const isVerified = ref(false)
 const investorId = ref(null)
 const userEmail = ref('')
 
-// Estados para diferentes escenarios
-const verificationStatus = ref('pending') // 'pending', 'success', 'error', 'expired', 'already_verified'
+const verificationStatus = ref('pending')
 
 onMounted(async () => {
-    // Obtener parámetros de la URL si vienen de un enlace de verificación
     investorId.value = route.params.id || localStorage.getItem('temp_investor_id')
     
-    // Si viene de un enlace directo de verificación, intentar verificar automáticamente
     if (route.params.id && route.params.hash) {
-        await verifyEmail(route.params.id, route.params.hash)
-    } else {
-        // Mostrar pantalla para reenvío
-        verificationStatus.value = 'pending'
+        // Capturar TODOS los parámetros necesarios como en React
+        const expires = route.query.expires
+        const signature = route.query.signature // Si también lo necesitas
         
-        // Obtener email del localStorage si está disponible
+        console.log('Parámetros de verificación:', {
+            id: route.params.id,
+            hash: route.params.hash,
+            expires: expires,
+            signature: signature
+        })
+        
+        await verifyEmail(route.params.id, route.params.hash, expires, signature)
+    } else {
+        verificationStatus.value = 'pending'
         userEmail.value = localStorage.getItem('temp_user_email') || ''
     }
 })
 
-// Función para verificar el email automáticamente (cuando viene del enlace)
-const verifyEmail = async (id, hash) => {
+const verifyEmail = async (id, hash, expires = null, signature = null) => {
     loading.value = true
     verificationStatus.value = 'verifying'
     
     try {
-        // Usar el servicio de verificación de email
-        const response = await emailVerificationService.verifyEmail(id, hash)
+        // Pasar todos los parámetros al servicio
+        const response = await emailVerificationService.verifyEmail(id, hash, expires, signature)
         
         if (response.data && response.data.success) {
             verificationStatus.value = 'success'
@@ -60,11 +63,9 @@ const verifyEmail = async (id, hash) => {
                 life: 5000
             })
             
-            // Limpiar datos temporales
             localStorage.removeItem('temp_investor_id')
             localStorage.removeItem('temp_user_email')
             
-            // Redirigir al login después de unos segundos
             setTimeout(() => {
                 router.push('/login')
             }, 3000)
@@ -82,7 +83,6 @@ const verifyEmail = async (id, hash) => {
         if (error.response && error.response.data) {
             errorMessage = error.response.data.message || errorMessage
             
-            // Casos específicos del servidor
             if (error.response.status === 404) {
                 errorMessage = 'Usuario no encontrado'
             } else if (error.response.status === 400) {
@@ -92,6 +92,8 @@ const verifyEmail = async (id, hash) => {
                 message.value = 'Tu email ya está verificado'
                 messageType.value = 'info'
                 return
+            } else if (error.response.status === 422) {
+                errorMessage = 'El enlace de verificación ha expirado o es inválido'
             }
         }
         

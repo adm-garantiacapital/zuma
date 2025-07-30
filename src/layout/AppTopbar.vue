@@ -156,9 +156,13 @@ const notificationsCount = computed(() => {
 
 // Computed para determinar la sección actual - ahora incluye cliente
 const currentSection = computed(() => {
-  if (route.path.startsWith('/tasas-fijas')) {
+  const currentPath = route.path;
+  console.log('Ruta actual:', currentPath); // Para debugging
+  
+  if (currentPath.startsWith('/tasas-fijas')) {
     return 'tasas-fijas';
-  } else if (route.path.startsWith('/cliente')) {
+  } else if (currentPath.startsWith('/cliente')) {
+    console.log('Detectada sección cliente'); // Para debugging
     return 'cliente';
   }
   return 'hipotecas';
@@ -281,18 +285,22 @@ onBeforeUnmount(() => {
 const goToProfile = () => {
   showUserMenu.value = false;
   
-  switch (currentSection.value) {
+  const section = currentSection.value;
+  console.log('Sección detectada para perfil:', section); // Para debugging
+
+  switch (section) {
     case 'tasas-fijas':
       router.push('/tasas-fijas/Perfil');
       break;
     case 'cliente':
-      router.push('/cliente/Perfil');
+      router.push('/cliente/Perfil'); // ✅ CORREGIDO
       break;
-    default: // hipotecas
+    default:
       router.push('/hipotecas/Perfil');
       break;
   }
 };
+
 </script>
 
 <style scoped>

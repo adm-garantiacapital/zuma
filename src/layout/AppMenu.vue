@@ -8,21 +8,35 @@ import profileService from '@/services/profileService';
 const route = useRoute();
 const profile = ref(null);
 const fullName = ref('');
+const fullDoce = ref('');
 const initials = ref('');
 const profilePhoto = ref('');
+const showCopyTooltip = ref(false);
 
 const loadProfile = async () => {
     try {
         const response = await profileService.getProfile();
         profile.value = response.data.data;
 
-        const { alias, first_last_name, second_last_name, profile_photo_path } = profile.value;
-        
+        const { alias, first_last_name, profile_photo_path, codigo } = profile.value;
         fullName.value = alias;
+        fullDoce.value = codigo || 'Sin código';
         initials.value = `${alias?.[0] ?? ''}${first_last_name?.[0] ?? ''}`.toUpperCase();
         profilePhoto.value = profile_photo_path ? profile_photo_path : '';
     } catch (error) {
         console.error('Error cargando el perfil:', error);
+    }
+};
+
+const copyUserCode = async () => {
+    try {
+        await navigator.clipboard.writeText(fullDoce.value);
+        showCopyTooltip.value = true;
+        setTimeout(() => {
+            showCopyTooltip.value = false;
+        }, 2000);
+    } catch (error) {
+        console.error('Error al copiar:', error);
     }
 };
 
@@ -136,7 +150,45 @@ const model = computed(() => {
                 />
                 <span v-else>{{ initials }}</span>
             </div>
-            <h3 class="name-zuma text-center mt-2 mb-0 text-[#171717]">{{ fullName }}</h3>
+            <h3 class="name-zuma text-center mt-2 mb-3 text-[#171717]">{{ fullName }}</h3>
+            
+            <!-- Código de usuario mejorado -->
+            <div class="user-code-container mx-auto max-w-[200px]">
+                <div class="text-center mb-2">
+                    <span class="text-xs text-gray-600 font-medium">Código del inversionista</span>
+                </div>
+                <div class="relative">
+                    <div class="bg-gradient-to-r from-[#6790FF] to-[#FF4929] rounded-xl p-3 shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <span class="text-white font-mono font-bold text-sm tracking-wider">
+                                {{ fullDoce }}
+                            </span>
+                            <button 
+                                @click="copyUserCode"
+                                class="ml-2 p-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200 group"
+                                title="Copiar código"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white group-hover:scale-110 transition-transform">
+                                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                                    <path d="m4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="mt-1">
+                            <span class="text-white/80 text-xs font-bold">Gana más, REFIRIENDO.</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Tooltip de copiado -->
+                    <div 
+                        v-if="showCopyTooltip"
+                        class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs py-1 px-2 rounded shadow-lg animate-fade-in"
+                    >
+                        ¡Copiado!
+                        <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-800"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Menú dinámico -->
@@ -169,3 +221,20 @@ const model = computed(() => {
         </div>
     </ul>
 </template>
+
+<style scoped>
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+}
+</style>

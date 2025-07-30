@@ -37,7 +37,7 @@
         <div class="flex flex-col gap-3">
           <div class="flex items-center">
             <RadioButton v-model="depositType" inputId="deposit1" name="depositType" value="personal" />
-            <label for="deposit1" class="ml-2 text-sm">Depósito a mi cuenta</label>
+            <label for="deposit1" class="ml-2 text-sm">Depósito a mi billetera</label>
           </div>
           <div class="flex items-center">
             <RadioButton v-model="depositType" inputId="deposit2" name="depositType" value="mortgage" />

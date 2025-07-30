@@ -1,112 +1,125 @@
 <template>
-  <div class="mt-6">
-    <!-- Loading state -->
-    <div v-if="loading" class="flex justify-center items-center py-8">
-      <ProgressSpinner />
-    </div>
+  <br>
+  <br>
+  <div class="border rounded-3xl py-6">
+    <div class="p-6">
+      <!-- Loading state -->
+      <div v-if="loading" class="flex justify-center items-center py-8">
+        <ProgressSpinner />
+      </div>
 
-    <!-- Tabla de movimientos -->
-    <div v-else class="bg-white rounded-lg shadow-sm border overflow-hidden">
-      <DataTable 
-        :value="movements" 
-        :paginator="pagination.total > pagination.per_page"
-        :rows="pagination.per_page"
-        :totalRecords="pagination.total"
-        :lazy="true"
-        @page="onPageChange"
-        stripedRows
-        responsiveLayout="scroll"
-        :emptyMessage="`No hay movimientos en ${currentCurrency}`"
-        class="p-datatable-sm"
-      >
-        <!-- Fecha de solicitud -->
-        <Column field="created_at" header="Fecha de solicitud" style="min-width: 140px">
-          <template #body="slotProps">
-            <div class="text-sm">
-              <div class="font-medium text-gray-800">
-                {{ formatDate(slotProps.data.created_at).date }}
-              </div>
-              <div class="text-gray-500 text-xs">
-                {{ formatDate(slotProps.data.created_at).time }}
-              </div>
+      <!-- Tabla de movimientos -->
+      <div v-else>
+        <DataTable
+          ref="dt"
+          :value="movements"
+          dataKey="id"
+          lazy
+          :loading="loading"
+          :paginator="true"
+          :rows="pagination.perPage"
+          :first="pagination.first"
+          :totalRecords="pagination.total"
+          @page="onPage"
+          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+          :rowsPerPageOptions="[5, 10, 25]"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} movimientos"
+          :emptyMessage="`No hay movimientos en ${currentCurrency}`"
+          stripedRows
+          responsiveLayout="scroll"
+        >
+
+          <template #header>
+            <div class="flex flex-wrap gap-2 items-center justify-between">
+              <h4 class="m-0">Movimientos ({{ currentCurrency }})</h4>
+              <IconField>
+                <InputIcon>
+                  <i class="pi pi-search" />
+                </InputIcon>
+                <InputText v-model="filters['global'].value" placeholder="Buscar..." />
+              </IconField>
             </div>
           </template>
-        </Column>
+          <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
+          <Column field="created_at" header="Fecha de solicitud" sortable style="min-width: 200px">
+            <template #body="slotProps">
+              <div class="flex items-center gap-2 text-sm">
+                <span class="font-medium text-gray-800">
+                  {{ formatDate(slotProps.data.created_at).date }}
+                </span>
+                <span class="text-gray-500 text-xs">
+                  {{ formatDate(slotProps.data.created_at).time }}
+                </span>
+              </div>
+            </template>
+          </Column>
 
-        <!-- Movimiento -->
-        <Column field="type" header="Movimiento" style="min-width: 150px">
-          <template #body="slotProps">
-            <div class="flex items-center gap-2">
-              <!-- Icono con dirección -->
-              <div 
-                :class="[
+          <Column field="type" header="Movimiento" sortable style="min-width: 150px">
+            <template #body="slotProps">
+              <div class="flex items-center gap-2">
+                <div :class="[
                   'w-8 h-8 rounded-full flex items-center justify-center text-sm',
                   getMovementStyle(slotProps.data.type).bgClass
-                ]"
-              >
-                <i :class="getMovementStyle(slotProps.data.type).iconClass"></i>
+                ]">
+                  <i :class="getMovementStyle(slotProps.data.type).iconClass"></i>
+                </div>
+
+                <div>
+                  <div class="font-medium">
+                    {{ getMovementLabel(slotProps.data.type) }}
+                  </div>
+                  <div v-if="slotProps.data.description" class="text-xs text-gray-500 truncate max-w-32">
+                    {{ slotProps.data.description }}
+                  </div>
+                </div>
               </div>
-              
-              <!-- Tipo de movimiento -->
+            </template>
+          </Column>
+
+          <Column field="amount" header="Monto" sortable style="min-width: 120px" dataType="numeric">
+            <template #body="slotProps">
               <div>
-                <div class="font-medium text-sm text-gray-800">
-                  {{ getMovementLabel(slotProps.data.type) }}
-                </div>
-                <div v-if="slotProps.data.description" class="text-xs text-gray-500 truncate max-w-32">
-                  {{ slotProps.data.description }}
-                </div>
-              </div>
-            </div>
-          </template>
-        </Column>
-
-        <!-- Monto -->
-        <Column field="amount" header="Monto" style="min-width: 120px" class="text-right">
-          <template #body="slotProps">
-            <div class="text-right">
-              <div 
-                :class="[
-                  'font-bold text-sm',
+                <div :class="[
+                  'font-bold',
                   getAmountColor(slotProps.data.type)
-                ]"
-              >
-                {{ getAmountPrefix(slotProps.data.type) }}{{ currentCurrency }} {{ formatAmount(slotProps.data.amount) }}
+                ]">
+                  {{ getAmountPrefix(slotProps.data.type) }}{{ currentCurrency }} {{ formatAmount(slotProps.data.amount)
+                  }}
+                </div>
               </div>
-            </div>
-          </template>
-        </Column>
-
-        <!-- Estado -->
-        <Column field="status" header="Estado" style="min-width: 100px">
-          <template #body="slotProps">
-            <div class="flex flex-col gap-1">
-              <!-- Estado principal -->
-              <Badge 
-                :value="getStatusLabel(slotProps.data.status)" 
-                :severity="getStatusSeverity(slotProps.data.status)"
-                class="text-xs"
-              />
-              
-              <!-- Estado de confirmación si es diferente -->
-              <Badge 
-                v-if="slotProps.data.confirm_status && slotProps.data.confirm_status !== slotProps.data.status"
-                :value="getConfirmStatusLabel(slotProps.data.confirm_status)" 
-                :severity="getConfirmStatusSeverity(slotProps.data.confirm_status)"
-                class="text-xs"
-              />
-            </div>
-          </template>
-        </Column>
-      </DataTable>
+            </template>
+          </Column>
+<Column field="status" header="Estado" sortable>
+  <template #body="slotProps">
+    <div>
+      <!-- Mostrar solo uno: status o confirm_status -->
+      <Tag
+        v-if="slotProps.data.confirm_status && slotProps.data.confirm_status !== slotProps.data.status"
+        :value="getConfirmStatusLabel(slotProps.data.confirm_status)"
+        :severity="getConfirmStatusSeverity(slotProps.data.confirm_status)"
+      />
+      <Tag
+        v-else
+        :value="getStatusLabel(slotProps.data.status)"
+        :severity="getStatusSeverity(slotProps.data.status)"
+      />
     </div>
+  </template>
+</Column>
+  
+        </DataTable>
+      </div>
 
-    <!-- Mensaje de error -->
-    <Toast ref="toast" />
+      <!-- Mensaje de error -->
+      <Toast ref="toast" />
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
+import { FilterMatchMode } from '@primevue/core/api';
+
 import MovementService from '@/services/movementService'
 
 // Props
@@ -124,47 +137,56 @@ const emit = defineEmits(['balance-updated'])
 const movements = ref([])
 const loading = ref(false)
 const currentCurrency = ref(props.currency)
-const pagination = ref({
-  current_page: 1,
-  total: 0,
-  per_page: 10,
-  last_page: 1
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS }
 })
 
 // Referencias
 const toast = ref()
+const dt = ref()
+
+const pagination = ref({
+  page: 1,
+  perPage: 10,
+  total: 0,
+  first: 0
+})
 
 // Computed para saldo disponible (solo movimientos confirmados)
 const availableBalance = computed(() => {
   let balance = 0
-  
+
   movements.value.forEach(movement => {
-    // Solo contar movimientos confirmados
     if (movement.confirm_status === 'confirmed' && movement.status === 'completed') {
       const amount = parseFloat(movement.amount)
-      
+
       switch (movement.type) {
         case 'deposit':
-        case 'payment': // Pagos recibidos
+        case 'payment':
+        case 'fixed_rate_interest_payment':
+        case 'fixed_rate_disbursement':
+        case 'mortgage_disbursement':
           balance += amount
           break
         case 'withdraw':
         case 'investment':
         case 'tax':
-        case 'exchange_up': // Intercambio hacia arriba (salida)
+        case 'exchange_up':
+        case 'fixed_rate_capital_return':
+        case 'mortgage_installment_payment':
+        case 'mortgage_early_payment':
           balance -= amount
           break
-        case 'exchange_down': // Intercambio hacia abajo (entrada)
+        case 'exchange_down':
           balance += amount
           break
       }
     }
   })
-  
+
   return balance
 })
 
-// Watch para cambios de moneda
 // Watch para emitir cambios de balance
 watch(availableBalance, (newBalance) => {
   emit('balance-updated', {
@@ -174,25 +196,24 @@ watch(availableBalance, (newBalance) => {
 })
 
 // Cargar movimientos
-const loadMovements = async (page = 1) => {
+const loadMovements = async () => {
   try {
     loading.value = true
-    
+
     const params = {
       currency: currentCurrency.value,
-      page: page
+      page: pagination.value.page,
+      per_page: pagination.value.perPage
     }
-    
+
     const response = await MovementService.getMovements(params)
-    
+
     if (response.data.success) {
-      movements.value = response.data.data.data
-      pagination.value = {
-        current_page: response.data.data.current_page,
-        total: response.data.data.total,
-        per_page: response.data.data.per_page,
-        last_page: response.data.data.last_page
-      }
+      const paginatedData = response.data.data
+
+      movements.value = paginatedData.data
+      pagination.value.total = paginatedData.total
+      pagination.value.first = (paginatedData.current_page - 1) * paginatedData.per_page
     } else {
       throw new Error(response.data.message || 'Error al cargar movimientos')
     }
@@ -210,13 +231,18 @@ const loadMovements = async (page = 1) => {
   }
 }
 
-// Manejar cambio de página
-const onPageChange = (event) => {
-  const page = event.page + 1
-  loadMovements(page)
+const onPage = (event) => {
+  pagination.value.page = Math.floor(event.first / event.rows) + 1
+  pagination.value.perPage = event.rows
+  pagination.value.first = event.first
+  loadMovements()
 }
+
+// Watch para cambios de moneda
 watch(() => props.currency, (newCurrency) => {
   currentCurrency.value = newCurrency
+  pagination.value.page = 1
+  pagination.value.first = 0
   loadMovements()
 }, { immediate: true })
 
@@ -229,7 +255,13 @@ const getMovementLabel = (type) => {
     'investment': 'Inversión',
     'tax': 'Impuesto',
     'exchange_up': 'Cambio ↑',
-    'exchange_down': 'Cambio ↓'
+    'exchange_down': 'Cambio ↓',
+    'fixed_rate_disbursement': 'Desembolso Tasa Fija',
+    'fixed_rate_interest_payment': 'Pago Intereses T.F.',
+    'fixed_rate_capital_return': 'Devolución Capital T.F.',
+    'mortgage_disbursement': 'Desembolso Hipoteca',
+    'mortgage_installment_payment': 'Cuota Hipoteca',
+    'mortgage_early_payment': 'Pago Adelantado Hipoteca'
   }
   return labels[type] || type
 }
@@ -254,7 +286,7 @@ const getMovementStyle = (type) => {
       bgClass: 'bg-purple-100'
     },
     'tax': {
-      iconClass: 'pi pi-arrow-up text-orange-600',
+      iconClass: 'pi pi-minus text-orange-600',
       bgClass: 'bg-orange-100'
     },
     'exchange_up': {
@@ -264,9 +296,33 @@ const getMovementStyle = (type) => {
     'exchange_down': {
       iconClass: 'pi pi-arrow-down text-teal-600',
       bgClass: 'bg-teal-100'
+    },
+    'fixed_rate_disbursement': {
+      iconClass: 'pi pi-dollar text-green-600',
+      bgClass: 'bg-green-100'
+    },
+    'fixed_rate_interest_payment': {
+      iconClass: 'pi pi-percentage text-emerald-600',
+      bgClass: 'bg-emerald-100'
+    },
+    'fixed_rate_capital_return': {
+      iconClass: 'pi pi-undo text-amber-600',
+      bgClass: 'bg-amber-100'
+    },
+    'mortgage_disbursement': {
+      iconClass: 'pi pi-home text-blue-600',
+      bgClass: 'bg-blue-100'
+    },
+    'mortgage_installment_payment': {
+      iconClass: 'pi pi-calendar text-violet-600',
+      bgClass: 'bg-violet-100'
+    },
+    'mortgage_early_payment': {
+      iconClass: 'pi pi-fast-forward text-pink-600',
+      bgClass: 'bg-pink-100'
     }
   }
-  
+
   return styles[type] || {
     iconClass: 'pi pi-circle text-gray-600',
     bgClass: 'bg-gray-100'
@@ -275,13 +331,27 @@ const getMovementStyle = (type) => {
 
 // Obtener prefijo del monto
 const getAmountPrefix = (type) => {
-  const incomingTypes = ['deposit', 'payment', 'exchange_down']
+  const incomingTypes = [
+    'deposit', 
+    'payment', 
+    'exchange_down', 
+    'fixed_rate_interest_payment', 
+    'fixed_rate_disbursement', 
+    'mortgage_disbursement'
+  ]
   return incomingTypes.includes(type) ? '+' : '-'
 }
 
 // Obtener color del monto
 const getAmountColor = (type) => {
-  const incomingTypes = ['deposit', 'payment', 'exchange_down']
+  const incomingTypes = [
+    'deposit', 
+    'payment', 
+    'exchange_down', 
+    'fixed_rate_interest_payment', 
+    'fixed_rate_disbursement', 
+    'mortgage_disbursement'
+  ]
   return incomingTypes.includes(type) ? 'text-green-600' : 'text-red-600'
 }
 
@@ -313,7 +383,8 @@ const formatAmount = (amount) => {
 const getStatusLabel = (status) => {
   const statusMap = {
     'pending': 'Pendiente',
-    'approved': 'Aprobado',
+    'valid': 'Aprobado',
+    'confirmed': 'Confirmado',
     'rejected': 'Rechazado',
     'completed': 'Completado'
   }
@@ -323,8 +394,9 @@ const getStatusLabel = (status) => {
 // Obtener severidad de estado
 const getStatusSeverity = (status) => {
   const severityMap = {
-    'pending': 'warning',
-    'approved': 'info',
+    'pending': 'warn',
+    'valid': 'info',
+    'confirmed': 'success',
     'rejected': 'danger',
     'completed': 'success'
   }
@@ -344,7 +416,7 @@ const getConfirmStatusLabel = (confirmStatus) => {
 // Obtener severidad de estado de confirmación
 const getConfirmStatusSeverity = (confirmStatus) => {
   const severityMap = {
-    'pending': 'warning',
+    'pending': 'warn',
     'confirmed': 'success',
     'rejected': 'danger'
   }
@@ -357,31 +429,4 @@ defineExpose({
 })
 </script>
 
-<style scoped>
-:deep(.p-datatable-table) {
-  font-size: 0.875rem;
-}
-
-:deep(.p-datatable-thead > tr > th) {
-  background-color: #f8fafc;
-  border-bottom: 2px solid #e2e8f0;
-  font-weight: 600;
-  color: #374151;
-  padding: 1rem 0.75rem;
-}
-
-:deep(.p-datatable-tbody > tr > td) {
-  padding: 0.875rem 0.75rem;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-:deep(.p-datatable-tbody > tr:hover) {
-  background-color: #f8fafc;
-}
-
-.truncate {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-</style>
+<style scoped></style>

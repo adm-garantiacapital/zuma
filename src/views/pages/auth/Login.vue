@@ -51,14 +51,48 @@ const login = async () => {
       life: 3000
     });
 
-    await router.push('/hipotecas');
+    // Opción 1: Usar la ruta de redirección que viene del backend
+    const redirectRoute = response.data?.redirect_route;
+    if (redirectRoute) {
+      await router.push(redirectRoute);
+    } else {
+      // Opción 2: Lógica de redirección en el frontend usando la columna 'type'
+      // CORRECCIÓN: El authService retorna { user: userData }, entonces accedemos a response.user.type
+      const userType = response.user?.type;
+      
+      if (userType === 'cliente') {
+        await router.push('/cliente');
+      } else if (userType === 'inversionista' || userType === 'mixto') {
+        await router.push('/hipotecas');
+      } else {
+        await router.push('/hipotecas'); // Ruta por defecto
+      }
+    }
+    
   } catch (error) {
-    toast.add({
-      severity: 'error',
-      summary: 'Error de autenticación',
-      detail: error.response?.data?.message || 'Credenciales inválidas',
-      life: 4000,
-    });
+    if (error.response?.data?.error_type === 'email_not_verified') {
+      toast.add({
+        severity: 'warn',
+        summary: 'Cuenta no verificada',
+        detail: error.response.data.message,
+        life: 4000,
+      });
+
+      await router.push({
+        path: '/verificar-cuenta',
+        query: {
+          email: error.response.data.user_email,
+          userId: error.response.data.user_id
+        }
+      });
+    } else {
+      toast.add({
+        severity: 'error',
+        summary: 'Error de autenticación',
+        detail: error.response?.data?.message || 'Credenciales inválidas',
+        life: 4000,
+      });
+    }
   } finally {
     loading.value = false;
   }

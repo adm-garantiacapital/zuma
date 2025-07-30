@@ -12,15 +12,15 @@
 
     <!-- Preguntas PEP -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-  <div class="border p-3 rounded-lg">
-    <label class="block font-medium mb-2">¿Eres o has sido Persona Expuesta Políticamente (PEP)?</label>
-    <ToggleSwitch v-model="form.is_pep" />
-  </div>
-  <div class="border p-3 rounded-lg">
-    <label class="block font-medium mb-2">¿Eres pariente, cónyuge o conviviente de alguna persona PEP?</label>
-    <ToggleSwitch v-model="form.has_relationship_pep" />
-  </div>
-</div>
+      <div class="border p-3 rounded-lg">
+        <label class="block font-medium mb-2">¿Eres o has sido Persona Expuesta Políticamente (PEP)?</label>
+        <ToggleSwitch v-model="form.is_pep" />
+      </div>
+      <div class="border p-3 rounded-lg">
+        <label class="block font-medium mb-2">¿Eres pariente, cónyuge o conviviente de alguna persona PEP?</label>
+        <ToggleSwitch v-model="form.has_relationship_pep" />
+      </div>
+    </div>
 
     <!-- Ubigeo -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -58,7 +58,7 @@
             type="file" 
             ref="frontFileInput"
             @change="onUploadFront" 
-            accept="image/*,.jpg,.jpeg,.png,.webp" 
+            accept="image/jpeg,image/jpg,image/png,image/svg+xml,.jpg,.jpeg,.png,.svg" 
             class="hidden"
           />
           
@@ -67,7 +67,7 @@
             <i class="pi pi-cloud-upload text-4xl text-gray-400 mb-4 block"></i>
             <p class="text-gray-600 mb-2">Haz clic para subir imagen</p>
             <p class="text-sm text-gray-400">o arrastra y suelta aquí</p>
-            <p class="text-xs text-gray-400 mt-2">Formatos: JPG, PNG, WEBP (máx. 5MB)</p>
+            <p class="text-xs text-gray-400 mt-2">Formatos: JPG, PNG, SVG (máx. 5MB)</p>
           </div>
           
           <!-- Vista previa de la imagen -->
@@ -139,7 +139,7 @@
             type="file" 
             ref="backFileInput"
             @change="onUploadBack" 
-            accept="image/*,.jpg,.jpeg,.png,.webp" 
+            accept="image/jpeg,image/jpg,image/png,image/svg+xml,.jpg,.jpeg,.png,.svg" 
             class="hidden"
           />
           
@@ -148,7 +148,7 @@
             <i class="pi pi-cloud-upload text-4xl text-gray-400 mb-4 block"></i>
             <p class="text-gray-600 mb-2">Haz clic para subir imagen</p>
             <p class="text-sm text-gray-400">o arrastra y suelta aquí</p>
-            <p class="text-xs text-gray-400 mt-2">Formatos: JPG, PNG, WEBP (máx. 5MB)</p>
+            <p class="text-xs text-gray-400 mt-2">Formatos: JPG, PNG, SVG (máx. 5MB)</p>
           </div>
           
           <!-- Vista previa de la imagen -->
@@ -184,14 +184,6 @@
       </div>
     </div>
 
-    <!-- Debug info (remover en producción) -->
-    <div v-if="debugMode" class="bg-gray-100 p-4 rounded text-sm">
-      <p><strong>Debug Info:</strong></p>
-      <p>Front file: {{ form.document_front ? `${form.document_front.name} (${form.document_front.size} bytes)` : 'No file' }}</p>
-      <p>Back file: {{ form.document_back ? `${form.document_back.name} (${form.document_back.size} bytes)` : 'No file' }}</p>
-      <p>Front validation: {{ frontValidation.status }}</p>
-    </div>
-
     <!-- Contrato y botón -->
     <div class="flex items-center space-x-4">
       <Checkbox v-model="form.contractAccepted" :binary="true" inputId="contract" />
@@ -222,7 +214,7 @@ import profileService from '@/services/profileService'
 import { ocrService } from '@/services/ocrService'
 
 const toast = useToast()
-const debugMode = ref(false) // Cambia a true para ver info de debug
+const debugMode = ref(true) // Cambia a false en producción
 
 const perfil = ref({})
 
@@ -241,7 +233,7 @@ const form = ref({
 const departamentos = ref([])
 const provincias = ref([])
 const distritos = ref([])
-
+const File = window.File
 const frontImagePreview = ref('')
 const backImagePreview = ref('')
 
@@ -290,11 +282,29 @@ const onProvinciaChange = () => {
 // Validar tamaño de archivo
 const validateFileSize = (file, maxSizeMB = 5) => {
   const maxSize = maxSizeMB * 1024 * 1024 // Convertir MB a bytes
+  console.log(`Validando tamaño: ${file.size} bytes vs ${maxSize} bytes máx`)
+  
   if (file.size > maxSize) {
     toast.add({
       severity: 'warn',
       summary: 'Archivo muy grande',
-      detail: `El archivo debe ser menor a ${maxSizeMB}MB`,
+      detail: `El archivo debe ser menor a ${maxSizeMB}MB. Archivo actual: ${(file.size / 1024 / 1024).toFixed(2)}MB`,
+      life: 4000
+    })
+    return false
+  }
+  return true
+}
+
+// Validar tipo de archivo
+const validateFileType = (file) => {
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml']
+  
+  if (!allowedTypes.includes(file.type)) {
+    toast.add({
+      severity: 'warn',
+      summary: 'Archivo no válido',
+      detail: 'Solo se permiten imágenes (JPG, PNG, SVG)',
       life: 4000
     })
     return false
@@ -336,36 +346,39 @@ const onUploadFront = async (event) => {
     name: file.name,
     size: file.size,
     type: file.type,
-    lastModified: file.lastModified
+    lastModified: file.lastModified,
+    constructor: file.constructor.name
   })
 
   // Validar tipo de archivo
-  if (!file.type.startsWith('image/')) {
-    toast.add({
-      severity: 'warn',
-      summary: 'Archivo no válido',
-      detail: 'Solo se permiten imágenes (JPG, PNG, WEBP)',
-      life: 4000
-    })
+  if (!validateFileType(file)) {
     event.target.value = '' // Limpiar input
     return
   }
 
   // Validar tamaño
-  if (!validateFileSize(file)) {
+  if (!validateFileSize(file, 5)) {
     event.target.value = '' // Limpiar input
     return
   }
 
-  // IMPORTANTE: Asignar directamente el archivo File original
+  // CRÍTICO: Asignar directamente el archivo File original
   form.value.document_front = file
-  console.log('File assigned to form.document_front:', form.value.document_front)
+  
+  console.log('File assigned to form.document_front:', {
+    file: form.value.document_front,
+    isFile: form.value.document_front instanceof File,
+    name: form.value.document_front?.name,
+    size: form.value.document_front?.size,
+    type: form.value.document_front?.type,
+    constructor: form.value.document_front?.constructor.name
+  })
 
   // Crear preview
   const reader = new FileReader()
   reader.onload = (e) => {
     frontImagePreview.value = e.target.result
-    console.log('Front preview created')
+    console.log('Front preview created successfully')
   }
   reader.onerror = (error) => {
     console.error('Error reading front file:', error)
@@ -399,36 +412,39 @@ const onUploadBack = (event) => {
     name: file.name,
     size: file.size,
     type: file.type,
-    lastModified: file.lastModified
+    lastModified: file.lastModified,
+    constructor: file.constructor.name
   })
 
   // Validar tipo de archivo
-  if (!file.type.startsWith('image/')) {
-    toast.add({
-      severity: 'warn',
-      summary: 'Archivo no válido',
-      detail: 'Solo se permiten imágenes (JPG, PNG, WEBP)',
-      life: 4000
-    })
+  if (!validateFileType(file)) {
     event.target.value = '' // Limpiar input
     return
   }
 
   // Validar tamaño
-  if (!validateFileSize(file)) {
+  if (!validateFileSize(file, 5)) {
     event.target.value = '' // Limpiar input
     return
   }
 
-  // IMPORTANTE: Asignar directamente el archivo File original
+  // CRÍTICO: Asignar directamente el archivo File original
   form.value.document_back = file
-  console.log('File assigned to form.document_back:', form.value.document_back)
+  
+  console.log('File assigned to form.document_back:', {
+    file: form.value.document_back,
+    isFile: form.value.document_back instanceof File,
+    name: form.value.document_back?.name,
+    size: form.value.document_back?.size,
+    type: form.value.document_back?.type,
+    constructor: form.value.document_back?.constructor.name
+  })
 
   // Crear preview
   const reader = new FileReader()
   reader.onload = (e) => {
     backImagePreview.value = e.target.result
-    console.log('Back preview created')
+    console.log('Back preview created successfully')
   }
   reader.onerror = (error) => {
     console.error('Error reading back file:', error)
@@ -460,7 +476,21 @@ const removeBackImage = () => {
 }
 
 const guardarPerfil = async () => {
+  console.log('=== INICIO VALIDACIÓN GUARDAR PERFIL ===')
+  
+  // Validación básica de canSave
   if (!canSave.value) {
+    console.log('canSave validation failed:', {
+      department: !!form.value.department,
+      province: !!form.value.province,
+      district: !!form.value.district,
+      address: !!form.value.address,
+      document_front: !!form.value.document_front,
+      document_back: !!form.value.document_back,
+      contractAccepted: form.value.contractAccepted,
+      frontValidationStatus: frontValidation.value.status
+    })
+    
     toast.add({
       severity: 'warn',
       summary: 'Validación requerida',
@@ -470,13 +500,24 @@ const guardarPerfil = async () => {
     return
   }
 
-  // Validación más robusta de archivos
+  // Validación específica de archivos
   console.log('Validando archivos antes del envío:')
-  console.log('document_front:', form.value.document_front)
-  console.log('document_back:', form.value.document_back)
-  console.log('Es document_front un File?', form.value.document_front instanceof File)
-  console.log('Es document_back un File?', form.value.document_back instanceof File)
+  console.log('document_front:', {
+    exists: !!form.value.document_front,
+    isFile: form.value.document_front instanceof File,
+    name: form.value.document_front?.name,
+    size: form.value.document_front?.size,
+    type: form.value.document_front?.type
+  })
+  console.log('document_back:', {
+    exists: !!form.value.document_back,
+    isFile: form.value.document_back instanceof File,
+    name: form.value.document_back?.name,
+    size: form.value.document_back?.size,
+    type: form.value.document_back?.type
+  })
 
+  // Verificación robusta de archivos
   if (!form.value.document_front || !form.value.document_back) {
     toast.add({
       severity: 'warn',
@@ -487,12 +528,14 @@ const guardarPerfil = async () => {
     return
   }
 
-  // Verificación adicional de que los archivos existen y son válidos
   if (!(form.value.document_front instanceof File) || !(form.value.document_back instanceof File)) {
-    console.error('Los archivos no son válidos:', {
+    console.error('Los archivos no son instancias válidas de File:', {
       front: form.value.document_front,
-      back: form.value.document_back
+      back: form.value.document_back,
+      frontType: typeof form.value.document_front,
+      backType: typeof form.value.document_back
     })
+    
     toast.add({
       severity: 'error',
       summary: 'Error en archivos',
@@ -505,57 +548,103 @@ const guardarPerfil = async () => {
   isSaving.value = true
 
   try {
+    // Crear FormData con validación paso a paso
     const payload = new FormData()
     
-    // Datos booleanos
-    payload.append('is_pep', form.value.is_pep ? '1' : '0')
-    payload.append('has_relationship_pep', form.value.has_relationship_pep ? '1' : '0')
+    console.log('=== CONSTRUYENDO FORM DATA ===')
     
-    // Ubigeo
+    // Datos booleanos (convertir exactamente como espera Laravel)
+    const isPep = form.value.is_pep ? '1' : '0'
+    const hasRelationshipPep = form.value.has_relationship_pep ? '1' : '0'
+    
+    payload.append('is_pep', isPep)
+    payload.append('has_relationship_pep', hasRelationshipPep)
+    
+    console.log('Booleanos agregados:', { isPep, hasRelationshipPep })
+    
+    // Ubigeo - formatear correctamente
     const formatUbigeoId = (id) => {
       if (!id) return ''
       const idStr = String(id)
       return idStr.length >= 2 ? idStr.slice(-2) : idStr.padStart(2, '0')
     }
     
-    payload.append('department', formatUbigeoId(form.value.department?.ubigeo_id))
-    payload.append('province', formatUbigeoId(form.value.province?.ubigeo_id))
-    payload.append('district', formatUbigeoId(form.value.district?.ubigeo_id))
-    payload.append('address', form.value.address || '')
+    const department = formatUbigeoId(form.value.department?.ubigeo_id)
+    const province = formatUbigeoId(form.value.province?.ubigeo_id)
+    const district = formatUbigeoId(form.value.district?.ubigeo_id)
+    const address = form.value.address || ''
+    
+    payload.append('department', department)
+    payload.append('province', province)
+    payload.append('district', district)
+    payload.append('address', address)
+    
+    console.log('Ubigeo agregado:', { department, province, district, address })
 
-    // CRÍTICO: Agregar archivos SIN modificar el nombre
-    // El servidor espera los nombres exactos 'document_front' y 'document_back'
-    payload.append('document_front', form.value.document_front)
-    payload.append('document_back', form.value.document_back)
+    // CRÍTICO: Agregar archivos - VALIDAR ANTES DE AGREGAR
+    console.log('Agregando archivo frontal...')
+    console.log('Archivo frontal antes de append:', {
+      file: form.value.document_front,
+      name: form.value.document_front.name,
+      size: form.value.document_front.size,
+      type: form.value.document_front.type,
+      constructor: form.value.document_front.constructor.name
+    })
+    
+    // Usar exactamente los nombres que espera el servidor
+    payload.append('document_front', form.value.document_front, form.value.document_front.name)
+    
+    console.log('Agregando archivo trasero...')
+    console.log('Archivo trasero antes de append:', {
+      file: form.value.document_back,
+      name: form.value.document_back.name,
+      size: form.value.document_back.size,
+      type: form.value.document_back.type,
+      constructor: form.value.document_back.constructor.name
+    })
+    
+    payload.append('document_back', form.value.document_back, form.value.document_back.name)
 
-    // Debug mejorado del FormData
-    console.log('=== FormData Debug ===')
+    // Verificación final del FormData
+    console.log('=== VERIFICACIÓN FINAL FORMDATA ===')
     for (let [key, value] of payload.entries()) {
       if (value instanceof File) {
         console.log(`${key}:`, {
           name: value.name,
           size: value.size,
           type: value.type,
-          lastModified: value.lastModified
+          lastModified: value.lastModified,
+          constructor: value.constructor.name
         })
       } else {
         console.log(`${key}:`, value)
       }
     }
-    console.log('=== Fin FormData Debug ===')
 
     // Verificar que los archivos están realmente en el FormData
-    const frontFile = payload.get('document_front')
-    const backFile = payload.get('document_back')
+    const frontFileFromFormData = payload.get('document_front')
+    const backFileFromFormData = payload.get('document_back')
     
-    console.log('Archivos en FormData después de append:')
-    console.log('Front file from FormData:', frontFile)
-    console.log('Back file from FormData:', backFile)
+    console.log('=== VERIFICACIÓN ARCHIVOS EN FORMDATA ===')
+    console.log('Front file from FormData:', {
+      exists: !!frontFileFromFormData,
+      isFile: frontFileFromFormData instanceof File,
+      name: frontFileFromFormData?.name,
+      size: frontFileFromFormData?.size
+    })
+    console.log('Back file from FormData:', {
+      exists: !!backFileFromFormData,
+      isFile: backFileFromFormData instanceof File,
+      name: backFileFromFormData?.name,
+      size: backFileFromFormData?.size
+    })
     
-    if (!frontFile || !backFile || !(frontFile instanceof File) || !(backFile instanceof File)) {
+    if (!frontFileFromFormData || !backFileFromFormData || 
+        !(frontFileFromFormData instanceof File) || !(backFileFromFormData instanceof File)) {
       throw new Error('Los archivos no se agregaron correctamente al FormData')
     }
 
+    console.log('=== ENVIANDO REQUEST ===')
     const response = await profileService.updateConfirmAccount(payload)
     console.log('Profile updated successfully:', response)
     
@@ -565,37 +654,34 @@ const guardarPerfil = async () => {
       detail: 'Tu información se guardó correctamente.',
       life: 4000
     })
-  } catch (error) {
-    console.error('Error al guardar:', error)
-    console.error('Error response:', error.response?.data)
     
-    const errorMessage = error.response?.data?.message || 
-                        error.response?.data?.errors || 
-                        'Ocurrió un error al enviar los datos.'
+  } catch (error) {
+    console.error('=== ERROR AL GUARDAR ===')
+    console.error('Error completo:', error)
+    console.error('Error response:', error.response?.data)
+    console.error('Error status:', error.response?.status)
+    console.error('Error headers:', error.response?.headers)
+    
+    let errorMessage = 'Ocurrió un error al enviar los datos.'
+    
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message
+    } else if (error.response?.data?.errors) {
+      const errors = error.response.data.errors
+      const errorList = Object.values(errors).flat()
+      errorMessage = errorList.join(', ')
+    }
     
     toast.add({
       severity: 'error',
       summary: 'Error al guardar',
-      detail: typeof errorMessage === 'string' ? errorMessage : 'Error en validación de campos',
+      detail: errorMessage,
       life: 5000
     })
   } finally {
     isSaving.value = false
   }
+  
+  console.log('=== FIN VALIDACIÓN GUARDAR PERFIL ===')
 }
-
 </script>
-
-<style scoped>
-/* Estilos adicionales para hover effects */
-.border-dashed:hover {
-  border-style: dashed;
-}
-
-/* Animación suave para las transiciones */
-.transition-colors {
-  transition-property: color, background-color, border-color;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 300ms;
-}
-</style>

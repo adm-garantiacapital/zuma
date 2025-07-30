@@ -13,7 +13,19 @@ export default {
         return apiAdmin1.post(`/email/verify/resend/${id}`);
     },
 
-    verifyEmail(id, hash) {
-        return apiAdmin1.put(`/email/verify/${id}/${hash}`);
+    // Modificar para aceptar todos los parámetros como en React
+    verifyEmail(id, hash, expires = null, signature = null) {
+        const data = {};
+        
+        // Incluir todos los parámetros necesarios
+        if (expires) {
+            data.expires = expires;
+        }
+        
+        if (signature) {
+            data.signature = signature;
+        }
+        
+        return apiAdmin1.put(`/email/verify/${id}/${hash}`, data);
     }
 };

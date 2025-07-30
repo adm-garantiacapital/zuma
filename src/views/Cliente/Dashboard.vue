@@ -92,7 +92,7 @@
             <NotificationsWidget />
         </div>
         <div class="col-span-12 xl:col-span-6">
-            <BestSellingWidget />
+            <RevenueStreamWidget />
         </div>
     </div>
     <div class="text-center py-10">
@@ -100,7 +100,7 @@
         <p class="text-[#555] mb-6">Explora nuetras tasas fijas disponibles desde la más alta hasta la menor.</p>
 
         <router-link to="/Search">
-            <Button label="Explorar Tasas fijas" icon="pi pi-search" iconPos="left"
+            <Button label="Todas" icon="pi pi-search" iconPos="left"
                 class="!bg-[#171717] hover:!bg-[#6790FF] !border-none !text-white font-bold !px-6 !py-3 rounded-3xl text-base transition duration-150 ease-in-out" />
         </router-link>
     </div>
@@ -113,8 +113,8 @@
 import { ref, onMounted } from "vue";
 import profileService from '@/services/profileService';
 import reportsService from '@/services/reportsService';
-import NotificationsWidget from "@/components/dashboardTasas/NotificationsWidget.vue";
-import BestSellingWidget from "@/components/dashboardTasas/BestSellingWidget.vue";
+import NotificationsWidget from "@/components/dashboardCliente/NotificationsWidget.vue";
+import RevenueStreamWidget from "@/components/dashboard/RevenueStreamWidget.vue";
 import AddDeposito from "./EstadoCuenta/Desarrollo/AddDeposito.vue";
 import AddRetiro from "./EstadoCuenta/Desarrollo/AddRetiro.vue";
 
