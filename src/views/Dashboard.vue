@@ -1,19 +1,16 @@
 <template>
-  <br />
   <Breadcrumb :home="home" :model="items" />
   <div class="mb-10 rounded-3xl bg-[#6790FF] relative overflow-hidden">
-    <div class="px-4 sm:px-6 md:px-10 py-10 sm:py-15 md:py-20 relative superior">
+    <div class="px-4 sm:px-6 md:px-10 py-10 sm:py-15 md:py-16 relative superior">
       <h2 class="m-0 text-[#171717] text-lg sm:text-xl md:text-2xl lg:text-3xl leading-tight pr-4 sm:pr-8 md:pr-12">
         Bienvenido {{ fullName }} a tu perfil del inversionista
       </h2>
     </div>
-
     <a class="mask absolute -top-16 -right-5" href="https://fondeo.apros.global/" target="_blank">
       <img src="/imagenes/zuma/imagen-1.png" alt="Logo Zuma"
         class="inline-block w-80 hover:scale-110 transition duration-100 ease-in" />
     </a>
   </div>
-
 
   <StatsWidget />
 
@@ -30,12 +27,11 @@
         <Button label="Retiro" icon="pi pi-minus" iconPos="left"
           class="border-button-black !border-none !text-[#171717] !bg-transparent hover:!bg-[#6790FF] focus:!border-none focus:!bg-[#FF4929] !font-bold !rounded-3xl !px-5 !py-3 !me-3 !transition !duration-100 !ease-in"
           rounded @click="showRetiroDialog = true" />
-        
+
         <!-- Botón para mostrar/ocultar montos -->
-        <Button :icon="showAmounts ? 'pi pi-eye' : 'pi pi-eye-slash'" severity="contrast" variant="outlined"
-          rounded @click="toggleAmounts" :title="showAmounts ? 'Ocultar montos' : 'Mostrar montos'" 
-          class="!me-3" />
-        
+        <Button :icon="showAmounts ? 'pi pi-eye' : 'pi pi-eye-slash'" severity="contrast" variant="outlined" rounded
+          @click="toggleAmounts" :title="showAmounts ? 'Ocultar montos' : 'Mostrar montos'" class="!me-3" />
+
         <Button v-if="wallet" @click="showWallet" icon="pi pi-angle-up" aria-label="Mostrar Billetera" variant="link"
           class="!text-black" />
         <Button v-else @click="showWallet" icon="pi pi-angle-down" aria-label="Mostrar Billetera" variant="link"
@@ -122,6 +118,7 @@ import NotificationsWidget from "@/components/dashboard/NotificationsWidget.vue"
 import RevenueStreamWidget from "@/components/dashboard/RevenueStreamWidget.vue";
 import AddDeposito from "./pages/EstadoCuenta/Desarrollo/AddDeposito.vue";
 import AddRetiro from "./pages/EstadoCuenta/Desarrollo/AddRetiro.vue";
+import StatsWidget from "@/components/dashboard/StatsWidget.vue";
 
 const home = ref({ icon: 'pi pi-home' });
 const items = ref([{ label: 'Subasta hipotecas' }, { label: 'Mi billetera' }]);
@@ -203,8 +200,7 @@ const handleWithdrawSuccess = () => {
 onMounted(() => {
   loadProfile();
   loadBalances();
-  
-  // Cargar la preferencia desde localStorage
+
   const savedShowAmounts = localStorage.getItem('showAmounts');
   if (savedShowAmounts !== null) {
     showAmounts.value = savedShowAmounts === 'true';

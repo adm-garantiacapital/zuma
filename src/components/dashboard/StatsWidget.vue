@@ -7,7 +7,7 @@
                         href="https://zuma.com.pe/factoring">
                         <h5 class="text-white m-0 font-semibold">Factoring</h5>
                     </a>
-                    <a class="mask absolute -top-16 -right-5" href="https://zuma.com.pe/factoring">
+                    <a class="mask absolute -top-16 -right-8" href="https://zuma.com.pe/factoring">
                         <img src="/imagenes/zuma/imagen-2.png" alt="Logo Zuma"
                             class="inline-block w-80 hover:scale-110 transition duration-100 ease-in" />
                     </a>
@@ -20,7 +20,7 @@
                         href="https://zuma.com.pe/tasas-fijas">
                         <h5 class="text-[#171717] m-0 font-semibold">Tasas Fijas</h5>
                     </a>
-                    <a class="mask absolute -top-16 -right-5" href="https://zuma.com.pe/tasas-fijas">
+                    <a class="mask absolute -top-14 -right-12" href="https://zuma.com.pe/tasas-fijas">
                         <img src="/imagenes/zuma/imagen-3.png" alt="Logo Zuma"
                             class="inline-block w-80 hover:scale-110 transition duration-100 ease-in" />
                     </a>
@@ -33,7 +33,7 @@
                         href="https://zuma.com.pe/hipotecas">
                         <h5 class="text-white m-0 font-semibold">Hipotecas</h5>
                     </a>
-                    <a class="mask absolute -top-16 -right-5" href="https://zuma.com.pe/hipotecas">
+                    <a class="mask absolute -top-20 -right-5" href="https://zuma.com.pe/hipotecas">
                         <img src="/imagenes/zuma/imagen-4.png" alt="Logo Zuma"
                             class="inline-block w-80 hover:scale-110 transition duration-100 ease-in" />
                     </a>

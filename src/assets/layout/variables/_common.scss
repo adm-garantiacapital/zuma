@@ -32,6 +32,11 @@
     -webkit-mask-image: url(/imagenes/zuma/triangulo.svg);
     mask-image: url(/imagenes/zuma/triangulo.svg);
     mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    transform: rotate(9deg); /* Ajusta el ángulo según necesites */
 }
 .inferior {
     z-index: 1;
