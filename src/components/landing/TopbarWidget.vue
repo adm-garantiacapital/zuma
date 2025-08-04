@@ -64,7 +64,7 @@ import { RouterLink } from 'vue-router'
             <Button label="Iniciar Sesión" text rounded severity="contrast" class="hover:bg-white hover:!text-[#6790FF] transition-all duration-300 w-full" />
           </RouterLink>
           <RouterLink to="/registrarte" class="w-full lg:w-auto" >
-            <Button label="Regístrate" severity="warn" rounded  class="bg-white text-[#6790FF] hover:bg-[#ffffffcc] transition-all duration-300 w-full" />
+            <Button label="Registrarme" severity="warn" rounded  class="bg-white text-[#6790FF] hover:bg-[#ffffffcc] transition-all duration-300 w-full" />
           </RouterLink>
         </div>
       </div>

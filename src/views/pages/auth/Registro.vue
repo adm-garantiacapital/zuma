@@ -21,11 +21,11 @@ const confirmarPassword = ref('');
 const numeroTelefono = ref('');
 const checked = ref(false);
 const loading = ref(false);
+const showErrors = ref(false);
 
 const ingredient = ref('inversionista');
 
 const showEmpresaDialog = ref(false);
-
 
 watch(document, async (newVal) => {
   if (newVal.length === 8) {
@@ -84,6 +84,26 @@ const isFormValid = computed(() => {
     passwordsMatch.value && numeroTelefono.value && checked.value;
 });
 
+const fieldValidations = computed(() => {
+  return {
+    document: document.value.trim() !== '' && document.value.length === 8,
+    nombre: nombre.value.trim() !== '',
+    apellidoPaterno: apellidoPaterno.value.trim() !== '',
+    apellidoMaterno: apellidoMaterno.value.trim() !== '',
+    alias: alias.value.trim() !== '',
+    correoElectronico: correoElectronico.value.trim() !== '' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correoElectronico.value),
+    password: isPasswordValid.value,
+    confirmarPassword: passwordsMatch.value,
+    numeroTelefono: numeroTelefono.value.trim() !== '',
+    checked: checked.value
+  };
+});
+
+const getFieldClass = (fieldName) => {
+  if (!showErrors.value) return '';
+  return fieldValidations.value[fieldName] ? '' : 'p-invalid';
+};
+
 const handlePerfilChange = (value) => {
   if (value === 'empresa') {
     showEmpresaDialog.value = true;
@@ -94,6 +114,8 @@ const handlePerfilChange = (value) => {
 };
 
 const handleRegister = async () => {
+  showErrors.value = true;
+  
   if (!isFormValid.value) {
     toast.add({
       severity: 'error',
@@ -168,7 +190,7 @@ const contactarEspecialista = () => {
     <!-- Contenido centrado -->
     <div class="flex-1 flex flex-col items-center justify-center p-4 bg-white">
 
-      <div class="w-full max-w-md flex justify-between items-center mb-6 py-8 px-6">
+      <div class="w-full max-w-md flex justify-between items-center mb-4 py-2 px-6">
         <div class="flex items-center gap-2 hover:text-[#FF4929] transition-colors">
           <RadioButton v-model="ingredient" inputId="ingredient1" name="perfil" value="inversionista"
             @change="handlePerfilChange('inversionista')" />
@@ -192,7 +214,7 @@ const contactarEspecialista = () => {
             <h2 class="text-2xl font-bold text-gray-800 mb-2">
               Comienza a hacer crecer tu dinero
             </h2>
-            <p class="text-gray-600">Completa los campos para registrarte</p>
+            <p class="text-gray-600">Completa todos los campos para registrarme</p>
           </div>
 
           <!-- Formulario -->
@@ -203,16 +225,27 @@ const contactarEspecialista = () => {
               <label class="text-sm font-medium text-gray-700">
                 Documento (DNI) <span class="text-red-500">*</span>
               </label>
-              <InputText v-model="document" fluid placeholder="Ingresa tu DNI"
-                :class="{ 'p-invalid': document && document.length < 8 }" />
+              <InputText 
+                v-model="document" 
+                fluid 
+                placeholder="Ingresa tu DNI"
+                :class="getFieldClass('document')" 
+                class="compact-input"
+              />
             </div>
 
             <!-- Nombre -->
             <div class="space-y-2">
               <label class="text-sm font-medium text-gray-700">Nombre <span class="text-red-500">*</span></label>
-              <InputText v-model="nombre" fluid disabled placeholder="Ingresa tu nombre" />
+              <InputText 
+                v-model="nombre" 
+                fluid 
+                disabled 
+                placeholder="Ingresa tu nombre" 
+                :class="getFieldClass('nombre')"
+                class="compact-input"
+              />
             </div>
-
 
             <!-- Apellidos -->
             <div class="grid grid-cols-2 gap-4">
@@ -220,13 +253,27 @@ const contactarEspecialista = () => {
                 <label class="text-sm font-medium text-gray-700">
                   Apellido Paterno <span class="text-red-500">*</span>
                 </label>
-                <InputText v-model="apellidoPaterno" placeholder="Apellido paterno" disabled fluid />
+                <InputText 
+                  v-model="apellidoPaterno" 
+                  placeholder="Apellido paterno" 
+                  disabled 
+                  fluid 
+                  :class="getFieldClass('apellidoPaterno')"
+                  class="compact-input"
+                />
               </div>
               <div class="space-y-2">
                 <label class="text-sm font-medium text-gray-700">
                   Apellido Materno <span class="text-red-500">*</span>
                 </label>
-                <InputText v-model="apellidoMaterno" placeholder="Apellido materno" fluid disabled />
+                <InputText 
+                  v-model="apellidoMaterno" 
+                  placeholder="Apellido materno" 
+                  fluid 
+                  disabled 
+                  :class="getFieldClass('apellidoMaterno')"
+                  class="compact-input"
+                />
               </div>
             </div>
 
@@ -235,7 +282,13 @@ const contactarEspecialista = () => {
               <label class="text-sm font-medium text-gray-700">
                 Alias <span class="text-red-500">*</span>
               </label>
-              <InputText v-model="alias" placeholder="Ingresa tu alias" fluid />
+              <InputText 
+                v-model="alias" 
+                placeholder="Ingresa tu alias" 
+                fluid 
+                :class="getFieldClass('alias')"
+                class="compact-input"
+              />
             </div>
 
             <!-- Correo electrónico -->
@@ -243,7 +296,14 @@ const contactarEspecialista = () => {
               <label class="text-sm font-medium text-gray-700">
                 Correo electrónico <span class="text-red-500">*</span>
               </label>
-              <InputText v-model="correoElectronico" type="email" placeholder="correo@ejemplo.com" fluid />
+              <InputText 
+                v-model="correoElectronico" 
+                type="email" 
+                placeholder="correo@ejemplo.com" 
+                fluid 
+                :class="getFieldClass('correoElectronico')"
+                class="compact-input"
+              />
             </div>
 
             <!-- Contraseña -->
@@ -251,7 +311,15 @@ const contactarEspecialista = () => {
               <label class="text-sm font-medium text-gray-700">
                 Contraseña <span class="text-red-500">*</span>
               </label>
-              <Password v-model="password" placeholder="Ingresa tu contraseña" :feedback="false" toggleMask fluid />
+              <Password 
+                v-model="password" 
+                placeholder="Ingresa tu contraseña" 
+                :feedback="false" 
+                toggleMask 
+                fluid 
+                :class="getFieldClass('password')"
+                class="compact-password"
+              />
 
               <!-- Validaciones de contraseña -->
               <div class="mt-2 space-y-1">
@@ -291,8 +359,15 @@ const contactarEspecialista = () => {
               <label class="text-sm font-medium text-gray-700">
                 Confirmar contraseña <span class="text-red-500">*</span>
               </label>
-              <Password v-model="confirmarPassword" placeholder="Confirma tu contraseña" :feedback="false" toggleMask
-                fluid :class="{ 'p-invalid': confirmarPassword && !passwordsMatch }" />
+              <Password 
+                v-model="confirmarPassword" 
+                placeholder="Confirma tu contraseña" 
+                :feedback="false" 
+                toggleMask
+                fluid 
+                :class="getFieldClass('confirmarPassword')"
+                class="compact-password"
+              />
               <div v-if="confirmarPassword && passwordsMatch" class="flex items-center gap-2 text-xs text-green-600">
                 <i class="pi pi-check text-green-500"></i>
                 <span>Las contraseñas coinciden</span>
@@ -308,20 +383,38 @@ const contactarEspecialista = () => {
               <label class="text-sm font-medium text-gray-700">
                 Número de teléfono <span class="text-red-500">*</span>
               </label>
-              <InputText v-model="numeroTelefono" placeholder="Ingresa tu número de teléfono" fluid />
+              <InputText 
+                v-model="numeroTelefono" 
+                placeholder="Ingresa tu número de teléfono" 
+                fluid 
+                :class="getFieldClass('numeroTelefono')"
+                class="compact-input"
+              />
             </div>
 
             <!-- Términos y condiciones -->
             <div class="flex items-start gap-3">
-              <Checkbox v-model="checked" inputId="terms" binary />
+              <Checkbox 
+                v-model="checked" 
+                inputId="terms" 
+                binary 
+                :class="getFieldClass('checked')"
+              />
               <label for="terms" class="text-sm text-gray-600 cursor-pointer">
                 Acepto los <a @click.prevent="goTerminos" class="text-[#FF4929] hover:underline">términos y condiciones</a>
               </label>
             </div>
 
             <!-- Botón de registro -->
-            <Button type="submit" :disabled="!isFormValid || loading" :loading="loading" severity="contrast" fluid>
-              {{ loading ? 'Registrando...' : 'Registrar' }}
+            <Button 
+              type="submit" 
+              :disabled="loading" 
+              :loading="loading" 
+              severity="contrast" 
+              fluid
+              class="register-button"
+            >
+              {{ loading ? 'Registrando...' : 'Registrarme' }}
             </Button>
 
             <!-- Enlace a login -->
@@ -366,12 +459,45 @@ const contactarEspecialista = () => {
 </template>
 
 <style scoped>
-/* Estilos adicionales si son necesarios */
-.p-password {
+/* Estilos para inputs más compactos */
+.compact-input :deep(.p-inputtext) {
+  height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.compact-password :deep(.p-password-input) {
+  height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.compact-password :deep(.p-password) {
   width: 100%;
 }
 
-.p-password .p-inputtext {
+.compact-password :deep(.p-inputtext) {
   width: 100%;
+  height: 2.5rem;
+}
+
+/* Botón de registro */
+.register-button:deep(.p-button:disabled) {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Estilos para campos inválidos */
+:deep(.p-invalid) {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 1px #ef4444 !important;
+}
+
+:deep(.p-invalid:focus) {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+}
+
+/* Checkbox inválido */
+:deep(.p-checkbox.p-invalid .p-checkbox-box) {
+  border-color: #ef4444 !important;
 }
 </style>

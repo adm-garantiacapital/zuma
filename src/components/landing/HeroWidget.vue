@@ -13,7 +13,7 @@
         <ul class="mt-10 space-y-3 text-xl text-[#171717]">
           <li class="flex items-center gap-3 font-medium pe-20">
             <!-- <i class="pi pi-check text-xl text-[#171717]"></i> -->
-            <span>La única plataforma de <b>crowfactoring</b> que invierte junto a ti en todas las operaciones</span>
+            <span>La única plataforma de <b>crowdfactoring</b> que invierte junto a ti en todas las operaciones</span>
           </li>
           <!--<li class="flex items-center gap-3 font-medium">
             <i class="pi pi-check text-xl text-[#171717]"></i>
