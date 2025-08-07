@@ -166,7 +166,7 @@
       que pase, tu capital está garantizado.
     </p>
     <div class="flex justify-end gap-2">
-      <Button label="Gloria a ti señor" severity="warn" rounded @click="registrarYRedirigir(2, '/tasas-fijas')"
+      <Button label="Gloria a ti señor" severity="warn" rounded @click="registrarYRedirigir(3, '/tasas-fijas')"
         class="!text-lg !px-10 !py-2 !my-6 !border-none !mx-auto !bg-[#FF4929] !text-white hover:!bg-[#6790FF] transition-all duration-300" />
     </div>
   </Dialog>
