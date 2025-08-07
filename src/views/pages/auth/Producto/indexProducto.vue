@@ -16,34 +16,10 @@
             <h3 class="font-medium text-2xl text-[#171717] pt-14 leading-none"><b>Facturas</b></h3>
             <img src="/imagenes/landing/facturas.svg" alt="Imagen principal"
               class="h-[170px] w-full mt-10 mb-6 px-14" />
-            <!-- <Button label="Quiero saber más" severity="warn" rounded @click="facturas = true"
-              class="!text-lg !px-8 !py-2 !relative !border-none !-bottom-6 !mx-auto !bg-[#6790FF] !text-white hover:!bg-[#6790FF] transition-all duration-300" /> -->
           </div>
-          <div
-            class="bg-[#d6d2cb] rounded-[50px] h-[340px] w-full shadow-md absolute z-10 opacity-0 hover:opacity-100 transition-opacity duration-300">
-            <div class="text-center">
-              <div class="bg-[#edeae4] rounded-b-xl px-3 pb-1 inline-block">
-                <h6 class="text-[#FF4929] block m-0 text-center font-bold">Invierte desde $25</h6>
-              </div>
-            </div>
-            <p class="text-[#171717] mt-4 px-8 leading-5 text-sm text-justify">¡Bienvenido al mundo del factoring! Esta
-              es una
-              alternativa
-              ideal para
-              quienes buscan inversiones a corto plazo, con buenas rentabilidades y respaldo empresarial.
-            </p>
-            <ul class="list-disc ps-14 pe-8 text-[#171717] mt-2 mb-0 leading-5 text-sm text-justify">
-              <li>Rentabilidad anual entre 10% y 22% (TEA).</li>
-              <li>Inviertes en cuentas por cobrar de grandes empresas.</li>
-              <li>Te conviertes en acreedor indirecto.</li>
-              <li>Puedes empezar desde $25. Fácil y accesible.</li>
-            </ul>
-            <p class="text-[#171717] mt-4 px-8 leading-5 text-sm text-right">
-              <a href="#" @click.prevent="facturas = true">Leer más</a>
-            </p>
-          </div>
+
           <div class="absolute -bottom-4 left-0 right-0 z-50 flex justify-center">
-            <Button label="Quiero saber más" severity="warn" rounded @click="$router.push('/login')"
+            <Button label="Quiero saber más" severity="warn" rounded @click="facturas = true"
               class="!text-lg !px-8 !py-2 !border-none !mx-auto !bg-[#6790FF] !text-white hover:!bg-[#FF4929] transition-all duration-300" />
           </div>
         </div>
@@ -57,31 +33,9 @@
             <img src="/imagenes/landing/garantia-hipotecaria.svg" alt="Imagen principal"
               class="h-[170px] w-full mt-8 mb-4 px-14" />
           </div>
-          <div
-            class="bg-[#d6d2cb] rounded-[50px] h-[340px] w-full shadow-md absolute z-10 opacity-0 hover:opacity-100 transition-opacity duration-300">
-            <div class="text-center">
-              <div class="bg-[#edeae4] rounded-b-xl px-3 pb-1 inline-block">
-                <h6 class="text-[#FF4929] block m-0 text-center font-bold">1 solo ganador</h6>
-              </div>
-            </div>
-            <p class="text-[#171717] mt-2 px-8 leading-5 text-sm text-justify">Conectamos necesidades urgentes de
-              capital
-              con inversionistas, ofreciendo oportunidades evaluadas y respaldadas ante la lentitud del sistema
-              financiero
-              tradicional.
-            </p>
-            <ul class="list-disc ps-14 pe-8 text-[#171717] mt-2 mb-0 leading-5 text-sm text-justify">
-              <li>Atendemos solicitudes con necesidad de liquidez rápida.</li>
-              <li>Evaluamos y filtramos cada caso antes de presentarlo.</li>
-              <li>Todas las operaciones cuentan con garantías.</li>
-              <li>Las oportunidades se publican para toda nuestra comunidad inversionista.</li>
-            </ul>
-            <p class="text-[#171717] mt-0 px-8 leading-5 text-sm text-right">
-              <a href="#" @click.prevent="prestamos = true">Leer más</a>
-            </p>
-          </div>
+
           <div class="absolute -bottom-4 left-0 right-0 z-50 flex justify-center">
-            <Button label="Quiero ser el ganador" severity="warn" rounded @click="$router.push('/login')"
+            <Button label="Quiero ser el ganador" severity="warn" rounded @click="prestamos = true"
               class="!text-lg !px-8 !py-2 !border-none !mx-auto !bg-[#6790FF] !text-white hover:!bg-[#FF4929] transition-all duration-300" />
           </div>
         </div>
@@ -95,28 +49,9 @@
             <img src="/imagenes/landing/depositos-plazo.svg" alt="Imagen principal"
               class="h-[170px] w-full mt-8 mb-4 px-14" />
           </div>
-          <div
-            class="bg-[#d6d2cb] rounded-[50px] h-[340px] w-full shadow-md absolute z-10 opacity-0 hover:opacity-100 transition-opacity duration-300">
-            <div class="text-center">
-              <div class="bg-[#edeae4] rounded-b-xl px-3 pb-1 inline-block">
-                <h6 class="text-[#FF4929] block m-0 text-center font-bold">La favorita</h6>
-              </div>
-            </div>
-            <p class="text-[#171717] mt-4 px-8 leading-5 text-sm text-justify">Esta alternativa clásica es ideal para
-              tickets medianos y destaca frente a los bancos tradicionales.
-            </p>
-            <ul class="list-disc ps-14 pe-8 text-[#171717] mt-2 mb-0 leading-5 text-sm text-justify">
-              <li>Diversos plazos de inversión para perfiles conservadores.</li>
-              <li>Rentabilidad superior al 1-3% anual de la banca tradicional.</li>
-              <li>Inversiones respaldadas por el Seguro de Depósito.</li>
-              <li>Capital garantizado si inviertes dentro del monto cubierto.</li>
-            </ul>
-            <p class="text-[#171717] mt-4 px-8 leading-5 text-sm text-right">
-              <a href="#" @click.prevent="depositos = true">Leer más</a>
-            </p>
-          </div>
+
           <div class="absolute -bottom-4 left-0 right-0 z-50 flex justify-center">
-            <Button label="Gloria a ti señor" severity="warn" rounded @click="$router.push('/login')"
+            <Button label="Gloria a ti señor" severity="warn" rounded @click="depositos = true"
               class="!text-lg !px-8 !py-2 !border-none !mx-auto !bg-[#6790FF] !text-white hover:!bg-[#FF4929] transition-all duration-300" />
           </div>
         </div>
@@ -134,7 +69,7 @@
           </h3>
           <div class="bg-[#edeae4] rounded-[50px] text-center mt-8 mx-20 p-5">
             <h4 class="m-0 text-xl font-noto leading-none text-[#171717]"><span class="text-sm">Como diría la
-                abuela:</span><br> “Nunca pongas todos los huevos en una misma canasta.”
+                abuela:</span><br> "Nunca pongas todos los huevos en una misma canasta."
             </h4>
           </div>
           <p class="mt-8 px-10 max-w-4xl mx-auto text-[#171717] text-justify">Toda oportunidad de inversión presenta un
@@ -174,7 +109,7 @@
       y prestigiosas de tu país. Invierte desde $25. Easy.
     </p>
     <div class="flex justify-end gap-2">
-      <Button label="Quiero saber más" severity="warn" rounded @click="$router.push('/login')"
+      <Button label="Quiero saber más" severity="warn" rounded @click="$router.push('/factoring')"
         class="!text-lg !px-10 !py-2 !my-6 !border-none !mx-auto !bg-[#FF4929] !text-white hover:!bg-[#6790FF] transition-all duration-300" />
     </div>
   </Dialog>
