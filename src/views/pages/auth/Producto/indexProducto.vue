@@ -109,7 +109,7 @@
       y prestigiosas de tu país. Invierte desde $25. Easy.
     </p>
     <div class="flex justify-end gap-2">
-      <Button label="Quiero saber más" severity="warn" rounded @click="$router.push('/factoring')"
+      <Button label="Quiero saber más" severity="warn" rounded @click="() => registrarYRedirigir(1, 'https://zuma.com.pe/factoring')"
         class="!text-lg !px-10 !py-2 !my-6 !border-none !mx-auto !bg-[#FF4929] !text-white hover:!bg-[#6790FF] transition-all duration-300" />
     </div>
   </Dialog>
@@ -135,8 +135,14 @@
       para cada oportunidad de inversión que se presente, puede a ver un solo inversionista ganador.
     </p>
     <div class="flex justify-end gap-2">
-      <Button label="Quiero ser el ganador" severity="warn" rounded @click="$router.push('/login')"
-        class="!text-lg !px-10 !py-2 !my-6 !border-none !mx-auto !bg-[#FF4929] !text-white hover:!bg-[#6790FF] transition-all duration-300" />
+      <Button
+        label="Quiero ser el ganador"
+        severity="warn"
+        rounded
+        @click="registrarYRedirigir(2, '/hipotecas')"
+        class="!text-lg !px-10 !py-2 !my-6 !border-none !mx-auto !bg-[#FF4929] !text-white hover:!bg-[#6790FF] transition-all duration-300"
+      />
+
     </div>
   </Dialog>
 
@@ -160,7 +166,7 @@
       que pase, tu capital está garantizado.
     </p>
     <div class="flex justify-end gap-2">
-      <Button label="Gloria a ti señor" severity="warn" rounded @click="$router.push('/login')"
+      <Button label="Gloria a ti señor" severity="warn" rounded @click="registrarYRedirigir(2, '/tasas-fijas')"
         class="!text-lg !px-10 !py-2 !my-6 !border-none !mx-auto !bg-[#FF4929] !text-white hover:!bg-[#6790FF] transition-all duration-300" />
     </div>
   </Dialog>
@@ -171,8 +177,21 @@
 import FooterWidget from '@/components/landing/FooterWidget.vue';
 import TopbarWidget from '@/components/landing/TopbarWidget.vue';
 import { ref } from 'vue';
+import { visitaService } from '@/services/visitaService'
+import { useRouter } from 'vue-router'
 
 const facturas = ref(false);
 const prestamos = ref(false);
 const depositos = ref(false);
+
+const router = useRouter()
+
+const registrarYRedirigir = async (productoId, urlDestino) => {
+  try {
+    await visitaService.registrarVisita(productoId)
+    window.location.href = urlDestino
+  } catch (error) {
+    console.error('Error registrando visita:', error)
+  }
+}
 </script>

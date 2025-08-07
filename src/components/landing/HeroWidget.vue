@@ -40,7 +40,7 @@
       data-aos-delay="800">
 
       <!-- Botón 1 -->
-      <a href="https://zuma.com.pe/factoring" target="_blank" rel="noopener noreferrer">
+      <a @click="() => registrarYRedirigir(1, 'https://zuma.com.pe/factoring')" rel="noopener noreferrer">
         <div
           class="w-96 h-28 bg-white hover:bg-[#6790FF] hover:text-white transition-all duration-300 rounded-full flex items-center gap-6 shadow-md cursor-pointer px-8 hover:scale-110 group">
           <div
@@ -57,7 +57,7 @@
       </a>
 
       <!-- Botón 2 -->
-      <a href="https://zuma.com.pe/hipotecas" target="_blank" rel="noopener noreferrer">
+      <a @click="() => registrarYRedirigir(2, 'https://zuma.com.pe/hipotecas')" rel="noopener noreferrer">
         <div
           class="w-96 h-28 bg-white hover:bg-[#6790FF] hover:text-white transition-all duration-300 rounded-full flex items-center gap-6 shadow-md cursor-pointer px-8 hover:scale-110 group">
           <div
@@ -74,7 +74,7 @@
       </a>
 
       <!-- Botón 3 -->
-      <a href="https://zuma.com.pe/tasas-fijas" target="_blank" rel="noopener noreferrer">
+      <a @click="() => registrarYRedirigir(3, 'https://zuma.com.pe/tasas-fijas')" rel="noopener noreferrer">
         <div
           class="w-96 h-28 bg-white hover:bg-[#6790FF] hover:text-white transition-all duration-300 rounded-full flex items-center gap-6 shadow-md cursor-pointer px-8 hover:scale-110 group">
           <div
@@ -92,3 +92,19 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import { visitaService } from '@/services/visitaService'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const registrarYRedirigir = async (productoId, urlDestino) => {
+  try {
+    await visitaService.registrarVisita(productoId)
+    window.location.href = urlDestino // redirige en la misma página
+  } catch (error) {
+    console.error('Error registrando visita:', error)
+  }
+}
+</script>
