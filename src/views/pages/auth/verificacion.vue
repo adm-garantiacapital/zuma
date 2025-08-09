@@ -281,7 +281,7 @@ const goToRegister = () => {
                             </p>
                         </div>
                         <div class="space-y-3">
-                            <Button 
+                            <!--<Button 
                                 label="Reenviar correo" 
                                 icon="pi pi-envelope" 
                                 severity="contrast" 
@@ -289,7 +289,7 @@ const goToRegister = () => {
                                 :loading="loading"
                                 @click="resendEmail"
                                 v-if="investorId"
-                            />
+                            />-->
                             <Button 
                                 label="Volver al registro" 
                                 icon="pi pi-arrow-left" 
