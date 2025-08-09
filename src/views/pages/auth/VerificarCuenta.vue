@@ -100,7 +100,7 @@ const volverAlLogin = () => {
 
           <!-- Botones de acción -->
           <div class="space-y-4">
-            <Button 
+            <!--<Button 
               @click="reenviarVerificacion" 
               label="Reenviar correo de verificación" 
               class="w-full" 
@@ -108,7 +108,7 @@ const volverAlLogin = () => {
               rounded 
               :loading="resendLoading"
               icon="pi pi-refresh"
-            />
+            />-->
             
             <Button 
               @click="volverAlLogin" 
