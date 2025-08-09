@@ -111,80 +111,6 @@ const verifyEmail = async (id, hash, expires = null, signature = null) => {
     }
 }
 
-// Función para reenviar email de verificación
-const resendEmail = async () => {
-    if (!investorId.value) {
-        toast.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'No se pudo identificar el usuario',
-            life: 3000
-        })
-        return
-    }
-
-    loading.value = true
-    message.value = ''
-
-    try {
-        // Usar el servicio de verificación de email para reenviar
-        const response = await emailVerificationService.resendVerification(investorId.value)
-        
-        if (response.data && response.data.success) {
-            const successMessage = response.data.message || 'Se ha enviado un nuevo correo de verificación'
-            message.value = successMessage
-            messageType.value = 'success'
-            verificationStatus.value = 'resent'
-            
-            toast.add({
-                severity: 'success',
-                summary: 'Enviado',
-                detail: successMessage,
-                life: 5000
-            })
-        } else {
-            // Manejar diferentes casos de error
-            const errorMessage = response.data?.message || 'No se pudo reenviar el correo'
-            if (errorMessage === 'Correo ya esta verificado.' || errorMessage.includes('ya está verificado')) {
-                verificationStatus.value = 'already_verified'
-                message.value = 'Tu correo ya está verificado. Puedes iniciar sesión.'
-                messageType.value = 'info'
-            } else {
-                message.value = errorMessage
-                messageType.value = 'error'
-            }
-        }
-    } catch (error) {
-        let errorMessage = 'Error al reenviar el correo de verificación'
-        
-        if (error.response && error.response.data) {
-            errorMessage = error.response.data.message || errorMessage
-            
-            // Casos específicos
-            if (error.response.status === 404) {
-                errorMessage = 'Usuario no encontrado'
-            } else if (error.response.status === 307 || errorMessage.includes('ya está verificado')) {
-                verificationStatus.value = 'already_verified'
-                message.value = 'Tu correo ya está verificado. Puedes iniciar sesión.'
-                messageType.value = 'info'
-                return
-            }
-        }
-        
-        message.value = errorMessage
-        messageType.value = 'error'
-        
-        toast.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: errorMessage,
-            life: 3000
-        })
-    } finally {
-        loading.value = false
-    }
-}
-
 // Navegar al login
 const goToLogin = () => {
     router.push('/login')
@@ -281,15 +207,6 @@ const goToRegister = () => {
                             </p>
                         </div>
                         <div class="space-y-3">
-                            <!--<Button 
-                                label="Reenviar correo" 
-                                icon="pi pi-envelope" 
-                                severity="contrast" 
-                                rounded 
-                                :loading="loading"
-                                @click="resendEmail"
-                                v-if="investorId"
-                            />-->
                             <Button 
                                 label="Volver al registro" 
                                 icon="pi pi-arrow-left" 
@@ -301,22 +218,16 @@ const goToRegister = () => {
                         </div>
                     </div>
 
-                    <!-- Estado: Pendiente (reenvío) -->
-                    <div v-else-if="verificationStatus === 'pending' || verificationStatus === 'resent'" class="space-y-6">
+                    <!-- Estado: Pendiente -->
+                    <div v-else-if="verificationStatus === 'pending'" class="space-y-6">
                         <div class="flex justify-center">
                             <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
                                 <i class="pi pi-envelope text-blue-600 text-2xl"></i>
                             </div>
                         </div>
                         <div>
-                            <h4 class="text-[#171717] font-semibold text-xl mb-2">
-                                {{ verificationStatus === 'resent' ? 'Correo reenviado' : 'Verifica tu email' }}
-                            </h4>
-                            <p class="text-gray-600 text-sm mb-2">
-                                {{ verificationStatus === 'resent' 
-                                    ? 'Te hemos enviado un nuevo correo de verificación.' 
-                                    : 'Te hemos enviado un correo de verificación.' }}
-                            </p>
+                            <h4 class="text-[#171717] font-semibold text-xl mb-2">Verifica tu email</h4>
+                            <p class="text-gray-600 text-sm mb-2">Te hemos enviado un correo de verificación.</p>
                             <p class="text-gray-500 text-xs">
                                 Revisa tu bandeja de entrada y spam. Haz clic en el enlace del correo para verificar tu cuenta.
                             </p>
@@ -325,32 +236,7 @@ const goToRegister = () => {
                             </p>
                         </div>
 
-                        <!-- Mensaje de respuesta del servidor -->
-                        <div v-if="message && verificationStatus === 'resent'" class="mb-4">
-                            <p :class="{
-                                'text-green-600 text-sm': messageType === 'success',
-                                'text-red-600 text-sm': messageType === 'error',
-                                'text-blue-600 text-sm': messageType === 'info'
-                            }">
-                                <i :class="{
-                                    'pi pi-check-circle': messageType === 'success',
-                                    'pi pi-times-circle': messageType === 'error',
-                                    'pi pi-info-circle': messageType === 'info'
-                                }" class="mr-1"></i>
-                                {{ message }}
-                            </p>
-                        </div>
-
                         <div class="space-y-3">
-                            <Button 
-                                label="Reenviar correo" 
-                                icon="pi pi-refresh" 
-                                severity="contrast" 
-                                rounded 
-                                :loading="loading"
-                                @click="resendEmail"
-                                v-if="investorId"
-                            />
                             <Button 
                                 label="Ya tengo cuenta" 
                                 icon="pi pi-sign-in" 
@@ -366,10 +252,7 @@ const goToRegister = () => {
                 <!-- Información adicional -->
                 <div class="mt-6 text-center">
                     <p class="text-gray-500 text-xs">
-                        ¿No recibes el correo? Revisa tu carpeta de spam o 
-                        <button @click="resendEmail" class="text-blue-600 hover:underline" :disabled="loading">
-                            reenvíalo aquí
-                        </button>
+                        ¿No recibes el correo? Revisa tu carpeta de spam.
                     </p>
                 </div>
             </div>
