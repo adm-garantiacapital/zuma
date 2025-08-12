@@ -34,7 +34,8 @@
         </div>
 
         <div class="grid lg:grid-cols-3 gap-8 mb-16">
-          <Card class="shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+          <Card v-for="post in posts" :key="post.id"
+            class="shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
             <template #header>
               <div class="relative overflow-hidden">
                 <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&h=300&fit=crop&crop=center"
@@ -50,14 +51,14 @@
 
             <template #title>
               <h3 class="text-xl font-bold text-gray-800 mb-2 line-clamp-2 text-[#171717]">
-                ¿Por qué el Factoring es una Oportunidad de Inversión Inteligente en 2025?
+                {{ post.titulo }}
               </h3>
             </template>
 
             <template #subtitle>
               <div class="flex items-center gap-2 text-[#171717] text-sm mb-4 !text-[#171717]">
                 <i class="pi pi-calendar"></i>
-                <span>15 Enero 2025</span>
+                <span>{{ post.fecha_publicacion }}</span>
                 <i class="pi pi-user ml-4"></i>
                 <span>Equipo Zuma</span>
               </div>
@@ -65,8 +66,7 @@
 
             <template #content>
               <p class="text-gray-600 leading-relaxed mb-6 !text-[#171717]">
-                Descubre por qué el factoring se ha convertido en una de las alternativas de inversión más
-                atractivas del mercado. Analizamos rentabilidad, riesgos y oportunidades para 2025.
+                {{ post.resumen }}
               </p>
 
               <div class="flex flex-wrap gap-2 mb-6">
@@ -77,15 +77,18 @@
 
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <Rating :modelValue="5" readonly :cancel="false" class="text-sm" />
-                  <span class="text-sm text-[#171717]">(4.8/5)</span>
+                  <!-- <Rating v-model="rating" :modelValue="getPromedioRating(post.ratings)" :cancel="false" /> -->
+                  <Rating v-model="rating" :cancel="false" @change="saveRating(post.id, rating)" />
+                  <!-- <span class="text-sm text-[#171717]">
+                    ({{ getPromedioRating(post.ratings) }})
+                  </span> -->
                 </div>
                 <Button label="Leer más" icon="pi pi-arrow-right" iconPos="right"
                   class="p-button-outlined !text-[#171717]" @click="readArticle(1)" />
               </div>
             </template>
           </Card>
-
+          <!--
           <Card class="shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
             <template #header>
               <div class="relative overflow-hidden">
@@ -138,57 +141,7 @@
             </template>
           </Card>
 
-          <Card class="shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-            <template #header>
-              <div class="relative overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&h=300&fit=crop&crop=center"
-                  alt="Digital Investment" class="w-full h-64 object-cover" />
-                <div class="absolute top-4 left-4">
-                  <Tag value="Digital" severity="help" class="font-semibold"></Tag>
-                </div>
-                <div class="absolute top-4 right-4">
-                  <Tag value="Nuevo" icon="pi pi-sparkles" severity="success" class="font-semibold"></Tag>
-                </div>
-              </div>
-            </template>
-
-            <template #title>
-              <h3 class="text-xl font-bold text-gray-800 mb-2 line-clamp-2 text-[#171717]">
-                Inversión Digital: Cómo Diversificar tu Portafolio desde una App
-              </h3>
-            </template>
-
-            <template #subtitle>
-              <div class="flex items-center gap-2 text-[#171717] text-sm mb-4 !text-[#171717]">
-                <i class="pi pi-calendar"></i>
-                <span>10 Enero 2025</span>
-                <i class="pi pi-user ml-4"></i>
-                <span>Carlos Rodriguez</span>
-              </div>
-            </template>
-
-            <template #content>
-              <p class="text-gray-600 leading-relaxed mb-6 !text-[#171717]">
-                La revolución fintech ha llegado. Descubre cómo diversificar tu portafolio de inversiones
-                de manera inteligente y accesible desde tu smartphone con las últimas tecnologías.
-              </p>
-
-              <div class="flex flex-wrap gap-2 mb-6">
-                <Chip label="Fintech" class="bg-indigo-100 text-[#171717]" />
-                <Chip label="Diversificación" class="bg-orange-100 text-[#171717]" />
-                <Chip label="App Móvil" class="bg-pink-100 text-[#171717]" />
-              </div>
-
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <Rating :modelValue="5" readonly :cancel="false" class="text-sm" />
-                  <span class="text-sm text-[#171717]">(4.9/5)</span>
-                </div>
-                <Button label="Leer más" icon="pi pi-arrow-right" iconPos="right"
-                  class="p-button-outlined !text-[#171717]" @click="readArticle(3)" />
-              </div>
-            </template>
-          </Card>
+           -->
         </div>
 
         <!-- Newsletter Subscription -->
@@ -299,9 +252,10 @@
 <script setup>
 import FooterWidget from '@/components/landing/FooterWidget.vue'
 import TopbarWidget from '@/components/landing/TopbarWidget.vue'
-import { ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 // Componentes PrimeVue
+import axios from 'axios'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Chip from 'primevue/chip'
@@ -310,12 +264,15 @@ import InputGroup from 'primevue/inputgroup'
 import InputText from 'primevue/inputtext'
 import Rating from 'primevue/rating'
 import Tag from 'primevue/tag'
+import { useToast } from 'primevue/usetoast'
 
 // Estados reactivos
 const searchQuery = ref('')
 const selectedCategory = ref('')
 const newsletterEmail = ref('')
 const isSubscribing = ref(false)
+const rating = ref(null)
+const toast = useToast()
 
 // Categorías para filtros
 const categories = [
@@ -380,6 +337,67 @@ const contactAdvisor = () => {
   console.log('Contactando asesor...')
   // Abrir chat o formulario de contacto
 }
+
+const posts = ref([])
+
+async function obtenerPublicaciones() {
+  try {
+    const res = await axios.get('http://127.0.0.1:8000/api/blog/publicaciones')
+    posts.value = res.data
+  } catch (error) {
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'No se pudo cargar posts',
+      life: 3000
+    })
+  }
+}
+
+function getPromedioRating(ratings) {
+  if (!ratings || ratings.length === 0) return 0;
+  const total = ratings.reduce((sum, rating) => {
+    return sum + parseFloat(rating.estrellas);
+  }, 0);
+
+  return total / ratings.length;
+}
+
+const saveRating = async (postId, nuevoRating) => {
+  try {
+    const res = await axios.post('http://127.0.0.1:8000/api/blog/guardar-rating', {
+      post_id: postId,
+      estrellas: nuevoRating,
+    })
+    toast.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: `Usuario calificó el post ${postId} con ${nuevoRating} estrellas`,
+      life: 3000
+    })
+  } catch (error) {
+    console.log(error.value)
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'No se pudo guardar el rating',
+      life: 3000
+    })
+  }
+}
+
+onMounted(() => {
+  obtenerPublicaciones()
+})
+
+watch(() => posts.refresh, () => {
+  obtenerPublicaciones()
+})
+
+watch(() => rating.refresh, () => {
+  alert()
+  console.log(rating.value)
+})
 </script>
 
 <style scoped>
