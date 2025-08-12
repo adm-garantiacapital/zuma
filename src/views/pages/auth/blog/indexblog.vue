@@ -33,6 +33,8 @@
           </Card>
         </div>
 
+        <BlogGrid />
+
         <div class="grid lg:grid-cols-3 gap-8 mb-16">
           <Card v-for="post in posts" :key="post.id"
             class="shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
@@ -250,21 +252,22 @@
 </template>
 
 <script setup>
-import FooterWidget from '@/components/landing/FooterWidget.vue'
-import TopbarWidget from '@/components/landing/TopbarWidget.vue'
-import { onMounted, ref, watch } from 'vue'
+import FooterWidget from '@/components/landing/FooterWidget.vue';
+import TopbarWidget from '@/components/landing/TopbarWidget.vue';
+import { onMounted, ref, watch } from 'vue';
 
 // Componentes PrimeVue
-import axios from 'axios'
-import Button from 'primevue/button'
-import Card from 'primevue/card'
-import Chip from 'primevue/chip'
-import Dropdown from 'primevue/dropdown'
-import InputGroup from 'primevue/inputgroup'
-import InputText from 'primevue/inputtext'
-import Rating from 'primevue/rating'
-import Tag from 'primevue/tag'
-import { useToast } from 'primevue/usetoast'
+import BlogGrid from "@/components/blog/GridBlog.vue";
+import axios from 'axios';
+import Button from 'primevue/button';
+import Card from 'primevue/card';
+import Chip from 'primevue/chip';
+import Dropdown from 'primevue/dropdown';
+import InputGroup from 'primevue/inputgroup';
+import InputText from 'primevue/inputtext';
+import Rating from 'primevue/rating';
+import Tag from 'primevue/tag';
+import { useToast } from 'primevue/usetoast';
 
 // Estados reactivos
 const searchQuery = ref('')
