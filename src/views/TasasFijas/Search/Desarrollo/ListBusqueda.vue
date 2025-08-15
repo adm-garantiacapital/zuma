@@ -41,7 +41,8 @@
                 <div class="flex justify-center">
                     <Image v-if="slotProps.data.foto" :src="slotProps.data.foto" class="rounded"
                         :alt="slotProps.data.nombre || 'Imagen de propiedad'" preview width="50" style="width: 64px" />
-                    <div v-else class="w-16 h-16 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
+                    <div v-else
+                        class="w-16 h-16 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
                         <i class="pi pi-image text-gray-400 text-xl"></i>
                     </div>
                 </div>
@@ -58,12 +59,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { FilterMatchMode } from '@primevue/core/api';
-import { useToast } from 'primevue/usetoast';
-import { propertyService } from '@/services/propertyService.js';
 import { currencyService } from '@/services/currencyService.js';
+import { propertyService } from '@/services/propertyService.js';
+import { FilterMatchMode } from '@primevue/core/api';
 import Image from 'primevue/image';
+import { useToast } from 'primevue/usetoast';
+import { onMounted, ref, watch } from 'vue';
 import ScheduleGeneration from './ScheduleGeneration.vue';
 
 const toast = useToast();

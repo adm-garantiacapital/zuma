@@ -148,22 +148,22 @@ const formatMoney = (amount) => {
 };
 
 function verPDF(item) {
-  if (!item.pdf_url) {
-    toast.add({
-      severity: 'warn',
-      summary: 'Advertencia',
-      detail: 'Esta cooperativa no tiene un PDF asociado',
-      life: 3000
-    })
-    return
-  }
+    if (!item.pdf_url) {
+        toast.add({
+            severity: 'warn',
+            summary: 'Advertencia',
+            detail: 'Esta cooperativa no tiene un PDF asociado',
+            life: 3000
+        })
+        return
+    }
 
-  const link = document.createElement('a')
-  link.href = `/storage/pdfs/${item.pdf_url}`
-  link.download = `${item.cooperativa || 'documento'}.pdf`
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
+    const link = document.createElement('a')
+    link.href = `/storage/pdfs/${item.pdf_url}`
+    link.download = `${item.cooperativa || 'documento'}.pdf`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
 }
 
 
@@ -385,49 +385,57 @@ const createInvestment = async () => {
             </div>
         </form>
 
-        <div v-if="simulationItems" class="relative overflow-x-auto rounded-3xl mt-10">
-            <table class="w-full text-left rtl:text-right text-gray-500">
-                <thead class="text-[#171717] border-b border-[#D9D9D9] bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-5 py-3">Entidad</th>
-                        <th v-tooltip.top="'90 días'" scope="col" class="px-3 py-3">3 m.</th>
-                        <th v-tooltip.top="'180 días'" scope="col" class="px-3 py-3">6 m.</th>
-                        <th v-tooltip.top="'270 días'" scope="col" class="px-3 py-3">9 m.</th>
-                        <th v-tooltip.top="'360 días'" scope="col" class="px-3 py-3">12 m.</th>
-                        <th v-tooltip.top="'540 días'" scope="col" class="px-3 py-3">18 m.</th>
-                        <th v-tooltip.top="'720 días'" scope="col" class="px-3 py-3">24 m.</th>
-                        <th v-tooltip.top="'1080 días'" scope="col" class="px-3 py-3">36 m.</th>
-                        <th v-tooltip.top="'1440 días'" scope="col" class="px-3 py-3">48 m.</th>
-                        <th v-tooltip.top="'1800 días'" scope="col" class="px-3 py-3">60 m.</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="item in simulationItems" :key="item.id"
-                        class="odd:bg-white even:bg-gray-50 text-[#171717]">
-                        <th scope="row" class="px-5 py-3 font-medium">
-                            <div class="flex items-center justify-between">
-                                <span>{{ item.nombre }}</span>
-                                <Button 
-                                    @click="verPDF(item)"
-                                    label="Más información"
-                                    aria-label="Ver documento PDF" 
-                                    variant="link"
-                                    v-tooltip.top="'Ver más información en PDF'"
-                                    class="!text-[#FF4929] hover:!text-[#6790FF] focus:!text-[#FF4929] !transition !duration-100 !ease-in !ml-2 !font-bold !text-sm" />
-
-                            </div>
-                        </th>
-                        <td v-for="subitem in item.tea" :key="subitem.id" class="px-3 py-3">
-                            {{ subitem[1] }}
-                            <Button v-if="subitem[1] != ''"
-                                @click="simulationDetaill(item.nombre, subitem[0], subitem[1], subitem[2], subitem[3])"
-                                icon="pi pi-calculator" aria-label="Save" variant="link"
-                                class="!text-black !w-[20px] hover:!text-[#6790FF] focus:!text-[#FF4929] !transition !duration-100 !ease-in" />
-                            <span v-else>-</span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div v-if="simulationItems" class="relative rounded-3xl mt-10">
+            <div class="overflow-auto max-h-[500px] border border-gray-200 rounded-3xl">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50 sticky top-0 z-10">
+                        <tr>
+                            <th scope="col"
+                                class="sticky left-0 z-20 bg-gray-50 px-5 py-3 text-left text-sm font-medium text-[#171717]">
+                                Entidad</th>
+                            <th v-tooltip.top="'90 días'" scope="col"
+                                class="px-3 py-3 text-left text-sm font-medium text-[#171717]">3 m.</th>
+                            <th v-tooltip.top="'180 días'" scope="col"
+                                class="px-3 py-3 text-left text-sm font-medium text-[#171717]">6 m.</th>
+                            <th v-tooltip.top="'270 días'" scope="col"
+                                class="px-3 py-3 text-left text-sm font-medium text-[#171717]">9 m.</th>
+                            <th v-tooltip.top="'360 días'" scope="col"
+                                class="px-3 py-3 text-left text-sm font-medium text-[#171717]">12 m.</th>
+                            <th v-tooltip.top="'540 días'" scope="col"
+                                class="px-3 py-3 text-left text-sm font-medium text-[#171717]">18 m.</th>
+                            <th v-tooltip.top="'720 días'" scope="col"
+                                class="px-3 py-3 text-left text-sm font-medium text-[#171717]">24 m.</th>
+                            <th v-tooltip.top="'1080 días'" scope="col"
+                                class="px-3 py-3 text-left text-sm font-medium text-[#171717]">36 m.</th>
+                            <th v-tooltip.top="'1440 días'" scope="col"
+                                class="px-3 py-3 text-left text-sm font-medium text-[#171717]">48 m.</th>
+                            <th v-tooltip.top="'1800 días'" scope="col"
+                                class="px-3 py-3 text-left text-sm font-medium text-[#171717]">60 m.</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        <tr v-for="item in simulationItems" :key="item.id" class="odd:bg-white even:bg-gray-50">
+                            <td
+                                class="sticky left-0 z-10 bg-white px-5 py-3 whitespace-nowrap text-sm font-medium text-[#171717]">
+                                <div class="flex items-center justify-between">
+                                    <span>{{ item.nombre }}</span>
+                                    <Button @click="verPDF(item)" label="Más información" aria-label="Ver documento PDF"
+                                        variant="link" v-tooltip.top="'Ver más información en PDF'"
+                                        class="!text-[#FF4929] hover:!text-[#6790FF] focus:!text-[#FF4929] !transition !duration-100 !ease-in !ml-2 !font-bold !text-sm" />
+                                </div>
+                            </td>
+                            <td v-for="subitem in item.tea" :key="subitem.id"
+                                class="px-3 py-3 whitespace-nowrap text-sm text-[#171717]">
+                                {{ subitem[1] || '-' }}
+                                <Button v-if="subitem[1] != ''"
+                                    @click="simulationDetaill(item.nombre, subitem[0], subitem[1], subitem[2], subitem[3])"
+                                    icon="pi pi-calculator" aria-label="Save" variant="link"
+                                    class="!text-black !w-[20px] hover:!text-[#6790FF] focus:!text-[#FF4929] !transition !duration-100 !ease-in" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <Dialog v-model:visible="detaill" modal class="!bg-white !m-5 !overflow-hidden" :style="{ width: '90rem' }">
@@ -522,7 +530,7 @@ const createInvestment = async () => {
                     <Column field="monto_base" header="Monto base" class="!text-[#171717] !py-3" sortable>
                         <template #body="slotProps">
                             <span class="text-[#171717] text-nowrap">S/ {{ formatMoney(slotProps.data.monto_base)
-                                }}</span>
+                            }}</span>
                         </template>
                     </Column>
                     <Column field="interes_bruto" header="Interés base (S/.)" class="!text-[#171717] !py-3" sortable>
@@ -559,7 +567,7 @@ const createInvestment = async () => {
                     <Column field="saldo_capital" header="Saldo de capital" class="!text-[#171717] !py-3" sortable>
                         <template #body="slotProps">
                             <span class="text-[#171717] text-nowrap">S/ {{ formatMoney(slotProps.data.saldo_capital)
-                                }}</span>
+                            }}</span>
                         </template>
                     </Column>
                     <Column field="total_a_depositar" header="Total a depositar" class="!text-[#171717] !py-3" sortable>
@@ -586,6 +594,4 @@ const createInvestment = async () => {
     </div>
 </template>
 
-<style>
-
-</style>
+<style></style>
