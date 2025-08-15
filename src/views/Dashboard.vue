@@ -1,15 +1,15 @@
 <template>
   <Breadcrumb :home="home" :model="items" />
-  <section class="md:px-7">
-    <div class="mb-10 rounded-3xl border bg-[#6790FF] text-card-foreground shadow-sm relative overflow-hidden">
-      <div class="p-4 sm:px-6 md:px-15 md:mx-10 py-10 sm:py-15 relative superior">
-        <h3 class="scroll-m-20 text-md md:text-xl font-semibold tracking-tight">
+  <section class="px-1 md:px-7">
+    <div class=" mb-6 md:mb-10 rounded-3xl border bg-[#6790FF] text-card-foreground shadow-sm relative overflow-hidden">
+      <div class="mx-5     p-4 sm:px-6 md:px-8 lg:px-15 md:mx-5 lg:mx-10 py-6 sm:py-10 md:py-15 relative superior">
+        <h3 class="scroll-m-20 text-sm sm:text-lg md:text-xl font-semibold text-black max-w-32 md:max-w-full">
           Bienvenido {{ fullName }} a tu perfil del inversionista
         </h3>
       </div>
-      <a class="mask absolute -top-16 -right-5" href="https://fondeo.apros.global/" target="_blank">
+      <a class="mask absolute -top-12 sm:-top-16 -right-5" href="https://fondeo.apros.global/" target="_blank">
         <img src="/imagenes/zuma/imagen-1.png" alt="Logo Zuma"
-          class="inline-block w-80 hover:scale-110 transition duration-100 ease-in" />
+          class="inline-block w-60 sm:w-80 hover:scale-110 transition duration-100 ease-in" />
       </a>
     </div>
   </section>
