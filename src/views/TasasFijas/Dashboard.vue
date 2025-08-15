@@ -2,7 +2,6 @@
     <br />
     <Breadcrumb :home="home" :model="items" />
 
-    <Breadcrumb :home="home" :model="items" />
     <section class="px-1 md:px-7">
         <div
             class=" mb-6 md:mb-10 rounded-3xl border bg-[#6790FF] text-card-foreground shadow-sm relative overflow-hidden">
@@ -74,7 +73,7 @@
                                         class="text-[#171717] !text-[2rem] sm:!text-[2.5rem] md:!text-[2.8rem] inline-block align-top mt-3 sm:mt-5 mb-2 sm:mb-3 me-4 sm:me-6 md:me-10"></i>
                                     <div class="inline-block">
                                         <h5 class="text-[#171717] m-0 font-semibold text-sm sm:text-base">{{ label.title
-                                            }}</h5>
+                                        }}</h5>
                                         <h3 class="text-[#171717] m-0 font-bold text-lg sm:text-xl md:text-2xl">
                                             {{ showAmounts ? `S/ ${balances.PEN[key].toFixed(2)}` : 'S/ ••••••' }}
                                         </h3>
