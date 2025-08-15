@@ -35,10 +35,8 @@
                     rounded @click="toggleAmounts" :title="showAmounts ? 'Ocultar montos' : 'Mostrar montos'"
                     class="!me-3" />
 
-                <Button v-if="wallet" @click="showWallet" icon="pi pi-angle-up" aria-label="Mostrar Billetera"
-                    variant="link" class="!text-black" />
-                <Button v-else @click="showWallet" icon="pi pi-angle-down" aria-label="Mostrar Billetera" variant="link"
-                    class="!text-black" />
+
+
             </div>
 
             <div class="col-span-8">
@@ -147,7 +145,7 @@ const home = ref({ icon: 'pi pi-home' });
 const items = ref([{ label: 'Tasas fijas' }, { label: 'Mi billetera' }]);
 const profile = ref(null);
 const fullName = ref('');
-const wallet = ref(false);
+const wallet = ref(true);
 const showDepositoDialog = ref(false)
 const showRetiroDialog = ref(false)
 

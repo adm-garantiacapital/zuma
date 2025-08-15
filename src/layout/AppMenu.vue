@@ -46,7 +46,7 @@ const { toggleMenu } = useLayout();
 
 const hipotecasMenu = [
     {
-        items: [{ label: 'Mi billetera', icon: 'billetera', to: '/hipotecas' }]
+        items: [{ label: 'Mi billetera', icon: 'billetera', to: '/hipotecas', icon2: 'si' }]
     },
     {
         items: [
@@ -54,7 +54,7 @@ const hipotecasMenu = [
                 label: 'Información bancaria',
                 icon: 'informacion',
                 items: [
-                    { label: 'Cuentas', icon: 'cuentas', to: '/hipotecas/Cuenta-Bancaria' },
+                    { label: 'Cuentas', icon: 'cuentas', to: '/hipotecas/Cuenta-Bancaria', icon2: 'si' },
                     { label: 'Estados de cuenta', icon: 'estados', to: '/hipotecas/Estado-Cuenta' }
                 ]
             }
@@ -78,9 +78,9 @@ const tasasFijasMenu = [
         items: [
             {
                 label: 'Información bancaria',
-                icon: 'informacion',
+                icon: 'informacion', icon2: 'si',
                 items: [
-                    { label: 'Cuentas', icon: 'cuentas', to: '/tasas-fijas/Cuenta-Bancaria' },
+                    { label: 'Cuentas', icon: 'cuentas', to: '/tasas-fijas/Cuenta-Bancaria', icon2: 'si' },
                     { label: 'Estados de cuenta', icon: 'estados', to: '/tasas-fijas/Estado-Cuenta' }
                 ]
             }
