@@ -1,9 +1,9 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
-import { ref, onMounted, computed } from 'vue';
+import profileService from '@/services/profileService';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import AppMenuItem from './AppMenuItem.vue';
-import profileService from '@/services/profileService';
 
 const route = useRoute();
 const profile = ref(null);
@@ -49,15 +49,6 @@ const hipotecasMenu = [
         items: [{ label: 'Mi billetera', icon: 'billetera', to: '/hipotecas' }]
     },
     {
-        items: [{ label: 'Buscar hipotecas', icon: 'buscar', to: '/hipotecas/buscar' }]
-    },
-    {
-        items: [{ label: 'Subastas en línea', icon: 'datos', to: '/hipotecas/subasta' }]
-    },
-    {
-        items: [{ label: 'Mi dashboard', icon: 'dashboard', to: '/hipotecas/dashboard' }]
-    },
-    {
         items: [
             {
                 label: 'Información bancaria',
@@ -68,18 +59,20 @@ const hipotecasMenu = [
                 ]
             }
         ]
-    }
+    },
+    {
+        items: [{ label: 'Buscar hipotecas', icon: 'buscar', to: '/hipotecas/buscar' }]
+    },
+    {
+        items: [{ label: 'Subastas en línea', icon: 'datos', to: '/hipotecas/subasta' }]
+    },
+
+
 ];
 
 const tasasFijasMenu = [
     {
         items: [{ label: 'Mi billetera', icon: 'billetera', to: '/tasas-fijas' }]
-    },
-    {
-        items: [{ label: 'Oportunidades', icon: 'buscar', to: '/tasas-fijas/Search' }]
-    },
-    {
-        items: [{ label: 'Mi dashboard', icon: 'dashboard', to: '/tasas-fijas/dashboard' }]
     },
     {
         items: [
@@ -92,7 +85,12 @@ const tasasFijasMenu = [
                 ]
             }
         ]
-    }
+    },
+    {
+        items: [{ label: 'Oportunidades', icon: 'buscar', to: '/tasas-fijas/Search' }]
+    },
+
+
 ];
 
 const clienteMenu = [
@@ -142,16 +140,11 @@ const model = computed(() => {
         <div class="py-20">
             <div
                 class="avatar-zuma w-[104px] h-[116px] bg-[#F0F1F9] relative mx-auto rounded-[40px] overflow-hidden flex items-center justify-center text-[#171717] text-3xl font-bold">
-                <img
-                    v-if="profilePhoto"
-                    :src="profilePhoto"
-                    alt="Avatar"
-                    class="w-full h-full object-cover"
-                />
+                <img v-if="profilePhoto" :src="profilePhoto" alt="Avatar" class="w-full h-full object-cover" />
                 <span v-else>{{ initials }}</span>
             </div>
             <h3 class="name-zuma text-center mt-2 mb-3 text-[#171717]">{{ fullName }}</h3>
-            
+
             <!-- Código de usuario mejorado -->
             <div class="user-code-container mx-auto max-w-[200px]">
                 <div class="text-center mb-2">
@@ -163,14 +156,15 @@ const model = computed(() => {
                             <span class="text-white font-mono font-bold text-sm tracking-wider">
                                 {{ fullDoce }}
                             </span>
-                            <button 
-                                @click="copyUserCode"
+                            <button @click="copyUserCode"
                                 class="ml-2 p-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200 group"
-                                title="Copiar código"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white group-hover:scale-110 transition-transform">
-                                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
-                                    <path d="m4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                                title="Copiar código">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="text-white group-hover:scale-110 transition-transform">
+                                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                                    <path d="m4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
                                 </svg>
                             </button>
                         </div>
@@ -178,14 +172,14 @@ const model = computed(() => {
                             <span class="text-white/80 text-xs font-bold">Gana más, REFIRIENDO.</span>
                         </div>
                     </div>
-                    
+
                     <!-- Tooltip de copiado -->
-                    <div 
-                        v-if="showCopyTooltip"
-                        class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs py-1 px-2 rounded shadow-lg animate-fade-in"
-                    >
+                    <div v-if="showCopyTooltip"
+                        class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs py-1 px-2 rounded shadow-lg animate-fade-in">
                         ¡Copiado!
-                        <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-800"></div>
+                        <div
+                            class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-800">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -228,6 +222,7 @@ const model = computed(() => {
         opacity: 0;
         transform: translateX(-50%) translateY(-5px);
     }
+
     to {
         opacity: 1;
         transform: translateX(-50%) translateY(0);

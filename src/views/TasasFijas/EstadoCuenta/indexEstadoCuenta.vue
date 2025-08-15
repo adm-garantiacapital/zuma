@@ -2,24 +2,17 @@
     <br>
     <Breadcrumb :home="home" :model="items" />
     <div class="card">
-        <AddEstadoCuenta
-            @currency-changed="handleCurrencyChange"
-            @deposit-success="handleTransactionSuccess"
-            @withdraw-success="handleTransactionSuccess"
-            ref="addEstadoCuentaRef"
-        />
-        <ListEstadoCuenta
-            :currency="selectedCurrency"
-            @balance-updated="handleBalanceUpdate"
-            ref="listEstadoCuentaRef"
-        />
+        <AddEstadoCuenta @currency-changed="handleCurrencyChange" @deposit-success="handleTransactionSuccess"
+            @withdraw-success="handleTransactionSuccess" ref="addEstadoCuentaRef" />
+        <ListEstadoCuenta :currency="selectedCurrency" @balance-updated="handleBalanceUpdate"
+            ref="listEstadoCuentaRef" />
     </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import AddEstadoCuenta from './Desarrollo/TypeMoneda.vue'
 import ListEstadoCuenta from './Desarrollo/ListEstadoCuenta.vue'
+import AddEstadoCuenta from './Desarrollo/TypeMoneda.vue'
 
 // Referencias a los componentes hijos
 const addEstadoCuentaRef = ref()

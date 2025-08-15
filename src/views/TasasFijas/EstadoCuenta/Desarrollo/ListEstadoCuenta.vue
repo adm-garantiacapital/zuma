@@ -10,24 +10,12 @@
 
       <!-- Tabla de movimientos -->
       <div v-else>
-        <DataTable
-          ref="dt"
-          :value="movements"
-          dataKey="id"
-          lazy
-          :loading="loading"
-          :paginator="true"
-          :rows="pagination.perPage"
-          :first="pagination.first"
-          :totalRecords="pagination.total"
-          @page="onPage"
+        <DataTable ref="dt" :value="movements" dataKey="id" lazy :loading="loading" :paginator="true"
+          :rows="pagination.perPage" :first="pagination.first" :totalRecords="pagination.total" @page="onPage"
           paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
           :rowsPerPageOptions="[5, 10, 25]"
           currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} movimientos"
-          :emptyMessage="`No hay movimientos en ${currentCurrency}`"
-          stripedRows
-          responsiveLayout="scroll"
-        >
+          :emptyMessage="`No hay movimientos en ${currentCurrency}`" stripedRows responsiveLayout="scroll">
 
           <template #header>
             <div class="flex flex-wrap gap-2 items-center justify-between">
@@ -89,24 +77,27 @@
               </div>
             </template>
           </Column>
-<Column field="status" header="Estado" sortable>
-  <template #body="slotProps">
-    <div>
-      <!-- Mostrar solo uno: status o confirm_status -->
-      <Tag
-        v-if="slotProps.data.confirm_status && slotProps.data.confirm_status !== slotProps.data.status"
-        :value="getConfirmStatusLabel(slotProps.data.confirm_status)"
-        :severity="getConfirmStatusSeverity(slotProps.data.confirm_status)"
-      />
-      <Tag
-        v-else
-        :value="getStatusLabel(slotProps.data.status)"
-        :severity="getStatusSeverity(slotProps.data.status)"
-      />
-    </div>
-  </template>
-</Column>
-  
+
+          <Column field="status" header="Estado" sortable>
+            <template #body="slotProps">
+              <div>
+                <!-- Mostrar solo uno: status o confirm_status -->
+                <Tag v-if="slotProps.data.confirm_status && slotProps.data.confirm_status !== slotProps.data.status"
+                  :value="getConfirmStatusLabel(slotProps.data.confirm_status)"
+                  :severity="getConfirmStatusSeverity(slotProps.data.confirm_status)" />
+                <Tag v-else :value="getStatusLabel(slotProps.data.status)"
+                  :severity="getStatusSeverity(slotProps.data.status)" />
+              </div>
+            </template>
+          </Column>
+          <Column field="status" header="Dashboard" sortable>
+            <template #body="slotProps">
+              <div class="text-red-500 cursor-pointer hover:text-red-600" @click="irdetalle">
+                Ver Detalles
+              </div>
+            </template>
+          </Column>
+
         </DataTable>
       </div>
 
@@ -117,10 +108,13 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
 import { FilterMatchMode } from '@primevue/core/api';
+import { computed, ref, watch } from 'vue';
 
-import MovementService from '@/services/movementService'
+import MovementService from '@/services/movementService';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 // Props
 const props = defineProps({
@@ -129,7 +123,14 @@ const props = defineProps({
     default: 'PEN'
   }
 })
+function irdetalle() {
+  const url = window.location.pathname; // Obtiene la ruta después del host, ej: "/productos/123"
+  const segmentos = url.split('/').filter(seg => seg); // Filtra elementos vacíos
+  const primerSegmento = segmentos[0];
+  // Supongamos que tu ruta es "/detalle/:id"
+  router.push(`/${primerSegmento}/dashboard`)
 
+}
 // Emits
 const emit = defineEmits(['balance-updated'])
 
@@ -332,11 +333,11 @@ const getMovementStyle = (type) => {
 // Obtener prefijo del monto
 const getAmountPrefix = (type) => {
   const incomingTypes = [
-    'deposit', 
-    'payment', 
-    'exchange_down', 
-    'fixed_rate_interest_payment', 
-    'fixed_rate_disbursement', 
+    'deposit',
+    'payment',
+    'exchange_down',
+    'fixed_rate_interest_payment',
+    'fixed_rate_disbursement',
     'mortgage_disbursement'
   ]
   return incomingTypes.includes(type) ? '+' : '-'
@@ -345,11 +346,11 @@ const getAmountPrefix = (type) => {
 // Obtener color del monto
 const getAmountColor = (type) => {
   const incomingTypes = [
-    'deposit', 
-    'payment', 
-    'exchange_down', 
-    'fixed_rate_interest_payment', 
-    'fixed_rate_disbursement', 
+    'deposit',
+    'payment',
+    'exchange_down',
+    'fixed_rate_interest_payment',
+    'fixed_rate_disbursement',
     'mortgage_disbursement'
   ]
   return incomingTypes.includes(type) ? 'text-green-600' : 'text-red-600'

@@ -1,44 +1,55 @@
+<script setup>
+import { useRoute } from 'vue-router';
+
+const route = useRoute()
+
+function isActive(path) {
+    const url = window.location.pathname; // Obtiene la ruta después del host, ej: "/productos/123"
+    const segmentos = url.split('/').filter(seg => seg); // Filtra elementos vacíos
+    const primerSegmento = segmentos[0];
+    return primerSegmento === path
+}
+</script>
+
 <template>
-    <div class="px-14">
-        <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-                <div class="rounded-3xl bg-[#FF4929] relative overflow-hidden">
-                    <a class="px-5 py-3 mt-[7rem] rounded-3xl bg-[#FF4929] inline-block relative superior"
-                        href="https://zuma.com.pe/factoring">
-                        <h5 class="text-white m-0 font-semibold">Factoring</h5>
-                    </a>
-                    <a class="mask absolute -top-16 -right-8" href="https://zuma.com.pe/factoring">
-                        <img src="/imagenes/zuma/imagen-2.png" alt="Logo Zuma"
-                            class="inline-block w-80 hover:scale-110 transition duration-100 ease-in" />
-                    </a>
-                </div>
+    <section class="md:px-8 mt-6 flex flex-wrap gap-4">
+        <!-- Factoring -->
+        <a href="/factoring"
+            class="flex items-center justify-between rounded-3xl overflow-hidden w-full md:w-[32%] bg-[#FF4929] h-28">
+            <div class="px-6 flex-1 text-white font-semibold">
+                Factoring
+                <div v-if="isActive('factoring')" class="h-[2px] w-20 bg-white mt-2"></div>
             </div>
+            <div class="h-full w-1/2 bg-cover bg-center" style="
+          clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+          background-image: url('/imagenes/zuma/imagen-2.png');
+        "></div>
+        </a>
 
-            <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-                <div class="rounded-3xl bg-[#F0F1F9] relative overflow-hidden">
-                    <a class="px-5 py-3 mt-[7rem] rounded-3xl bg-[#F0F1F9] inline-block relative superior"
-                        href="https://zuma.com.pe/tasas-fijas">
-                        <h5 class="text-[#171717] m-0 font-semibold">Tasas Fijas</h5>
-                    </a>
-                    <a class="mask absolute -top-14 -right-12" href="https://zuma.com.pe/tasas-fijas">
-                        <img src="/imagenes/zuma/imagen-3.png" alt="Logo Zuma"
-                            class="inline-block w-80 hover:scale-110 transition duration-100 ease-in" />
-                    </a>
-                </div>
+        <!-- Tasas Fijas -->
+        <a href="/tasas-fijas"
+            class="flex items-center justify-between rounded-3xl overflow-hidden w-full md:w-[32%] bg-[#F0F1F9] h-28">
+            <div class="px-6 flex-1 text-[#171717] font-semibold">
+                Tasas fijas
+                <div v-if="isActive('tasas-fijas')" class="h-[2px] w-20 bg-[#171717] mt-2"></div>
             </div>
+            <div class="h-full w-1/2 bg-cover bg-center" style="
+          clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+          background-image: url('/imagenes/zuma/imagen-3.png');
+        "></div>
+        </a>
 
-            <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-                <div class="rounded-3xl bg-[#171717] relative overflow-hidden">
-                    <a class="px-5 py-3 mt-[7rem] rounded-3xl bg-[#171717] inline-block relative superior"
-                        href="https://zuma.com.pe/hipotecas">
-                        <h5 class="text-white m-0 font-semibold">Hipotecas</h5>
-                    </a>
-                    <a class="mask absolute -top-20 -right-5" href="https://zuma.com.pe/hipotecas">
-                        <img src="/imagenes/zuma/imagen-4.png" alt="Logo Zuma"
-                            class="inline-block w-80 hover:scale-110 transition duration-100 ease-in" />
-                    </a>
-                </div>
+        <!-- Hipotecas -->
+        <a href="/hipotecas"
+            class="flex items-center justify-between rounded-3xl overflow-hidden w-full md:w-[32%] bg-[#171717] h-28">
+            <div class="px-6 flex-1 text-white font-semibold">
+                Hipotecas
+                <div v-if="isActive('hipotecas')" class="h-[2px] w-20 bg-white mt-2"></div>
             </div>
-        </div>
-    </div>
+            <div class="h-full w-1/2 bg-cover bg-center" style="
+          clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
+          background-image: url('/imagenes/zuma/imagen-4.png');
+        "></div>
+        </a>
+    </section>
 </template>
