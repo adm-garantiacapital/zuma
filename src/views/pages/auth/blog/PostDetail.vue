@@ -59,7 +59,7 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <label for="name" class="block text-gray-700 mb-2">Nombre*</label>
-                                        <input type="text" id="name" v-model="commentForm.name"
+                                        <input type="text" id="name" v-model="commentForm.nombre"
                                             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             required>
                                     </div>
@@ -74,17 +74,17 @@
                                 <div class="mb-4">
                                     <label class="block text-gray-700 mb-2">Calificación</label>
                                     <div class="flex items-center">
-                                        <span v-for="star in 5" :key="star" @click="commentForm.rating = star"
+                                        <span v-for="star in 5" :key="star" @click="commentForm.estrellas = star"
                                             class="cursor-pointer text-2xl mr-1 transition-transform hover:scale-110"
-                                            :class="star <= commentForm.rating ? 'text-yellow-400' : 'text-gray-300'">
+                                            :class="star <= commentForm.estrellas ? 'text-yellow-400' : 'text-gray-300'">
                                             ★
                                         </span>
-                                        <span class="ml-2 text-sm text-gray-500">({{ commentForm.rating }}/5)</span>
+                                        <span class="ml-2 text-sm text-gray-500">({{ commentForm.estrellas }}/5)</span>
                                     </div>
                                 </div>
                                 <div class="mb-4">
                                     <label for="comment" class="block text-gray-700 mb-2">Comentario*</label>
-                                    <textarea id="comment" v-model="commentForm.content" rows="4"
+                                    <textarea id="comment" v-model="commentForm.comentario" rows="4"
                                         class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         required></textarea>
                                 </div>
@@ -130,12 +130,12 @@
                                     <div class="flex-shrink-0 mr-4">
                                         <div
                                             class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-bold">
-                                            {{ comment.name.charAt(0).toUpperCase() }}
+                                            {{ comment.nombre.charAt(0).toUpperCase() }}
                                         </div>
                                     </div>
                                     <div class="flex-1">
                                         <div class="flex flex-col md:flex-row md:items-center justify-between mb-1">
-                                            <h4 class="font-semibold">{{ comment.name }}</h4>
+                                            <h4 class="font-semibold">{{ comment.nombre }}</h4>
                                             <div class="flex items-center">
                                                 <div class="flex mr-2">
                                                     <span v-for="star in 5" :key="star" class="text-sm"
@@ -144,10 +144,10 @@
                                                     </span>
                                                 </div>
                                                 <span class="text-sm text-gray-500">{{ formatDate(comment.created_at)
-                                                    }}</span>
+                                                }}</span>
                                             </div>
                                         </div>
-                                        <p class="text-gray-700 whitespace-pre-line">{{ comment.content }}</p>
+                                        <p class="text-gray-700 whitespace-pre-line">{{ comment.comentario }}</p>
 
                                         <!-- Acciones (responder, reportar) -->
                                         <div class="flex mt-3 space-x-4">
@@ -232,10 +232,10 @@ const route = useRoute()
 
 // Formulario de comentario
 const commentForm = ref({
-    name: '',
+    nombre: '',
     email: '',
-    content: '',
-    rating: 0,
+    comentario: '',
+    estrellas: 1,
     post_id: route.params.id
 })
 
@@ -302,11 +302,11 @@ function sortComments() {
 // Enviar comentario
 async function submitComment() {
     try {
-        const res = await axios.post(`${apiUrl}/blog/comments`, commentForm.value)
+        const res = await axios.post(`${apiUrl}/blog/savecomentario`, commentForm.value)
 
         // Limpiar formulario (excepto nombre y email)
-        commentForm.value.content = ''
-        commentForm.value.rating = 0
+        commentForm.value.comentario = ''
+        commentForm.value.estrellas = 0
 
         // Recargar comentarios
         await obtenerComentarios(route.params.id)
