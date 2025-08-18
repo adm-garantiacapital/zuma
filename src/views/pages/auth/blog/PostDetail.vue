@@ -18,8 +18,8 @@
                     <!-- Imágenes adicionales -->
                     <Swiper :modules="[Navigation, Pagination, Autoplay]" :slides-per-view="1" :space-between="10"
                         :loop="true" :autoplay="{ delay: 4000 }" pagination navigation>
-                        <SwiperSlide v-for="(img, index) in post.extraImages" :key="index">
-                            <img :src="img" class="rounded-lg" />
+                        <SwiperSlide v-for="(img, index) in post.images" :key="index">
+                            <img :src="`${storageUrl}/${img.image_path}`" class="rounded-lg" />
                         </SwiperSlide>
                     </Swiper>
 
