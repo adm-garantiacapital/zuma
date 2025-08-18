@@ -1,55 +1,30 @@
 <script setup>
-import { useRoute } from 'vue-router';
-
-const route = useRoute()
-
-function isActive(path) {
-    const url = window.location.pathname; // Obtiene la ruta después del host, ej: "/productos/123"
-    const segmentos = url.split('/').filter(seg => seg); // Filtra elementos vacíos
-    const primerSegmento = segmentos[0];
-    return primerSegmento === path
-}
+import ServiceCard from './ServiceCard.vue';
 </script>
 
 <template>
-    <section class="md:px-8 mt-6 flex flex-wrap gap-4">
-        <!-- Factoring -->
-        <a href="/factoring"
-            class="flex items-center justify-between rounded-3xl overflow-hidden w-full md:w-[32%] bg-[#FF4929] h-28">
-            <div class="px-6 flex-1 text-white font-semibold">
-                Factoring
-                <div v-if="isActive('factoring')" class="h-[2px] w-20 bg-white mt-2"></div>
-            </div>
-            <div class="h-full w-1/2 bg-cover bg-center" style="
-          clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
-          background-image: url('/imagenes/zuma/imagen-2.png');
-        "></div>
-        </a>
+    <section class="container mx-auto px-4 md:px-8 mt-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2    ">
+            <!-- Factoring -->
+            <ServiceCard to="/factoring" image="/imagenes/zuma/imagen-2.png" image-position="right" :title-props="{
+                text: 'Factoring',
+                className: 'text-white',
+                background: '#FF4929'
+            }" class="rounded-3xl bg-[#FF4929] h-full" />
 
-        <!-- Tasas Fijas -->
-        <a href="/tasas-fijas"
-            class="flex items-center justify-between rounded-3xl overflow-hidden w-full md:w-[32%] bg-[#F0F1F9] h-28">
-            <div class="px-6 flex-1 text-[#171717] font-semibold">
-                Tasas fijas
-                <div v-if="isActive('tasas-fijas')" class="h-[2px] w-20 bg-[#171717] mt-2"></div>
-            </div>
-            <div class="h-full w-1/2 bg-cover bg-center" style="
-          clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
-          background-image: url('/imagenes/zuma/imagen-3.png');
-        "></div>
-        </a>
+            <!-- Tasas Fijas -->
+            <ServiceCard to="/tasas-fijas" image="/imagenes/zuma/imagen-3.png" image-position="right" :title-props="{
+                text: 'Tasas fijas',
+                className: 'text-[#171717]',
+                background: '#d4d4d4'
+            }" class="rounded-3xl bg-neutral-300 h-full" />
 
-        <!-- Hipotecas -->
-        <a href="/hipotecas"
-            class="flex items-center justify-between rounded-3xl overflow-hidden w-full md:w-[32%] bg-[#171717] h-28">
-            <div class="px-6 flex-1 text-white font-semibold">
-                Hipotecas
-                <div v-if="isActive('hipotecas')" class="h-[2px] w-20 bg-white mt-2"></div>
-            </div>
-            <div class="h-full w-1/2 bg-cover bg-center" style="
-          clip-path: polygon(20% 0, 100% 0, 100% 100%, 0% 100%);
-          background-image: url('/imagenes/zuma/imagen-4.png');
-        "></div>
-        </a>
+            <!-- Hipotecas -->
+            <ServiceCard to="/hipotecas" image="/imagenes/zuma/imagen-4.png" image-position="right" :title-props="{
+                text: 'Hipotecas',
+                className: 'text-white',
+                background: '#171717'
+            }" class="rounded-3xl bg-[#171717] h-full" />
+        </div>
     </section>
 </template>

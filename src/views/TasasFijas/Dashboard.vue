@@ -2,7 +2,7 @@
     <br />
     <Breadcrumb :home="home" :model="items" />
 
-    <section class="px-1 md:px-7">
+    <section class="px-4 md:px-7">
         <div
             class=" mb-6 md:mb-10 rounded-3xl border bg-[#6790FF] text-card-foreground shadow-sm relative overflow-hidden">
             <div
@@ -114,6 +114,7 @@
 </template>
 
 <script setup>
+import StatsWidget from "@/components/dashboard/StatsWidget.vue";
 import BestSellingWidget from "@/components/dashboardTasas/BestSellingWidget.vue";
 import NotificationsWidget from "@/components/dashboardTasas/NotificationsWidget.vue";
 import profileService from '@/services/profileService';
@@ -121,6 +122,7 @@ import reportsService from '@/services/reportsService';
 import { onMounted, ref } from "vue";
 import AddDeposito from "./EstadoCuenta/Desarrollo/AddDeposito.vue";
 import AddRetiro from "./EstadoCuenta/Desarrollo/AddRetiro.vue";
+
 
 const home = ref({ icon: 'pi pi-home' });
 const items = ref([{ label: 'Tasas fijas' }, { label: 'Mi billetera' }]);
