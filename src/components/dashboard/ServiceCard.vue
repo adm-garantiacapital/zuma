@@ -28,8 +28,10 @@ const props = defineProps({
 <template>
     <a :href="props.to"
         class="flex-1 relative overflow-hidden w-full md:max-h-28 h-full group transition-all duration-300" :class="{
-            'grayscale opacity-70': !isActive(props.to.split('/').filter(seg => seg)[0]),
-            'grayscale-0 opacity-100': isActive(props.to.split('/').filter(seg => seg)[0])
+            'hover:grayscale-0 opacity-100': !isActive(props.to.split('/').filter(seg => seg)[0]),
+            'grayscale opacity-80': !isActive(props.to.split('/').filter(seg => seg)[0]),
+            'grayscale-0 opacity-100': isActive(props.to.split('/').filter(seg => seg)[0]),
+
         }">
         <div class="relative h-full" :style="{ color: props.titleProps.background }">
             <img :src="props.image" :alt="props.titleProps.text || 'Servicio'" :class="[
