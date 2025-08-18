@@ -27,7 +27,7 @@
                     <div v-if="post" class="bg-gray-100 p-4 rounded-lg shadow mt-2">
                         <h2 class="text-xl font-semibold mb-2">Referencias</h2>
                         <ul class="list-disc pl-6 space-y-1">
-                            <li v-for="(ref, index) in post.references" :key="index">
+                            <li v-for="(ref, index) in post.enlaces" :key="index">
                                 <a :href="ref" target="_blank" class="text-blue-600 hover:underline">{{ ref }}</a>
                             </li>
                         </ul>
@@ -84,11 +84,19 @@ onMounted(() => {
 
 async function obtenerPost(id) {
     try {
-
         const res = await axios.get(`${apiUrl}/blog/showpost/${id}`)
         console.log(res.data)
-        post.value = res.data
+
+        const data = res.data
+
+        // Mapeamos los campos para que encajen con tu template
+        post.value = {
+            ...data,
+            enlaces: data.enlaces ? data.enlaces.split(",") : [] // 👈 aquí se transforma a array
+        }
+
     } catch (error) {
+        console.error(error)
         toast.add({
             severity: 'error',
             summary: 'Error',
