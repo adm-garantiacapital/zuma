@@ -10,21 +10,21 @@ import ServiceCard from './ServiceCard.vue';
                 text: 'Factoring',
                 className: 'text-black hover:text-white',
                 background: '#d4d4d4'
-            }" class="rounded-3xl bg-neutral-300  h-full hover:bg-black " />
+            }" class="rounded-3xl bg-neutral-300  h-full  " />
 
             <!-- Tasas Fijas -->
             <ServiceCard to="/tasas-fijas" image="/imagenes/zuma/imagen-3.png" image-position="right" :title-props="{
                 text: 'Tasas fijas',
                 className: 'text-black hover:text-white',
                 background: '#d4d4d4'
-            }" class="rounded-3xl bg-neutral-300 h-full hover:bg-black " />
+            }" class="rounded-3xl bg-neutral-300 h-full " />
 
             <!-- Hipotecas -->
             <ServiceCard to="/hipotecas" image="/imagenes/zuma/imagen-4.png" image-position="right" :title-props="{
                 text: 'Hipotecas',
                 className: 'text-black hover:text-white',
                 background: '#d4d4d4'
-            }" class="rounded-3xl bg-neutral-300 hover:bg-black h-full " />
+            }" class="rounded-3xl bg-neutral-300  h-full " />
         </div>
     </section>
 </template>
