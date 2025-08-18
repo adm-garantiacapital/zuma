@@ -32,12 +32,55 @@
         <Column selectionMode="multiple" style="width: 3rem" :exportable="false" />
         <Column field="cuota" header="Cuota" sortable style="width: 3rem" />
         <Column field="vencimiento" header="Vencimiento" sortable style="width: 5rem" />
-        <Column field="saldo_inicial" header="Saldo Inicial" sortable style="width: 10rem" />
-        <Column field="capital" header="Capital" sortable style="width: 8rem" />
-        <Column field="intereses" header="Interés" sortable style="width: 8rem" />
-        <Column field="cuota_neta" header="Cuota Neta" sortable style="width: 10rem" />
-        <Column field="total_cuota" header="Total Cuota" sortable style="width: 10rem" />
-        <Column field="saldo_final" header="Saldo Final" sortable style="width: 13rem" />
+        
+        <!-- Columnas con formato de moneda -->
+        <Column field="saldo_inicial" header="Saldo Inicial" sortable style="width: 10rem">
+          <template #body="slotProps">
+            <span class="font-medium text-gray-700">
+              {{ formatCurrency(slotProps.data.saldo_inicial) }}
+            </span>
+          </template>
+        </Column>
+        
+        <Column field="capital" header="Capital" sortable style="width: 8rem">
+          <template #body="slotProps">
+            <span class="font-medium text-blue-600">
+              {{ formatCurrency(slotProps.data.capital) }}
+            </span>
+          </template>
+        </Column>
+        
+        <Column field="intereses" header="Interés" sortable style="width: 8rem">
+          <template #body="slotProps">
+            <span class="font-medium text-orange-600">
+              {{ formatCurrency(slotProps.data.intereses) }}
+            </span>
+          </template>
+        </Column>
+        
+        <Column field="cuota_neta" header="Cuota Neta" sortable style="width: 10rem">
+          <template #body="slotProps">
+            <span class="font-medium text-green-600">
+              {{ formatCurrency(slotProps.data.cuota_neta) }}
+            </span>
+          </template>
+        </Column>
+        
+        <Column field="total_cuota" header="Total Cuota" sortable style="width: 10rem">
+          <template #body="slotProps">
+            <span class="font-bold text-purple-700">
+              {{ formatCurrency(slotProps.data.total_cuota) }}
+            </span>
+          </template>
+        </Column>
+        
+        <Column field="saldo_final" header="Saldo Final" sortable style="width: 13rem">
+          <template #body="slotProps">
+            <span class="font-medium text-gray-700">
+              {{ formatCurrency(slotProps.data.saldo_final) }}
+            </span>
+          </template>
+        </Column>
 
         <!-- Columna Estado con tag -->
         <Column field="estado" header="Estado" sortable style="width: 8rem">
@@ -164,6 +207,45 @@ const showInvestmentInfo = ref(false)
 
 const { exportLoading, exportCronogramaToExcel } = useExport()
 
+// Función para formatear números como moneda peruana
+// Función para formatear números como moneda (actualizada para manejar múltiples monedas)
+const formatCurrency = (value, currency = null) => {
+  if (value === null || value === undefined || isNaN(value)) {
+    return currency === 'USD' || currency === 'DOLARES' || currency === 'Dólares' ? '$0.00' : 'S/ 0.00'
+  }
+  
+  const number = Number(value)
+  
+  // Si se especifica una moneda, usar esa moneda
+  if (currency) {
+    const currencyMap = {
+      'USD': { code: 'USD', symbol: '$' },
+      'DOLARES': { code: 'USD', symbol: '$' },
+      'Dólares': { code: 'USD', symbol: '$' },
+      'PEN': { code: 'PEN', symbol: 'S/' },
+      'SOL': { code: 'PEN', symbol: 'S/' },
+      'SOLES': { code: 'PEN', symbol: 'S/' },
+      'EUR': { code: 'EUR', symbol: '€' }
+    }
+    
+    const currencyInfo = currencyMap[currency] || { code: 'PEN', symbol: 'S/' }
+    
+    return new Intl.NumberFormat('es-PE', {
+      style: 'currency',
+      currency: currencyInfo.code,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(number)
+  }
+  
+  // Por defecto usar soles
+  return new Intl.NumberFormat('es-PE', {
+    style: 'currency',
+    currency: 'PEN',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(number)
+}
 const formattedScheduleData = computed(() => {
   return scheduleData.value?.map(item => ({
     ...item,
@@ -194,9 +276,9 @@ const open = async (propertyData) => {
     // Mantener compatibilidad con el código anterior
     propertyId.value = propertyData
   } else {
-    // Nuevo formato: recibir el objeto completo
-    propertyId.value = propertyData.property_id
-    configId.value = propertyData.id // El id de la configuración
+    // CORRECCIÓN: Usar el id directamente, no property_id
+    propertyId.value = propertyData.id  // Cambiar de property_id a id
+    configId.value = propertyData.id    // El id de la configuración es el mismo
     amount.value = propertyData.requerido
   }
 
@@ -205,6 +287,7 @@ const open = async (propertyData) => {
   currentPage.value = 1
 
   try {
+    // Usar propertyId.value que ahora contiene el id correcto
     const response = await simulationService.getSchedules(propertyId.value)
     const responseData = response.data
 
