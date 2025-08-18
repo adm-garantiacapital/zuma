@@ -55,11 +55,13 @@
             </svg>
         </div>
         <span :class="[
-            'absolute text-white px-6 rounded-full bottom-3 left-4 md:bottom-8 md:left-12 font-semibold md:text-lg z-10',
-            props.titleProps.className
+            'absolute text-black px-6 rounded-full bottom-3 left-4 md:bottom-8 md:left-12 font-semibold md:text-lg z-10 group-hover:text-white',
+            { 'text-white': isActive(props.to.split('/').filter(seg => seg)[0]) },
+            props.titleProps.className,
+
         ]">
             {{ props.titleProps.text }}
-            <div v-if="!isActive(props.to.split('/').filter(seg => seg)[0])" class="w-full h-[2px] mt-1 bg-black    "
+            <div class="w-full h-[2px] mt-1  bg-black    "
                 :class="isActive(props.to.split('/').filter(seg => seg)[0]) ? 'bg-white' : 'group-hover:bg-white'" />
         </span>
     </a>
