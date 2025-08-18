@@ -33,7 +33,7 @@
           </Card>
         </div>
 
-        <BlogGrid />
+        <BlogGrid :posts="posts" />
         <!-- Grid Old -->
 
 
@@ -156,6 +156,8 @@ import Dropdown from 'primevue/dropdown';
 import InputGroup from 'primevue/inputgroup';
 import InputText from 'primevue/inputtext';
 import { useToast } from 'primevue/usetoast';
+const apiUrl = import.meta.env.VITE_API_ADMIN1
+
 
 // Estados reactivos
 const searchQuery = ref('')
@@ -233,7 +235,7 @@ const posts = ref([])
 
 async function obtenerPublicaciones() {
   try {
-    const res = await axios.get('http://127.0.0.1:8000/api/blog/publicaciones')
+    const res = await axios.get(`${apiUrl}/blog/publicaciones`)
     posts.value = res.data
   } catch (error) {
     toast.add({

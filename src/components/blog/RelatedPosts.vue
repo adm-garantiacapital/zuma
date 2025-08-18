@@ -6,9 +6,9 @@
         <ul class="space-y-3">
             <li v-for="(post, index) in related" :key="index"
                 class="flex items-center space-x-3 hover:bg-gray-50 rounded-lg p-2 transition">
-                <img :src="post.image" alt="Miniatura" class="w-16 h-16 object-cover rounded-md" />
+                <img :src="`${storage}/${post.imagen}`" alt="Miniatura" class="w-16 h-16 object-cover rounded-md" />
                 <div>
-                    <h3 class="text-sm font-medium text-gray-700">{{ post.title }}</h3>
+                    <h3 class="text-sm font-medium text-gray-700">{{ post.titulo }}</h3>
                     <p class="text-xs text-gray-500">{{ post.date }}</p>
                 </div>
             </li>
@@ -17,9 +17,14 @@
 </template>
 
 <script>
+
 export default {
     name: "RelatedPosts",
     props: {
+        storage: {
+            type: String,
+            default: ''
+        },
         related: {
             type: Array,
             default: () => [],

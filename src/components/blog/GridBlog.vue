@@ -8,7 +8,7 @@
             <div v-for="(post, index) in paginatedPosts" :key="index"
                 class="rounded-xl overflow-hidden shadow-lg relative bg-white group">
                 <!-- Imagen -->
-                <img :src="post.image" alt="Post image" class="h-72 w-full object-cover" />
+                <img :src="`${apiUrl}/${post.imagen}`" alt="Post image" class="h-72 w-full object-cover" />
 
                 <!-- Etiqueta de producto arriba -->
                 <div class="absolute top-4 left-4 bg-white text-sm px-3 py-1 rounded-full font-semibold shadow">
@@ -18,9 +18,9 @@
                 <!-- Contenido -->
                 <div class="p-4 flex flex-col justify-between h-48">
                     <div>
-                        <h2 class="text-lg font-semibold line-clamp-2">{{ post.title }}</h2>
+                        <h2 class="text-lg font-semibold line-clamp-2">{{ post.titulo }}</h2>
                         <p class="text-sm opacity-80 mt-1 line-clamp-3">
-                            {{ post.description }}
+                            {{ post.contenido }}
                         </p>
                     </div>
 
@@ -28,13 +28,12 @@
                     <div class="mt-3 flex flex-wrap gap-2">
                         <span v-for="(cat, i) in post.categories" :key="i"
                             class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">
-                            {{ cat }}
+                            {{ cat.nombre }}
                         </span>
                     </div>
 
                     <!-- Botón Leer más (flecha) -->
                     <router-link :to="`/blog/post/${post.id}`">
-
                         <button
                             class="absolute bottom-4 right-4 p-2 text-gray-500 hover:text-gray-700 transition-all duration-300 group-hover:translate-x-1">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20"
@@ -67,97 +66,29 @@
 
 <script setup>
 import { computed, ref } from "vue";
+const apiUrl = import.meta.env.VITE_API_STORAGE
 
-
-// Datos de ejemplo
-const posts = ref([
-    {
-        id: 1,
-        title: "Wanderlust Unleashed: Top Hidden Gems You Must Visit This Year",
-        productTag: "Health & Nutrition",
-        description:
-            "Discover unique, off-the-radar destinations around the world.",
-        image:
-            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-        categories: ["Travel", "Nature", "Adventure"],
-        relatedPosts: [
-            {
-                title: "Otro artículo interesante",
-                image: "https://via.placeholder.com/150",
-                date: "12 Ago 2025",
-            },
-            {
-                title: "Tips para mejorar tu blog",
-                image: "https://via.placeholder.com/150",
-                date: "10 Ago 2025",
-            },
-        ],
+// Definimos las props que recibirá el componente
+const props = defineProps({
+    posts: {
+        type: Array,
+        required: true,
+        default: () => []
     },
-    {
-        id: 2,
-        title: "Travel Bucket List: 25 Destinations for Every Adventurer",
-        productTag: "Sustainability",
-        description:
-            "Explore a curated list of must-visit places for every kind of traveler.",
-        image:
-            "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80",
-        categories: ["Mountains", "Hiking", "Culture"],
-    },
-    {
-        id: 3,
-        title: "How to Travel Like a Local: Insider Tips for Authentic Experiences",
-        productTag: "Cultural Insights",
-        description:
-            "Learn how to immerse yourself in the culture of each place you visit.",
-        image:
-            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-        categories: ["Local", "Food", "Traditions"],
-    },
-    {
-        id: 4,
-        title: "How to Travel Like a Local: Insider Tips for Authentic Experiences",
-        productTag: "Cultural Insights",
-        description:
-            "Learn how to immerse yourself in the culture of each place you visit.",
-        image:
-            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-        categories: ["Local", "Food", "Traditions"],
-    },
-    {
-        id: 5,
-        title: "How to Travel Like a Local: Insider Tips for Authentic Experiences",
-        productTag: "Cultural Insights",
-        description:
-            "Learn how to immerse yourself in the culture of each place you visit.",
-        image:
-            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-        categories: ["Local", "Food", "Traditions"],
-    },
-    {
-        id: 4,
-        title: "How to Travel Like a Local: Insider Tips for Authentic Experiences",
-        productTag: "Cultural Insights",
-        description:
-            "Learn how to immerse yourself in the culture of each place you visit.",
-        image:
-            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-        categories: ["Local", "Food", "Traditions"],
-    },
-]);
-
-
-
-
+    itemsPerPage: {
+        type: Number,
+        default: 6
+    }
+});
 
 // Paginación
 const currentPage = ref(1);
-const itemsPerPage = 6;
 
-const totalPages = computed(() => Math.ceil(posts.value.length / itemsPerPage));
+const totalPages = computed(() => Math.ceil(props.posts.length / props.itemsPerPage));
 
 const paginatedPosts = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage;
-    return posts.value.slice(start, start + itemsPerPage);
+    const start = (currentPage.value - 1) * props.itemsPerPage;
+    return props.posts.slice(start, start + props.itemsPerPage);
 });
 
 function nextPage() {
