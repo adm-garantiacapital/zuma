@@ -125,38 +125,45 @@
 
                             <!-- Comentarios -->
                             <div v-for="comment in paginatedComments" :key="comment.id"
-                                class="mb-6 pb-6 border-b last:border-0">
+                                class="mb-4 pb-4 border-b last:border-0 text-sm">
+
                                 <div class="flex items-start">
-                                    <div class="flex-shrink-0 mr-4">
+                                    <!-- Avatar -->
+                                    <div class="flex-shrink-0 mr-3">
                                         <div
-                                            class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-bold">
-                                            {{ comment.nombre.charAt(0).toUpperCase() }}
+                                            class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-semibold text-xs">
+                                            {{ comment.email.charAt(0).toUpperCase() }}
                                         </div>
                                     </div>
+
+                                    <!-- Contenido -->
                                     <div class="flex-1">
                                         <div class="flex flex-col md:flex-row md:items-center justify-between mb-1">
-                                            <h4 class="font-semibold">{{ comment.nombre }}</h4>
-                                            <div class="flex items-center">
+                                            <h4 class="font-medium text-sm">{{ comment.email }}</h4>
+                                            <div class="flex items-center text-xs">
                                                 <div class="flex mr-2">
-                                                    <span v-for="star in 5" :key="star" class="text-sm"
-                                                        :class="star <= comment.rating ? 'text-yellow-400' : 'text-gray-300'">
+                                                    <span v-for="star in 5" :key="star" class="text-xs"
+                                                        :class="star <= comment.estrellas ? 'text-yellow-400' : 'text-gray-300'">
                                                         ★
                                                     </span>
                                                 </div>
-                                                <span class="text-sm text-gray-500">{{ formatDate(comment.created_at)
-                                                }}</span>
+                                                <span class="text-gray-500">{{ formatDate(comment.created_at) }}</span>
                                             </div>
                                         </div>
-                                        <p class="text-gray-700 whitespace-pre-line">{{ comment.comentario }}</p>
 
-                                        <!-- Acciones (responder, reportar) -->
-                                        <div class="flex mt-3 space-x-4">
-                                            <button class="text-sm text-blue-600 hover:underline">Responder</button>
-                                            <button class="text-sm text-gray-500 hover:underline">Reportar</button>
+                                        <p class="text-gray-700 whitespace-pre-line text-sm leading-snug">
+                                            {{ comment.comentario }}
+                                        </p>
+
+                                        <!-- Acciones -->
+                                        <div class="flex mt-2 space-x-2">
+                                            <button class="text-xs text-blue-600 hover:underline">Responder</button>
+                                            <button class="text-xs text-gray-500 hover:underline">Reportar</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
 
                             <!-- Paginación mejorada -->
                             <div class="flex flex-col items-center mt-8">
@@ -271,7 +278,7 @@ async function obtenerPost(id) {
 // Obtener comentarios
 async function obtenerComentarios(postId) {
     try {
-        const res = await axios.get(`${apiUrl}/blog/comments/${postId}`)
+        const res = await axios.get(`${apiUrl}/blog/getcomentarios/${postId}`)
         comments.value = res.data
         sortComments() // Ordenar inicialmente
     } catch (error) {
