@@ -58,7 +58,6 @@
                     <h3 class="text-[#171717] m-0 font-bold">
                       {{ showAmounts ? `S/ ${balances.PEN[key].toFixed(2)}` : 'S/ ••••••' }}
                     </h3>
-                    <a class="text-[#6790FF] m-0 font-medium">Ver más...</a>
                   </div>
                 </div>
               </div>
@@ -84,7 +83,6 @@
                     <h3 class="text-[#171717] m-0 font-bold">
                       {{ showAmounts ? `$ ${balances.USD[key].toFixed(2)}` : '$ ••••••' }}
                     </h3>
-                    <a class="text-[#6790FF] m-0 font-medium">Ver más...</a>
                   </div>
                 </div>
               </div>

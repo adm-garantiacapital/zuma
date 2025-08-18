@@ -73,11 +73,10 @@
                                         class="text-[#171717] !text-[2rem] sm:!text-[2.5rem] md:!text-[2.8rem] inline-block align-top mt-3 sm:mt-5 mb-2 sm:mb-3 me-4 sm:me-6 md:me-10"></i>
                                     <div class="inline-block">
                                         <h5 class="text-[#171717] m-0 font-semibold text-sm sm:text-base">{{ label.title
-                                        }}</h5>
+                                            }}</h5>
                                         <h3 class="text-[#171717] m-0 font-bold text-lg sm:text-xl md:text-2xl">
                                             {{ showAmounts ? `S/ ${balances.PEN[key].toFixed(2)}` : 'S/ ••••••' }}
                                         </h3>
-                                        <a class="text-[#6790FF] m-0 font-medium text-sm sm:text-base">Ver más...</a>
                                     </div>
                                 </div>
                             </div>
