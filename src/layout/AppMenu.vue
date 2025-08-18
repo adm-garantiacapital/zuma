@@ -13,6 +13,8 @@ const initials = ref('');
 const profilePhoto = ref('');
 const showCopyTooltip = ref(false);
 
+const { isSidebarCollapsed, toggleMenu } = useLayout();
+
 const loadProfile = async () => {
     try {
         const response = await profileService.getProfile();
@@ -42,8 +44,6 @@ const copyUserCode = async () => {
 
 onMounted(loadProfile);
 
-const { toggleMenu } = useLayout();
-
 const hipotecasMenu = [
     {
         items: [{ label: 'Mi billetera', icon: 'billetera', to: '/hipotecas', icon2: 'si' }]
@@ -66,8 +66,6 @@ const hipotecasMenu = [
     {
         items: [{ label: 'Subastas en línea', icon: 'datos', to: '/hipotecas/subasta' }]
     },
-
-
 ];
 
 const tasasFijasMenu = [
@@ -89,8 +87,6 @@ const tasasFijasMenu = [
     {
         items: [{ label: 'Oportunidades', icon: 'buscar', to: '/tasas-fijas/Search' }]
     },
-
-
 ];
 
 const clienteMenu = [
@@ -119,15 +115,19 @@ const model = computed(() => {
 </script>
 
 <template>
-    <br>
     <ul class="layout-menu">
-        <div class="layout-topbar-logo-container pt-5">
-            <router-link to="/" class="layout-topbar-logo inline-block">
-                <img id="zuma" src="/imagenes/landing/logo-zuma.svg" alt="Logo Zuma" class="inline-block w-28" />
-                <img id="zuma-m" src="/imagenes/landing/logo-zuma-m.svg" alt="Logo Zuma" class="hidden w-full mb-5" />
+        <div class="layout-topbar-logo-container pt-5 flex items-center justify-between px-4">
+            <router-link to="/" class="layout-topbar-logo flex items-center gap-3">
+                <div class="flex items-center justify-center rounded-lg bg-white text-sidebar-primary-foreground">
+                    <img id="zuma" src="/imagenes/landing/logo-zuma.svg" alt="Logo Zuma"
+                        :class="{ 'hidden': isSidebarCollapsed, 'block': !isSidebarCollapsed, 'h-auto w-auto max-w-[140px] object-contain duration-200': true }" />
+                    <img id="zuma-m" src="/imagenes/landing/logo-zuma-m.svg" alt="Logo Zuma"
+                        :class="{ 'hidden': !isSidebarCollapsed, 'block': isSidebarCollapsed, 'h-7 w-7': true }" />
+                </div>
             </router-link>
+
             <svg xmlns="http://www.w3.org/2000/svg" id="menu-icon" width="20" height="20" viewBox="0 0 26 22"
-                fill="none" @click="toggleMenu" class="menu-toggle-btn inline-block ms-[119px] float-none">
+                fill="none" @click="toggleMenu" class="menu-toggle-btn cursor-pointer">
                 <rect x="1.51078" y="1.5267" width="22.7718" height="19.1942" rx="5.31803"
                     transform="rotate(-0.620767 1.51078 1.5267)" stroke="#171717" stroke-width="2" />
                 <line x1="11.0977" y1="20.5049" x2="11.0977" y2="1.35933" stroke="#171717" stroke-width="2" />
@@ -137,16 +137,19 @@ const model = computed(() => {
         </div>
 
         <!-- Avatar y nombre -->
-        <div class="py-20">
-            <div
-                class="avatar-zuma w-[104px] h-[116px] bg-[#F0F1F9] relative mx-auto rounded-[40px] overflow-hidden flex items-center justify-center text-[#171717] text-3xl font-bold">
+        <div class="py-5 text-center my-5 px-4" :class="{ 'px-2': isSidebarCollapsed }">
+            <div class="avatar-zuma w-[104px] h-[116px] bg-[#E920AE] relative size-28 mx-auto rounded-2xl duration-200 overflow-hidden flex items-center justify-center text-white text-2xl "
+                :class="{ 'w-16 h-16': isSidebarCollapsed }">
                 <img v-if="profilePhoto" :src="profilePhoto" alt="Avatar" class="w-full h-full object-cover" />
-                <span v-else>{{ initials }}</span>
+                <span v-else class="text-5xl rounded-3xl duration-200" :class="{ 'text-3xl': isSidebarCollapsed }">{{
+                    initials }}</span>
             </div>
-            <h3 class="name-zuma text-center mt-2 mb-3 text-[#171717]">{{ fullName }}</h3>
+            <h5 class="name-zuma text-center mt-2 mb-3 text-black text-xl" :class="{ 'hidden': isSidebarCollapsed }">
+                {{ fullName }}</h5>
 
             <!-- Código de usuario mejorado -->
-            <div class="user-code-container mx-auto max-w-[200px]">
+            <div class="user-code-container mx-auto"
+                :class="{ 'max-w-[200px]': !isSidebarCollapsed, 'hidden': isSidebarCollapsed }">
                 <div class="text-center mb-2">
                     <span class="text-xs text-gray-600 font-medium">Código del inversionista</span>
                 </div>
@@ -187,12 +190,13 @@ const model = computed(() => {
 
         <!-- Menú dinámico -->
         <template v-for="(item, i) in model" :key="item">
-            <app-menu-item v-if="!item.separator" :item="item" :index="i"></app-menu-item>
+            <app-menu-item v-if="!item.separator" :item="item" :index="i"
+                :collapsed="isSidebarCollapsed"></app-menu-item>
         </template>
 
         <!-- Sección final -->
-        <div class="announce-zuma">
-            <div class="mt-20 p-5 rounded-3xl bg-[#FF4929] text-center">
+        <div class="announce-zuma px-4" :class="{ 'px-2': isSidebarCollapsed }">
+            <div class="mt-20 p-5 rounded-3xl bg-[#FF4929] text-center" :class="{ 'hidden': isSidebarCollapsed }">
                 <img src="/imagenes/landing/logo-zuma.svg" alt="Logo Zuma" class="inline-block w-14" />
                 <h3 class="text-center my-3 text-[#171717] font-noto">¿Tienes alguna duda?</h3>
                 <p class="text-[#171717] mb-3">Tenemos especialistas que te podrán ayudar.</p>
@@ -204,12 +208,14 @@ const model = computed(() => {
             </div>
 
             <button type="button"
-                class="w-full text-white bg-[#171717] focus:outline-none hover:bg-[#6790FF] focus:bg-[#FF4929] font-bold rounded-3xl px-5 py-3 mt-3 transition duration-100 ease-in">
+                class="w-full text-white bg-[#171717] focus:outline-none hover:bg-[#6790FF] focus:bg-[#FF4929] font-bold rounded-3xl px-5 py-3 mt-3 transition duration-100 ease-in"
+                :class="{ 'hidden': isSidebarCollapsed }">
                 <span class="inline-block align-middle">¿Por qué invertir con nosotros?</span>
             </button>
 
             <button type="button"
-                class="w-full text-white bg-[#171717] focus:outline-none hover:bg-[#6790FF] focus:bg-[#FF4929] font-bold rounded-3xl px-5 py-3 my-3 transition duration-100 ease-in">
+                class="w-full text-white bg-[#171717] focus:outline-none hover:bg-[#6790FF] focus:bg-[#FF4929] font-bold rounded-3xl px-5 py-3 my-3 transition duration-100 ease-in"
+                :class="{ 'hidden': isSidebarCollapsed }">
                 <span class="inline-block align-middle">Preguntas frecuentes</span>
             </button>
         </div>
@@ -231,5 +237,15 @@ const model = computed(() => {
 
 .animate-fade-in {
     animation: fade-in 0.3s ease-out;
+}
+
+.layout-menu {
+    transition: all 0.3s ease;
+}
+
+.avatar-zuma,
+.name-zuma,
+.user-code-container {
+    transition: all 0.3s ease;
 }
 </style>

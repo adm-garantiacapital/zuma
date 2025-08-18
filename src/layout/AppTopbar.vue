@@ -5,29 +5,27 @@
     <div class="layout-topbar-actions">
       <div class="layout-config-menu">
         <svg xmlns="http://www.w3.org/2000/svg" id="menu-icon-top" width="20" height="20" viewBox="0 0 26 22"
-            fill="none" @click="toggleMenu" class="menu-toggle-btn mt-[0.55rem] hidden">
-            <rect x="1.51078" y="1.5267" width="22.7718" height="19.1942" rx="5.31803"
-                transform="rotate(-0.620767 1.51078 1.5267)" stroke="#171717" stroke-width="2" />
-            <line x1="11.0977" y1="20.5049" x2="11.0977" y2="1.35933" stroke="#171717" stroke-width="2" />
-            <path d="M5.39844 6.86353H7.79163" stroke="#171717" stroke-width="2" stroke-linecap="round" />
-            <path d="M5.39844 11.1711H7.79163" stroke="#171717" stroke-width="2" stroke-linecap="round" />
+          fill="none" @click="toggleMenu" class="menu-toggle-btn mt-[0.55rem] hidden">
+          <rect x="1.51078" y="1.5267" width="22.7718" height="19.1942" rx="5.31803"
+            transform="rotate(-0.620767 1.51078 1.5267)" stroke="#171717" stroke-width="2" />
+          <line x1="11.0977" y1="20.5049" x2="11.0977" y2="1.35933" stroke="#171717" stroke-width="2" />
+          <path d="M5.39844 6.86353H7.79163" stroke="#171717" stroke-width="2" stroke-linecap="round" />
+          <path d="M5.39844 11.1711H7.79163" stroke="#171717" stroke-width="2" stroke-linecap="round" />
         </svg>
       </div>
 
       <!-- Componente de notificaciones separado -->
-      <Notificacion
-        v-model:showMobileNotifications="showMobileNotifications"
-        @close-user-menu="showUserMenu = false" 
-      />
+      <Notificacion v-model:showMobileNotifications="showMobileNotifications" @close-user-menu="showUserMenu = false" />
 
       <!-- MENÚ DE USUARIO - Visible en desktop -->
       <div class="relative user-menu-container hidden md:block">
         <button @click="toggleUserMenu"
           class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors duration-200">
           <!-- Foto de perfil con iniciales -->
-          <div class="w-8 h-8 rounded-full bg-gray-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+          <div
+            class="w-12 h-12 rounded-full bg-[#E920AE] overflow-hidden flex-shrink-0 flex items-center justify-center">
             <img v-if="profilePhoto" :src="profilePhoto" alt="Avatar" class="w-full h-full object-cover" />
-            <span v-else-if="userInitials" class="text-xs font-semibold text-gray-700">{{ userInitials }}</span>
+            <span v-else-if="userInitials" class="text-lg font-bold text-white">{{ userInitials }}</span>
             <i v-else class="pi pi-user text-gray-600 text-sm"></i>
           </div>
 
@@ -67,7 +65,7 @@
 
       <!-- Botón menú de 3 puntos - Solo visible en móvil/tablet -->
       <div class="relative mobile-menu-container md:hidden">
-        <button @click="toggleMobileMenu" 
+        <button @click="toggleMobileMenu"
           class="layout-topbar-action flex items-center justify-center p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200">
           <i class="pi pi-ellipsis-v text-lg"></i>
         </button>
@@ -76,11 +74,12 @@
         <div v-if="showMobileMenu" ref="mobileMenuRef"
           class="absolute right-0 mt-2 w-64 bg-white border-0 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] z-50 overflow-hidden"
           style="animation: slideDown 0.2s ease-out;">
-          
+
           <!-- Información del usuario en móvil -->
           <div class="px-4 py-4 border-b border-gray-100 bg-gray-50">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
+              <div
+                class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
                 <img v-if="profilePhoto" :src="profilePhoto" alt="Avatar" class="w-full h-full object-cover" />
                 <span v-else-if="userInitials" class="text-sm font-semibold text-gray-700">{{ userInitials }}</span>
                 <i v-else class="pi pi-user text-gray-600"></i>
@@ -98,11 +97,11 @@
               class="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-150">
               <div class="relative">
                 <i class="pi pi-bell text-gray-600"></i>
-                <div v-if="notificationsCount > 0"
-                  class="absolute -top-1 -right-1 w-3 h-3 bg-[#FF4929] rounded-full"></div>
+                <div v-if="notificationsCount > 0" class="absolute -top-1 -right-1 w-3 h-3 bg-[#FF4929] rounded-full">
+                </div>
               </div>
               <span class="text-sm font-medium text-gray-700">Notificaciones</span>
-              <span v-if="notificationsCount > 0" 
+              <span v-if="notificationsCount > 0"
                 class="ml-auto bg-[#FF4929] text-white text-xs px-2 py-1 rounded-full">
                 {{ notificationsCount }}
               </span>
@@ -131,12 +130,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
-import Notificacion from './Notificacion.vue';
-import profileService from '@/services/profileService';
-import { useRouter, useRoute } from 'vue-router';
 import { useLayout } from '@/layout/composables/layout';
 import admin2AuthService from '@/services/admin2AuthService';
+import profileService from '@/services/profileService';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import Notificacion from './Notificacion.vue';
 
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 
@@ -158,7 +157,7 @@ const notificationsCount = computed(() => {
 const currentSection = computed(() => {
   const currentPath = route.path;
   console.log('Ruta actual:', currentPath); // Para debugging
-  
+
   if (currentPath.startsWith('/tasas-fijas')) {
     return 'tasas-fijas';
   } else if (currentPath.startsWith('/cliente')) {
@@ -284,7 +283,7 @@ onBeforeUnmount(() => {
 // Función actualizada para manejar las 3 secciones
 const goToProfile = () => {
   showUserMenu.value = false;
-  
+
   const section = currentSection.value;
   console.log('Sección detectada para perfil:', section); // Para debugging
 
@@ -309,6 +308,7 @@ const goToProfile = () => {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
