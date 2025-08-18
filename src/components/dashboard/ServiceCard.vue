@@ -1,41 +1,53 @@
-<script setup>
-import { useRoute } from 'vue-router';
+    <script setup>
+    import { useRoute } from 'vue-router';
 
-const route = useRoute()
+    const route = useRoute()
 
-function isActive(path) {
-    const url = window.location.pathname;
-    const segmentos = url.split('/').filter(seg => seg);
-    const primerSegmento = segmentos[0];
-    return primerSegmento === path
-}
+    function isActive(path) {
+        const url = window.location.pathname;
+        const segmentos = url.split('/').filter(seg => seg);
+        const primerSegmento = segmentos[0];
+        return primerSegmento === path
+    }
 
-const props = defineProps({
-    to: { type: String, required: true },
-    image: { type: String, required: true },
-    imagePosition: { type: String, default: 'left', validator: (value) => ['left', 'right'].includes(value) },
-    titleProps: {
-        type: Object,
-        required: true,
-        validator: (value) => {
-            return 'text' in value && 'background' in value // 👈 ahora pedimos también color de fondo
-        }
-    },
-    className: { type: String, default: '' }
-});
+    function getrute(path) {
+        const url = window.location.pathname;
+        const segmentos = url.split('/').filter(seg => seg);
+        const primerSegmento = segmentos[0];
+        return primerSegmento;
+    }
+
+    const props = defineProps({
+        to: { type: String, required: true },
+        image: { type: String, required: true },
+        imagePosition: { type: String, default: 'left', validator: (value) => ['left', 'right'].includes(value) },
+        url: { type: String, required: true },
+        titleProps: {
+            type: Object,
+            required: true,
+            validator: (value) => {
+                return 'text' in value && 'background' in value // 👈 ahora pedimos también color de fondo
+            }
+        },
+        className: { type: String, default: '' }
+    });
 </script>
 
 <template>
     <a :href="props.to"
         class="flex-1 relative overflow-hidden w-full md:max-h-28 h-full group transition-all duration-300" :class="{
-            'hover:grayscale-0 opacity-100': !isActive(props.to.split('/').filter(seg => seg)[0]),
-            'grayscale opacity-80': !isActive(props.to.split('/').filter(seg => seg)[0]),
-            'grayscale-0 opacity-100': isActive(props.to.split('/').filter(seg => seg)[0]),
+            'hover:grayscale-0 opacity-100 bg-[#FF4929]': !isActive(props.to.split('/').filter(seg => seg)[0]),
+            'grayscale opacity-80 ': !isActive(props.to.split('/').filter(seg => seg)[0]),
+            'grayscale-0 opacity-100  ': isActive(props.to.split('/').filter(seg => seg)[0]),
 
         }">
-        <div class="relative h-full" :style="{ color: props.titleProps.background }">
+        <div class="relative h-full " :class="{
+            'bg-[#FF4929]': isActive(props.to.split('/').filter(seg => seg)[0]),
+
+
+        }" :style="{ color: isActive(props.to.split('/').filter(seg => seg)[0]) ? '#FF4929' : '#d4d4d4  ', }">
             <img :src="props.image" :alt="props.titleProps.text || 'Servicio'" :class="[
-                'w-32 sm:max-h-28 md:w-48 object-cover transition-transform duration-300 will-change-transform h-full',
+                'w-32 sm:max-h-28 md:w-48 object-cover transition-transform duration-    will-change-transform h-full',
                 props.imagePosition === 'right' && 'ml-auto',
                 'group-hover:scale-110'
             ]" />
@@ -47,12 +59,12 @@ const props = defineProps({
             </svg>
         </div>
         <span :class="[
-            'absolute text-black px-6 rounded-full bottom-3 left-4 md:bottom-8 md:left-12 font-semibold md:text-lg z-10',
+            'absolute text-white px-6 rounded-full bottom-3 left-4 md:bottom-8 md:left-12 font-semibold md:text-lg z-10',
             props.titleProps.className
         ]">
             {{ props.titleProps.text }}
             <div v-if="isActive(props.to.split('/').filter(seg => seg)[0])" class="w-full h-[2px] mt-1"
-                :class="props.titleProps.text === 'Hipotecas' ? 'bg-white' : 'bg-[#171717]'" />
+                :class="isActive(props.to.split('/').filter(seg => seg)[0]) ? 'bg-white' : 'bg-[#171717]'" />
         </span>
     </a>
 </template>

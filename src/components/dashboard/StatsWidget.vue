@@ -8,23 +8,23 @@ import ServiceCard from './ServiceCard.vue';
             <!-- Factoring -->
             <ServiceCard to="/factoring" image="/imagenes/zuma/imagen-2.png" image-position="right" :title-props="{
                 text: 'Factoring',
-                className: 'text-white',
-                background: '#FF4929'
-            }" class="rounded-3xl bg-[#FF4929] h-full" />
+                className: 'text-black hover:text-white',
+                background: '#d4d4d4'
+            }" class="rounded-3xl bg-neutral-300  h-full hover:bg-black " />
 
             <!-- Tasas Fijas -->
             <ServiceCard to="/tasas-fijas" image="/imagenes/zuma/imagen-3.png" image-position="right" :title-props="{
                 text: 'Tasas fijas',
-                className: 'text-[#171717]',
+                className: 'text-black hover:text-white',
                 background: '#d4d4d4'
-            }" class="rounded-3xl bg-neutral-300 h-full" />
+            }" class="rounded-3xl bg-neutral-300 h-full hover:bg-black " />
 
             <!-- Hipotecas -->
             <ServiceCard to="/hipotecas" image="/imagenes/zuma/imagen-4.png" image-position="right" :title-props="{
                 text: 'Hipotecas',
-                className: 'text-white',
-                background: '#171717'
-            }" class="rounded-3xl bg-[#171717] h-full" />
+                className: 'text-black hover:text-white',
+                background: '#d4d4d4'
+            }" class="rounded-3xl bg-neutral-300 hover:bg-black h-full " />
         </div>
     </section>
 </template>
