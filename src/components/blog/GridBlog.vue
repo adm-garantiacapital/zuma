@@ -8,8 +8,9 @@
             <div v-for="(post, index) in paginatedPosts" :key="index"
                 class="rounded-xl overflow-hidden shadow-lg relative bg-white group">
                 <!-- Imagen -->
-                <img :src="`${apiUrl}/${post.imagen}`" alt="Post image" class="h-72 w-full object-cover" />
-
+                <router-link :to="`/blog/post/${post.id}`">
+                    <img :src="`${apiUrl}/${post.imagen}`" alt="Post image" class="h-72 w-full object-cover" />
+                </router-link>
                 <!-- Etiqueta de producto arriba -->
                 <div class="absolute top-4 left-4 bg-white text-sm px-3 py-1 rounded-full font-semibold shadow">
                     {{ post.productTag }}
