@@ -16,82 +16,88 @@
 
   <StatsWidget />
 
-  <div class="p-10 my-10 rounded-3xl bg-[#F0F1F9]">
-    <div class="grid grid-cols-8 gap-0">
-      <div class="col-span-8 lg:col-span-4 mb-5">
-        <h3 class="m-0 text-[#171717]">Mi billetera</h3>
-        <p class="m-0 text-[#171717]">Puedes utilizar ambas monedas al momento de hacer la inversión.</p>
+  <section class="bg-[#f5f6fb] rounded-2xl p-6 mt-6">
+    <!-- HEADER -->
+    <div class="flex justify-between items-center mb-4">
+      <div>
+        <h2 class="text-xl font-bold text-[#171717]">Mi billetera</h2>
+        <p class="text-gray-600 text-sm">Puedes utilizar ambas monedas al momento de hacer la inversión.</p>
       </div>
-      <div class="col-span-8 lg:col-span-4 text-end mb-5">
-        <Button label="Depósito" icon="pi pi-plus" iconPos="left"
-          class="!border-none !text-white !bg-[#171717] hover:!bg-[#6790FF] focus:!border-none focus:!bg-[#FF4929] !font-bold !rounded-3xl !px-5 !py-3 !me-3 !transition !duration-100 !ease-in"
-          rounded @click="showDepositoDialog = true" />
-        <Button label="Retiro" icon="pi pi-minus" iconPos="left"
-          class="border-button-black !border-none !text-[#171717] !bg-transparent hover:!bg-[#6790FF] focus:!border-none focus:!bg-[#FF4929] !font-bold !rounded-3xl !px-5 !py-3 !me-3 !transition !duration-100 !ease-in"
-          rounded @click="showRetiroDialog = true" />
+      <div class="flex gap-2 items-center">
+        <button class="border border-gray-400 rounded-full p-2" @click="toggleAmounts">
+          👁
+        </button>
+        <button class="bg-black text-white rounded-full px-4 py-2 text-sm font-semibold"
+          @click="showDepositoDialog = true">+ Depósito</button>
+        <button class="border border-gray-400 rounded-full px-4 py-2 text-sm font-semibold"
+          @click="showRetiroDialog = true">- Retiro</button>
 
-        <!-- Botón para mostrar/ocultar montos -->
-        <Button :icon="showAmounts ? 'pi pi-eye' : 'pi pi-eye-slash'" severity="contrast" variant="outlined" rounded
-          @click="toggleAmounts" :title="showAmounts ? 'Ocultar montos' : 'Mostrar montos'" class="!me-3" />
-
-
-      </div>
-
-      <div class="col-span-8">
-        <TabView>
-          <TabPanel header="">
-            <template #header>
-              <button type="button"
-                class="text-[#171717] bg-white focus:outline-none hover:bg-[#6790FF] focus:bg-[#FF4929] font-bold rounded-3xl px-5 py-3 me-3 transition duration-100 ease-in">
-                <img src="/imagenes/zuma/pen.png" alt="Logo Zuma" class="inline-block me-2" width="20" />
-                <span class="inline-block align-middle">PEN</span>
-              </button>
-            </template>
-
-            <div v-if="wallet" class="grid grid-cols-3 gap-4 my-5">
-              <div class="col-span-3 lg:col-span-1" v-for="(label, key, index) in penLabels" :key="index">
-                <div class="rounded-3xl bg-white relative p-10">
-                  <i :class="label.icon"
-                    class="text-[#171717] !text-[2.8rem] inline-block align-top mt-5 mb-3 me-10"></i>
-                  <div class="inline-block">
-                    <h5 class="text-[#171717] m-0 font-semibold">{{ label.title }}</h5>
-                    <h3 class="text-[#171717] m-0 font-bold">
-                      {{ showAmounts ? `S/ ${balances.PEN[key].toFixed(2)}` : 'S/ ••••••' }}
-                    </h3>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </TabPanel>
-
-          <TabPanel header="">
-            <template #header>
-              <button type="button"
-                class="text-[#171717] bg-white focus:outline-none hover:bg-[#6790FF] focus:bg-[#FF4929] font-bold rounded-3xl px-5 py-3 me-3 transition duration-100 ease-in">
-                <img src="/imagenes/zuma/usd.png" alt="Logo Zuma" class="inline-block me-2" width="20" />
-                <span class="inline-block align-middle">USD</span>
-              </button>
-            </template>
-
-            <div v-if="wallet" class="grid grid-cols-3 gap-4 my-5">
-              <div class="col-span-3 lg:col-span-1 " v-for="(label, key, index) in usdLabels" :key="index">
-                <div class="rounded-3xl bg-white relative p-10">
-                  <i :class="label.icon"
-                    class="text-[#171717] !text-[2.8rem] inline-block align-top mt-5 mb-3 me-10"></i>
-                  <div class="inline-block">
-                    <h5 class="text-[#171717] m-0 font-semibold">{{ label.title }}</h5>
-                    <h3 class="text-[#171717] m-0 font-bold">
-                      {{ showAmounts ? `$ ${balances.USD[key].toFixed(2)}` : '$ ••••••' }}
-                    </h3>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </TabPanel>
-        </TabView>
       </div>
     </div>
-  </div>
+
+    <!-- TABS -->
+    <div class="flex gap-2 mb-6">
+
+      <button @click="setActiveTab('PEN')" :class="[
+        'flex flex-col items-center px-3 py-1 transition-colors',
+        activeTab === 'PEN' ? 'text-black' : 'text-gray-500'
+      ]">
+        <div class="flex gap-2 items-center">
+          <img src="/imagenes/zuma/pen.png" class="w-5 h-5" />
+          <span class="text-sm sm:text-base font-bold">PEN</span>
+        </div>
+
+        <div :class="[
+          'h-0.5 w-full mt-1 rounded-full transition',
+          activeTab === 'PEN' ? 'bg-black' : 'bg-transparent'
+        ]" />
+      </button>
+
+      <!-- Botón USD -->
+      <button @click="setActiveTab('USD')" :class="[
+        'flex flex-col items-center px-3 py-1 transition-colors',
+        activeTab === 'USD' ? 'text-black' : 'text-gray-500'
+      ]">
+        <div class="flex gap-2 items-center">
+          <img src="/imagenes/zuma/usd.png" class="w-5 h-5" />
+          <span class="text-sm sm:text-base font-bold">USD</span>
+        </div>
+
+        <div :class="[
+          'h-0.5 w-full mt-1 rounded-full transition',
+          activeTab === 'USD' ? 'bg-black' : 'bg-transparent'
+        ]" />
+      </button>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="bg-white rounded-2xl p-6">
+        <h5 class="text-[#171717] font-semibold">Saldo disponible</h5>
+        <h3 class="text-xl font-bold">
+          {{ showAmounts ? (activeTab === 'PEN' ? `S/ ${balances.PEN.amount.toFixed(2)}` : `$
+          ${balances.USD.amount.toFixed(2)}`) : '•••••' }}
+        </h3>
+        <a class="text-blue-500 text-sm">Ver más...</a>
+      </div>
+      <div class="bg-white rounded-2xl p-6">
+        <h5 class="text-[#171717] font-semibold">Total invertido</h5>
+        <h3 class="text-xl font-bold">
+          {{ showAmounts ? (activeTab === 'PEN' ? `S/ ${balances.PEN.invested_amount.toFixed(2)}` : `$
+          ${balances.USD.invested_amount.toFixed(2)}`) : '•••••' }}
+        </h3>
+        <a class="text-blue-500 text-sm">Ver más...</a>
+      </div>
+      <div class="bg-white rounded-2xl p-6">
+        <h5 class="text-[#171717] font-semibold">Retorno esperado</h5>
+        <h3 class="text-xl font-bold">
+          {{ showAmounts ? (activeTab === 'PEN' ? `S/ ${balances.PEN.expected_amount.toFixed(2)}` : `$
+          ${balances.USD.expected_amount.toFixed(2)}`) : '•••••' }}
+        </h3>
+        <a class="text-blue-500 text-sm">Ver más...</a>
+      </div>
+    </div>
+  </section>
 
   <div class="grid grid-cols-12 gap-8">
     <div class="col-span-12 xl:col-span-6">
@@ -133,6 +139,8 @@ const fullName = ref('');
 const wallet = ref(true);
 const showDepositoDialog = ref(false);
 const showRetiroDialog = ref(false);
+
+const activeTab = ref('PEN'); // Añadir esta línea
 
 // Nueva variable para controlar la visibilidad de los montos
 const showAmounts = ref(true);
@@ -202,6 +210,11 @@ const handleWithdrawSuccess = () => {
   emit('withdraw-success');
   loadBalances();
 };
+// Función para cambiar la pestaña activa
+const setActiveTab = (tab) => {
+  activeTab.value = tab;
+};
+
 
 onMounted(() => {
   loadProfile();

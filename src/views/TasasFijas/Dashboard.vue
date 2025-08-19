@@ -20,72 +20,109 @@
 
     <StatsWidget />
 
-    <div class="p-4 sm:p-6 md:p-10 my-6 md:my-10 rounded-3xl bg-[#F0F1F9]">
-        <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 lg:col-span-8 mb-4">
-                <h3 class="m-0 text-[#171717] text-lg md:text-xl">Mi billetera</h3>
-                <p class="m-0 text-[#171717] text-sm md:text-base">Puedes utilizar ambas monedas al momento de hacer la
-                    inversión.</p>
+    <section class="bg-[#f5f6fb] rounded-2xl p-8 m-6">
+        <!-- HEADER -->
+        <div class="flex justify-between items-center mb-4">
+            <div>
+                <h2 class="text-xl font-bold text-[#171717]">Mi billetera</h2>
+                <p class="text-gray-600 text-sm">Puedes utilizar ambas monedas al momento de hacer la inversión.</p>
             </div>
+            <div class="flex gap-2 items-center">
+                <button class="border border-gray-400 rounded-full p-2" @click="toggleAmounts">
+                    👁
+                </button>
+                <button class="bg-black text-white rounded-full px-4 py-2 text-sm font-semibold"
+                    @click="showDepositoDialog = true">+ Depósito</button>
+                <button class="border border-gray-400 rounded-full px-4 py-2 text-sm font-semibold"
+                    @click="showRetiroDialog = true">- Retiro</button>
 
-            <div class="col-span-12 lg:col-span-4 text-left lg:text-end mb-4">
-                <div class="flex flex-wrap gap-2 justify-start lg:justify-end items-center">
-                    <Button label="Depósito" icon="pi pi-plus" iconPos="left"
-                        class="!border-none !text-white !bg-[#171717] hover:!bg-[#6790FF] focus:!border-none focus:!bg-[#FF4929] !font-bold !rounded-3xl !px-3 sm:!px-5 !py-2 sm:!py-3 !transition !duration-100 !ease-in"
-                        rounded @click="showDepositoDialog = true" />
-
-                    <Button label="Retiro" icon="pi pi-minus" iconPos="left"
-                        class="border-button-black !border-none !text-[#171717] !bg-transparent hover:!bg-[#6790FF] focus:!border-none focus:!bg-[#FF4929] !font-bold !rounded-3xl !px-3 sm:!px-5 !py-2 sm:!py-3 !transition !duration-100 !ease-in"
-                        rounded @click="showRetiroDialog = true" />
-
-                    <!-- Botón para mostrar/ocultar montos -->
-                    <Button :icon="showAmounts ? 'pi pi-eye' : 'pi pi-eye-slash'" severity="contrast" variant="outlined"
-                        rounded @click="toggleAmounts" :title="showAmounts ? 'Ocultar montos' : 'Mostrar montos'"
-                        class="!p-2 sm:!p-3" />
-                </div>
-            </div>
-
-            <div class="col-span-12">
-                <TabView>
-                    <TabPanel header="">
-                        <!-- Tabs header responsive -->
-                        <template #header>
-                            <div class="flex flex-wrap gap-2">
-                                <button type="button"
-                                    class="text-[#171717] bg-white focus:outline-none hover:bg-[#6790FF] focus:bg-[#FF4929] font-bold rounded-3xl px-3 sm:px-5 py-2 sm:py-3 transition duration-100 ease-in">
-                                    <img src="/imagenes/zuma/pen.png" alt="PEN" class="inline-block me-2 w-4 sm:w-5" />
-                                    <span class="inline-block align-middle text-sm sm:text-base">PEN</span>
-                                </button>
-
-                                <button type="button"
-                                    class="text-[#171717] bg-white focus:outline-none hover:bg-[#6790FF] focus:bg-[#FF4929] font-bold rounded-3xl px-3 sm:px-5 py-2 sm:py-3 transition duration-100 ease-in">
-                                    <img src="/imagenes/zuma/usd.png" alt="USD" class="inline-block me-2 w-4 sm:w-5" />
-                                    <span class="inline-block align-middle text-sm sm:text-base">USD</span>
-                                </button>
-                            </div>
-                        </template>
-
-                        <!-- Contenido de las tabs -->
-                        <div v-if="wallet" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-4 sm:my-5">
-                            <div class="col-span-1" v-for="(label, key, index) in penLabels" :key="index">
-                                <div class="rounded-3xl bg-white relative p-6 sm:p-8 md:p-10">
-                                    <i :class="label.icon"
-                                        class="text-[#171717] !text-[2rem] sm:!text-[2.5rem] md:!text-[2.8rem] inline-block align-top mt-3 sm:mt-5 mb-2 sm:mb-3 me-4 sm:me-6 md:me-10"></i>
-                                    <div class="inline-block">
-                                        <h5 class="text-[#171717] m-0 font-semibold text-sm sm:text-base">{{ label.title
-                                            }}</h5>
-                                        <h3 class="text-[#171717] m-0 font-bold text-lg sm:text-xl md:text-2xl">
-                                            {{ showAmounts ? `S/ ${balances.PEN[key].toFixed(2)}` : 'S/ ••••••' }}
-                                        </h3>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </TabPanel>
-                </TabView>
             </div>
         </div>
-    </div>
+
+        <!-- TABS -->
+        <div class="flex gap-2 mb-6">
+
+            <button @click="setActiveTab('PEN')" :class="[
+                'flex flex-col items-center px-3 py-1 transition-colors',
+                activeTab === 'PEN' ? 'text-black' : 'text-gray-500'
+            ]">
+                <div class="flex gap-2 items-center">
+                    <img src="/imagenes/zuma/pen.png" class="w-5 h-5" />
+                    <span class="text-sm sm:text-base font-bold">PEN</span>
+                </div>
+
+                <div :class="[
+                    'h-0.5 w-full mt-1 rounded-full transition',
+                    activeTab === 'PEN' ? 'bg-black' : 'bg-transparent'
+                ]" />
+            </button>
+
+            <!-- Botón USD -->
+            <button @click="setActiveTab('USD')" :class="[
+                'flex flex-col items-center px-3 py-1 transition-colors',
+                activeTab === 'USD' ? 'text-black' : 'text-gray-500'
+            ]">
+                <div class="flex gap-2 items-center">
+                    <img src="/imagenes/zuma/usd.png" class="w-5 h-5" />
+                    <span class="text-sm sm:text-base font-bold">USD</span>
+                </div>
+
+                <div :class="[
+                    'h-0.5 w-full mt-1 rounded-full transition',
+                    activeTab === 'USD' ? 'bg-black' : 'bg-transparent'
+                ]" />
+            </button>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white rounded-2xl p-16">
+                <div class="flex gap-4 items-center" s>
+                    <img src="/icons/amount-available.svg" alt="" class="w-10 md:w-16">
+
+                    <div>
+                        <div>
+                            <div class="scroll-m-20 text-md md:text-lg font-semibold tracking-tightd">Saldo disponible
+                            </div>
+                            <div class="text-xl font-bold">
+                                {{ showAmounts ? (activeTab === 'PEN' ? `S/ ${balances.PEN.amount.toFixed(2)}` : `$
+                                ${balances.USD.amount.toFixed(2)}`) : '•••••' }}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="bg-white rounded-2xl p-16">
+                <div class="flex gap-4 items-center">
+                    <img src="/icons/investment-amount.svg" alt="" class="w-10 md:w-16">
+
+                    <div>
+                        <div class="scroll-m-20 text-md md:text-lg font-semibold tracking-tightd">Total invertido</div>
+                        <div class="text-2xl font-bold">
+                            {{ showAmounts ? (activeTab === 'PEN' ? `S/ ${balances.PEN.invested_amount.toFixed(2)}` : `$
+                            ${balances.USD.invested_amount.toFixed(2)}`) : '•••••' }}
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="bg-white rounded-2xl p-16">
+                <div class="flex gap-4 items-center">
+                    <img src="/icons/money-in-hands.svg" alt="" class="w-10 md:w-16">
+                    <div>
+                        <div class="scroll-m-20 text-md md:text-lg font-semibold tracking-tight">Retorno esperado</div>
+                        <div class="text-2xl font-bold">
+                            {{ showAmounts ? (activeTab === 'PEN' ? `S/ ${balances.PEN.expected_amount.toFixed(2)}` : `$
+                            ${balances.USD.expected_amount.toFixed(2)}`) : '•••••' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <div class="grid grid-cols-12 gap-4 sm:gap-6 md:gap-8 px-4 sm:px-6 md:px-0">
         <div class="col-span-12 xl:col-span-6">
@@ -131,6 +168,7 @@ const wallet = ref(true);
 const showDepositoDialog = ref(false)
 const showRetiroDialog = ref(false)
 const showAmounts = ref(true);
+const activeTab = ref('PEN'); // Añadir esta línea
 
 const penLabels = {
     amount: { title: "Saldo disponible", icon: "pi pi-wallet" },
@@ -151,6 +189,11 @@ const balances = ref({
         expected_amount: 0
     }
 });
+
+// Función para cambiar la pestaña activa
+const setActiveTab = (tab) => {
+    activeTab.value = tab;
+};
 
 const showWallet = () => {
     wallet.value = !wallet.value;
@@ -192,12 +235,10 @@ const loadBalances = async () => {
 };
 
 const handleDepositSuccess = () => {
-    emit('deposit-success')
     loadBalances()
 }
 
 const handleWithdrawSuccess = () => {
-    emit('withdraw-success')
     loadBalances()
 }
 
