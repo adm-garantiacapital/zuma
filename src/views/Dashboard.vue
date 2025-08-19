@@ -16,7 +16,7 @@
 
   <StatsWidget />
 
-  <section class="bg-[#f5f6fb] rounded-2xl p-6 mt-6">
+  <section class="bg-[#f5f6fb] rounded-2xl p-8 m-6">
     <!-- HEADER -->
     <div class="flex justify-between items-center mb-4">
       <div>
