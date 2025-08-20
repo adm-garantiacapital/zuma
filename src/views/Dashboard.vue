@@ -16,23 +16,44 @@
 
   <StatsWidget />
 
-  <section class="bg-[#f5f6fb] rounded-2xl p-8 m-6">
+  <section class="bg-[#f5f6fb] rounded-2xl p-6 m-6">
     <!-- HEADER -->
     <div class="flex justify-between items-center mb-4">
       <div>
-        <h2 class="text-xl font-bold text-[#171717]">Mi billetera</h2>
-        <p class="text-gray-600 text-sm">Puedes utilizar ambas monedas al momento de hacer la inversión.</p>
+        <h3
+          class="sans-serif text-lg sm:text-xl md:text-2xl scroll-m-20 text-md font-semibold m-0 tracking-tight text-black">
+          Mi billetera
+        </h3>
       </div>
       <div class="flex gap-2 items-center">
-        <button class="border border-gray-400 rounded-full p-2" @click="toggleAmounts">
-          👁
-        </button>
-        <button class="bg-black text-white rounded-full px-4 py-2 text-sm font-semibold"
+        <div @click="toggleAmounts" class="hidden md:flex gap-1 cursor-pointer">
+          <Icon icon="solar:eye-outline" width="20" height="20" style="color: #000" />
+          <div class="hidden md:flex">
+            Ocultar
+          </div>
+        </div>
+
+        <button class="bg-black hidden text-white rounded-full py-3 text-sm  md:flex gap-1 !px-3 sm:!px-4 "
           @click="showDepositoDialog = true">+ Depósito</button>
-        <button class="border border-gray-400 rounded-full px-4 py-2 text-sm font-semibold"
+        <button class="border hidden border-gray-400 rounded-full px-6 py-3 text-md md:flex gap-1 sm:!px-4 "
           @click="showRetiroDialog = true">- Retiro</button>
 
       </div>
+
+      <div class="flex gap-2 items-center md:hidden">
+        <div @click="toggleAmounts">
+          <Icon icon="solar:eye-outline" width="20" height="20" style="color: #000" />
+        </div>
+        <button
+          class="bg-black flex text-white rounded-full py-2 md:py-3 text-sm font-semibold md:hidden gap-1 !px-3 sm:!px-4"
+          @click="showDepositoDialog = true">+</button>
+        <button class="border flex border-gray-400 rounded-full px-3 py-2 md:py-3 text-md md:hidden gap-1 sm:!px-4 "
+          @click="showRetiroDialog = true">-</button>
+
+      </div>
+
+
+
     </div>
 
     <!-- TABS -->
@@ -44,11 +65,11 @@
       ]">
         <div class="flex gap-2 items-center">
           <img src="/imagenes/zuma/pen.png" class="w-5 h-5" />
-          <span class="text-sm sm:text-base font-bold">PEN</span>
+          <span class="text-sm sm:text-base md:text-lg font-bold">PEN</span>
         </div>
 
         <div :class="[
-          'h-0.5 w-full mt-1 rounded-full transition',
+          'h-1 w-full mt-2 rounded-full transition',
           activeTab === 'PEN' ? 'bg-black' : 'bg-transparent'
         ]" />
       </button>
@@ -60,11 +81,11 @@
       ]">
         <div class="flex gap-2 items-center">
           <img src="/imagenes/zuma/usd.png" class="w-5 h-5" />
-          <span class="text-sm sm:text-base font-bold">USD</span>
+          <span class="text-sm sm:text-base md:text-lg font-bold">USD</span>
         </div>
 
         <div :class="[
-          'h-0.5 w-full mt-1 rounded-full transition',
+          'h-1 w-full mt-2 rounded-full transition',
           activeTab === 'USD' ? 'bg-black' : 'bg-transparent'
         ]" />
       </button>
@@ -72,29 +93,65 @@
 
     <!-- CONTENT -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="bg-white rounded-2xl p-6">
-        <h5 class="text-[#171717] font-semibold">Saldo disponible</h5>
-        <h3 class="text-xl font-bold">
-          {{ showAmounts ? (activeTab === 'PEN' ? `S/ ${balances.PEN.amount.toFixed(2)}` : `$
-          ${balances.USD.amount.toFixed(2)}`) : '•••••' }}
-        </h3>
-        <a class="text-blue-500 text-sm">Ver más...</a>
+      <div class="bg-white rounded-3xl p-8 max-h-40">
+        <div class="flex gap-4 items-center justify-center" s>
+          <img src="/icons/amount-available.svg" alt="" class="w-10  md:w-12">
+
+          <div>
+            <div>
+              <div class="scroll-m-20 text-md md:text-lg font-semibold tracking-tight">Saldo disponible
+              </div>
+              <div class="text-xl font-bold">
+                {{ showAmounts ? (activeTab === 'PEN' ? `S/ ${balances.PEN.amount.toFixed(2)}` : `$
+                ${balances.USD.amount.toFixed(2)}`) : '•••••' }}
+              </div>
+              <RouterLink :to="'hipotecas/Estado-Cuenta'">
+                <div class="mt-2 text-blue-400 hover:border-b-2 border-blue-400">
+                  Ver mas detalles
+                </div>
+              </RouterLink>
+
+            </div>
+          </div>
+        </div>
+
       </div>
-      <div class="bg-white rounded-2xl p-6">
-        <h5 class="text-[#171717] font-semibold">Total invertido</h5>
-        <h3 class="text-xl font-bold">
-          {{ showAmounts ? (activeTab === 'PEN' ? `S/ ${balances.PEN.invested_amount.toFixed(2)}` : `$
-          ${balances.USD.invested_amount.toFixed(2)}`) : '•••••' }}
-        </h3>
-        <a class="text-blue-500 text-sm">Ver más...</a>
+      <div class="bg-white rounded-3xl p-8 max-h-40">
+        <div class="flex gap-4 items-center justify-center">
+          <img src="/icons/investment-amount.svg" alt="" class="w-10 md:w-16">
+
+          <div>
+            <div class="scroll-m-20 text-md md:text-lg font-semibold tracking-tight">Total invertido</div>
+            <div class="text-2xl font-bold">
+              {{ showAmounts ? (activeTab === 'PEN' ? `S/ ${balances.PEN.invested_amount.toFixed(2)}` : `$
+              ${balances.USD.invested_amount.toFixed(2)}`) : '•••••' }}
+            </div>
+            <RouterLink :to="'hipotecas/Estado-Cuenta'">
+              <div class="mt-2 text-blue-400 hover:border-b-2 border-blue-400">
+                Ver mas detalles
+              </div>
+            </RouterLink>
+
+          </div>
+        </div>
+
       </div>
-      <div class="bg-white rounded-2xl p-6">
-        <h5 class="text-[#171717] font-semibold">Retorno esperado</h5>
-        <h3 class="text-xl font-bold">
-          {{ showAmounts ? (activeTab === 'PEN' ? `S/ ${balances.PEN.expected_amount.toFixed(2)}` : `$
-          ${balances.USD.expected_amount.toFixed(2)}`) : '•••••' }}
-        </h3>
-        <a class="text-blue-500 text-sm">Ver más...</a>
+      <div class="bg-white rounded-3xl p-8 max-h-40">
+        <div class="flex gap-4 items-center justify-center">
+          <img src="/icons/money-in-hands.svg" alt="" class="w-10 md:w-16">
+          <div>
+            <div class="scroll-m-20 text-md md:text-lg font-semibold tracking-tight">Retorno esperado</div>
+            <div class="text-2xl font-bold">
+              {{ showAmounts ? (activeTab === 'PEN' ? `S/ ${balances.PEN.expected_amount.toFixed(2)}` : `$
+              ${balances.USD.expected_amount.toFixed(2)}`) : '•••••' }}
+            </div>
+            <RouterLink :to="'hipotecas/Estado-Cuenta'">
+              <div class="mt-2 text-blue-400 hover:border-b-2 border-blue-400">
+                Ver mas detalles
+              </div>
+            </RouterLink>
+          </div>
+        </div>
       </div>
     </div>
   </section>
