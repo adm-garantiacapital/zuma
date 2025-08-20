@@ -27,27 +27,37 @@
       </div>
       <div class="flex gap-2 items-center">
         <div @click="toggleAmounts" class="hidden md:flex gap-1 cursor-pointer">
-          <Icon icon="solar:eye-outline" width="20" height="20" style="color: #000" />
-          <div class="hidden md:flex">
+          <Icon v-if="showAmounts" icon="solar:eye-outline" width="20" height="20" style="color: #000" />
+          <!-- Icono oculto -->
+          <Icon v-else icon="mage:eye-off" width="24" height="24" style="color: #000" />
+          <div v-if="showAmounts" class="hidden md:flex text-black">
             Ocultar
+          </div>
+          <div v-else class="hidden md:flex text-black">
+            Mostrar
           </div>
         </div>
 
-        <button class="bg-black hidden text-white rounded-full py-3 text-sm  md:flex gap-1 !px-3 sm:!px-4 "
+        <button
+          class="bg-black hidden text-white rounded-full py-3 text-sm  md:flex gap-1 !px-3 sm:!px-4 hover:bg-zinc-800"
           @click="showDepositoDialog = true">+ Depósito</button>
-        <button class="border hidden border-gray-400 rounded-full px-6 py-3 text-md md:flex gap-1 sm:!px-4 "
+        <button
+          class="border border-black hidden rounded-full px-6 py-3 hover:bg-blue-400 hover:text-white hover:border-blue-400 text-md md:flex gap-1 sm:!px-4 "
           @click="showRetiroDialog = true">- Retiro</button>
 
       </div>
 
       <div class="flex gap-2 items-center md:hidden">
         <div @click="toggleAmounts">
-          <Icon icon="solar:eye-outline" width="20" height="20" style="color: #000" />
+          <Icon v-if="showAmounts" icon="solar:eye-outline" width="20" height="20" style="color: #000" />
+          <!-- Icono oculto -->
+          <Icon v-else icon="mage:eye-off" width="24" height="24" style="color: #000" />
         </div>
         <button
           class="bg-black flex text-white rounded-full py-2 md:py-3 text-sm font-semibold md:hidden gap-1 !px-3 sm:!px-4"
           @click="showDepositoDialog = true">+</button>
-        <button class="border flex border-gray-400 rounded-full px-3 py-2 md:py-3 text-md md:hidden gap-1 sm:!px-4 "
+        <button
+          class="border flex border-black rounded-full px-3  hover:bg-blue-400 hover:text-white hover:border-blue-400 py-2 md:py-3 text-md md:hidden gap-1 sm:!px-4 "
           @click="showRetiroDialog = true">-</button>
 
       </div>
@@ -93,7 +103,7 @@
 
     <!-- CONTENT -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="bg-white rounded-3xl p-8 max-h-40">
+      <div class="bg-white rounded-3xl p-8 max-h-40 ">
         <div class="flex gap-4 items-center justify-center" s>
           <img src="/icons/amount-available.svg" alt="" class="w-10  md:w-12">
 
@@ -185,9 +195,11 @@ import RevenueStreamWidget from "@/components/dashboard/RevenueStreamWidget.vue"
 import StatsWidget from "@/components/dashboard/StatsWidget.vue";
 import profileService from '@/services/profileService';
 import reportsService from '@/services/reportsService';
+import { Icon } from "@iconify/vue";
 import { onMounted, ref } from "vue";
 import AddDeposito from "./pages/EstadoCuenta/Desarrollo/AddDeposito.vue";
 import AddRetiro from "./pages/EstadoCuenta/Desarrollo/AddRetiro.vue";
+
 
 const home = ref({ icon: 'pi pi-home' });
 const items = ref([{ label: 'Subasta hipotecas' }, { label: 'Mi billetera' }]);

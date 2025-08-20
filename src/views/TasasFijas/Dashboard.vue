@@ -31,28 +31,37 @@
             </div>
             <div class="flex gap-2 items-center">
                 <div @click="toggleAmounts" class="hidden md:flex gap-1 cursor-pointer">
-                    <Icon icon="solar:eye-outline" width="20" height="20" style="color: #000" />
-                    <div class="hidden md:flex">
+                    <Icon v-if="showAmounts" icon="solar:eye-outline" width="20" height="20" style="color: #000" />
+                    <!-- Icono oculto -->
+                    <Icon v-else icon="mage:eye-off" width="24" height="24" style="color: #000" />
+                    <div v-if="showAmounts" class="hidden md:flex text-black">
                         Ocultar
+                    </div>
+                    <div v-else class="hidden md:flex text-black">
+                        Mostrar
                     </div>
                 </div>
 
-                <button class="bg-black hidden text-white rounded-full py-3 text-sm  md:flex gap-1 !px-3 sm:!px-4 "
+                <button
+                    class="bg-black hidden text-white rounded-full py-3 text-sm  md:flex gap-1 !px-3 sm:!px-4 hover:bg-zinc-800"
                     @click="showDepositoDialog = true">+ Depósito</button>
-                <button class="border hidden border-gray-400 rounded-full px-6 py-3 text-md md:flex gap-1 sm:!px-4 "
+                <button
+                    class="border hidden border-black rounded-full  hover:bg-blue-400 hover:text-white hover:border-blue-400 px-6 py-3 text-md md:flex gap-1 sm:!px-4 "
                     @click="showRetiroDialog = true">- Retiro</button>
 
             </div>
 
             <div class="flex gap-2 items-center md:hidden">
                 <div @click="toggleAmounts">
-                    <Icon icon="solar:eye-outline" width="20" height="20" style="color: #000" />
+                    <Icon v-if="showAmounts" icon="solar:eye-outline" width="20" height="20" style="color: #000" />
+                    <!-- Icono oculto -->
+                    <Icon v-else icon="mage:eye-off" width="24" height="24" style="color: #000" />
                 </div>
                 <button
-                    class="bg-black flex text-white rounded-full py-2 md:py-3 text-sm font-semibold md:hidden gap-1 !px-3 sm:!px-4"
+                    class="bg-black flex text-white rounded-full py-2 md:py-3 text-sm font-semibold md:hidden gap-1 !px-3 sm:!px-4 hover:bg-zinc-800"
                     @click="showDepositoDialog = true">+</button>
                 <button
-                    class="border flex border-gray-400 rounded-full px-3 py-2 md:py-3 text-md md:hidden gap-1 sm:!px-4 "
+                    class="border flex border-black rounded-full  hover:bg-blue-400 hover:text-white hover:border-blue-400 px-3 py-2 md:py-3 text-md md:hidden gap-1 sm:!px-4 "
                     @click="showRetiroDialog = true">-</button>
 
             </div>
