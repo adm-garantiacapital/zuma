@@ -151,7 +151,7 @@ const model = computed(() => {
             <div class="user-code-container mx-auto"
                 :class="{ 'max-w-[200px]': !isSidebarCollapsed, 'hidden': isSidebarCollapsed }">
                 <div class="text-center mb-2">
-                    <span class="text-xs text-gray-600 font-medium">Código del inversionista</span>
+                    <!-- <span class="text-xs text-gray-600 font-medium">Código del inversionista</span> -->
                 </div>
                 <div class="relative">
                     <div class="bg-gradient-to-r from-[#6790FF] to-[#FF4929] rounded-xl p-3 shadow-lg">

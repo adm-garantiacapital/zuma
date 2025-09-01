@@ -15,8 +15,8 @@
       </div>
 
       <!-- Componente de notificaciones separado -->
-      <Notificacion v-model:showMobileNotifications="showMobileNotifications" @close-user-menu="showUserMenu = false" />
-
+      <Notificacion v-model:showMobileNotifications="showMobileNotifications" @close-user-menu="showUserMenu = false"
+        class="self-center mx-2" />
       <!-- MENÚ DE USUARIO - Visible en desktop -->
       <div class="relative user-menu-container hidden md:block">
         <button @click="toggleUserMenu"

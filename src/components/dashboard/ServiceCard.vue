@@ -55,10 +55,9 @@
             </svg>
         </div>
         <span :class="[
-            'absolute text-black px-6 rounded-full bottom-3 left-4 md:bottom-8 md:left-12 font-semibold md:text-lg z-10 group-hover:text-white',
+            'absolute text-black px-6 rounded-full bottom-3 left-4 md:bottom-8 md:left-12 md:text-lg z-10 group-hover:text-white',
             { 'text-white': isActive(props.to.split('/').filter(seg => seg)[0]) },
-            props.titleProps.className,
-
+            props.titleProps.className || 'font-semibold',
         ]">
             {{ props.titleProps.text }}
             <div class="w-full h-[2px] mt-1  bg-black    "
