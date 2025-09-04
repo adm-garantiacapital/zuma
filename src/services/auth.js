@@ -71,13 +71,13 @@ export const authService = {
     async login(source = 'admin2', credentials) {
         try {
             // ✅ Validar credenciales antes de enviar
-            if (!credentials?.document || !credentials?.password) {
+            if (!credentials?.email || !credentials?.password) {
                 throw new Error('Documento y contraseña son requeridos');
             }
 
             // ✅ Sanitizar entrada básica
             const cleanCredentials = {
-                document: String(credentials.document).trim(),
+                email: String(credentials.email).trim(),
                 password: String(credentials.password)
             };
 

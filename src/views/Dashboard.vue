@@ -4,7 +4,7 @@
     <div class=" mb-6 md:mb-10 rounded-3xl border bg-[#6790FF] text-card-foreground shadow-sm relative overflow-hidden">
       <div class="mx-5     p-4 sm:px-6 md:px-8 lg:px-15 md:mx-5 lg:mx-10 py-6 sm:py-10 md:py-15 relative superior">
         <h3 class="scroll-m-20 text-base sm:text-xl md:text-2xl font-bold text-black max-w-32 md:max-w-full">
-          Bienvenido {{ fullName }} a tu perfil del inversionista
+          Bienvenido, {{ fullName }} a tu perfil del inversionista.
         </h3>
       </div>
       <a class="mask absolute -top-12 sm:-top-16 -right-5" href="https://fondeo.apros.global/" target="_blank">

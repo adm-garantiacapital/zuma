@@ -9,7 +9,7 @@ import TopbarWidget from '@/components/landing/TopbarWidget.vue';
 const router = useRouter();
 const toast = useToast();
 
-const document = ref('');
+const email = ref('');
 const password = ref('');
 const checked = ref(false);
 const loading = ref(false);
@@ -40,7 +40,7 @@ const login = async () => {
   loading.value = true;
   try {
     const response = await authService.login('admin2', {
-      document: document.value,
+      email: email.value,
       password: password.value,
     });
 
@@ -125,8 +125,8 @@ const login = async () => {
 
           <form class="space-y-6" @submit.prevent="login">
             <div>
-              <label for="document" class="block text-sm font-medium text-gray-700 mb-2">Número de documento de identidad</label>
-              <InputText id="document" type="text" placeholder="Número de documento" v-model="document" class="w-full" />
+              <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Coreeo electrónico</label>
+              <InputText id="email" type="text" placeholder="Correo electrónico" v-model="email" class="w-full" />
             </div>
 
             <div>
