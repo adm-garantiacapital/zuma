@@ -47,6 +47,11 @@ import { RouterLink } from 'vue-router'
             </RouterLink>
           </li>
           <li>
+            <RouterLink to="/prestamos" class="text-[#171717] font-semibold text-lg hover:text-[#ffffff] transition duration-300">
+              Préstamos
+            </RouterLink>
+          </li>
+          <li>
             <RouterLink to="/contactanos" class="text-[#171717] font-semibold text-lg hover:text-[#ffffff] transition duration-300">
               Contáctanos
             </RouterLink>

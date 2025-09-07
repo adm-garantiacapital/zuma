@@ -50,6 +50,11 @@ const router = createRouter({
             component: () => import('@/views/pages/auth/Producto/indexProducto.vue')
         },
         {
+            path: '/prestamos',
+            name: 'prestamos',
+            component: () => import('@/views/pages/auth/Prestamos/indexPrestamos.vue')
+        },
+        {
             path: '/verificar-cuenta',
             name: 'VerificarCuenta',
             component: () => import('@/views/pages/auth/VerificarCuenta.vue')
