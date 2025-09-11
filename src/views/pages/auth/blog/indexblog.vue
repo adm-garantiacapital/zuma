@@ -33,116 +33,9 @@
           </Card>
         </div>
 
-        <div class="grid lg:grid-cols-3 gap-8 mb-16">
-          <Card v-for="post in posts" :key="post.id"
-            class="shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-            <template #header>
-              <div class="relative overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&h=300&fit=crop&crop=center"
-                  alt="Factoring Investment" class="w-full h-64 object-cover" />
-                <div class="absolute top-4 left-4">
-                  <Tag value="Inversión" severity="success" class="font-semibold"></Tag>
-                </div>
-                <div class="absolute top-4 right-4">
-                  <Tag value="Trending" icon="pi pi-fire" severity="danger" class="font-semibold"></Tag>
-                </div>
-              </div>
-            </template>
+        <BlogGrid :posts="posts" />
+        <!-- Grid Old -->
 
-            <template #title>
-              <h3 class="text-xl font-bold text-gray-800 mb-2 line-clamp-2 text-[#171717]">
-                {{ post.titulo }}
-              </h3>
-            </template>
-
-            <template #subtitle>
-              <div class="flex items-center gap-2 text-[#171717] text-sm mb-4 !text-[#171717]">
-                <i class="pi pi-calendar"></i>
-                <span>{{ post.fecha_publicacion }}</span>
-                <i class="pi pi-user ml-4"></i>
-                <span>Equipo Zuma</span>
-              </div>
-            </template>
-
-            <template #content>
-              <p class="text-gray-600 leading-relaxed mb-6 !text-[#171717]">
-                {{ post.resumen }}
-              </p>
-
-              <div class="flex flex-wrap gap-2 mb-6">
-                <Chip label="Factoring" class="bg-blue-100 text-[#171717]" />
-                <Chip label="ROI 12-18%" class="bg-green-100 text-[#171717]" />
-                <Chip label="Riesgo Medio" class="bg-yellow-100 text-[#171717]" />
-              </div>
-
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <!-- <Rating v-model="rating" :modelValue="getPromedioRating(post.ratings)" :cancel="false" /> -->
-                  <Rating v-model="rating" :cancel="false" @change="saveRating(post.id, rating)" />
-                  <!-- <span class="text-sm text-[#171717]">
-                    ({{ getPromedioRating(post.ratings) }})
-                  </span> -->
-                </div>
-                <Button label="Leer más" icon="pi pi-arrow-right" iconPos="right"
-                  class="p-button-outlined !text-[#171717]" @click="readArticle(1)" />
-              </div>
-            </template>
-          </Card>
-          <!--
-          <Card class="shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-            <template #header>
-              <div class="relative overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=500&h=300&fit=crop&crop=center"
-                  alt="Real Estate Investment" class="w-full h-64 object-cover" />
-                <div class="absolute top-4 left-4">
-                  <Tag value="Inmobiliario" severity="info" class="font-semibold"></Tag>
-                </div>
-                <div class="absolute top-4 right-4">
-                  <Tag value="Popular" icon="pi pi-star-fill" severity="warning" class="font-semibold"></Tag>
-                </div>
-              </div>
-            </template>
-
-            <template #title>
-              <h3 class="text-xl font-bold text-gray-800 mb-2 line-clamp-2 text-[#171717]">
-                Hipotecas como Alternativa de Inversión: Rentabilidad con Respaldo Inmobiliario
-              </h3>
-            </template>
-
-            <template #subtitle>
-              <div class="flex items-center gap-2 text-[#171717] text-sm mb-4 !text-[#171717]">
-                <i class="pi pi-calendar"></i>
-                <span>12 Enero 2025</span>
-                <i class="pi pi-user ml-4"></i>
-                <span>Ana Martínez</span>
-              </div>
-            </template>
-
-            <template #content>
-              <p class="text-gray-600 leading-relaxed mb-6 !text-[#171717]">
-                Explora cómo las inversiones respaldadas por hipotecas ofrecen seguridad y rentabilidad.
-                Una guía completa sobre esta alternativa de inversión con garantía inmobiliaria.
-              </p>
-
-              <div class="flex flex-wrap gap-2 mb-6">
-                <Chip label="Hipotecash" class="bg-purple-100 text-[#171717]" />
-                <Chip label="ROI 8-14%" class="bg-green-100 text-[#171717]" />
-                <Chip label="Riesgo Bajo" class="bg-blue-100 text-[#171717]" />
-              </div>
-
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <Rating :modelValue="4" readonly :cancel="false" class="text-sm" />
-                  <span class="text-sm text-[#171717]">(4.6/5)</span>
-                </div>
-                <Button label="Leer más" icon="pi pi-arrow-right" iconPos="right"
-                  class="p-button-outlined !text-[#171717]" @click="readArticle(2)" />
-              </div>
-            </template>
-          </Card>
-
-           -->
-        </div>
 
         <!-- Newsletter Subscription -->
         <!-- <div class="mb-16">
@@ -250,21 +143,21 @@
 </template>
 
 <script setup>
-import FooterWidget from '@/components/landing/FooterWidget.vue'
-import TopbarWidget from '@/components/landing/TopbarWidget.vue'
-import { onMounted, ref, watch } from 'vue'
+import FooterWidget from '@/components/landing/FooterWidget.vue';
+import TopbarWidget from '@/components/landing/TopbarWidget.vue';
+import { onMounted, ref, watch } from 'vue';
 
 // Componentes PrimeVue
-import axios from 'axios'
-import Button from 'primevue/button'
-import Card from 'primevue/card'
-import Chip from 'primevue/chip'
-import Dropdown from 'primevue/dropdown'
-import InputGroup from 'primevue/inputgroup'
-import InputText from 'primevue/inputtext'
-import Rating from 'primevue/rating'
-import Tag from 'primevue/tag'
-import { useToast } from 'primevue/usetoast'
+import BlogGrid from "@/components/blog/GridBlog.vue";
+import axios from 'axios';
+import Button from 'primevue/button';
+import Card from 'primevue/card';
+import Dropdown from 'primevue/dropdown';
+import InputGroup from 'primevue/inputgroup';
+import InputText from 'primevue/inputtext';
+import { useToast } from 'primevue/usetoast';
+const apiUrl = import.meta.env.VITE_API_ADMIN1
+
 
 // Estados reactivos
 const searchQuery = ref('')
@@ -342,7 +235,7 @@ const posts = ref([])
 
 async function obtenerPublicaciones() {
   try {
-    const res = await axios.get('http://127.0.0.1:8000/api/blog/publicaciones')
+    const res = await axios.get(`${apiUrl}/blog/publicaciones`)
     posts.value = res.data
   } catch (error) {
     toast.add({

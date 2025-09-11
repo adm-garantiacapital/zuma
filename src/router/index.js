@@ -1,6 +1,6 @@
-import { createRouter, createWebHistory } from 'vue-router';
 import AppLayout from '@/layout/AppLayout.vue';
 import { authService } from '@/services/auth.js';
+import { createRouter, createWebHistory } from 'vue-router';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -69,11 +69,17 @@ const router = createRouter({
             name: 'blog',
             component: () => import('@/views/pages/auth/blog/indexblog.vue')
         },
+        {
+            path: '/blog/post/:id', // ← Ruta dinámica
+            name: 'post-detail',
+            component: () => import('@/views/pages/auth/blog/PostDetail.vue'),
+            props: true // Permite pasar el parámetro como prop al componente
+        },
         // SECCIÓN HIPOTECAS - Solo para inversionista y mixto
         {
             path: '/hipotecas',
             component: AppLayout,
-            meta: { 
+            meta: {
                 requiresAuth: true,
                 allowedUserTypes: ['inversionista', 'mixto'],
                 section: 'hipotecas'
@@ -83,7 +89,7 @@ const router = createRouter({
                     path: '',
                     name: 'hipotecas',
                     component: () => import('@/views/Dashboard.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['inversionista', 'mixto']
                     }
@@ -92,7 +98,7 @@ const router = createRouter({
                     path: 'buscar',
                     name: 'hipotecas-search',
                     component: () => import('@/views/pages/Search/indexSearch.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['inversionista', 'mixto']
                     }
@@ -101,7 +107,7 @@ const router = createRouter({
                     path: 'subasta',
                     name: 'hipotecas-online',
                     component: () => import('@/views/pages/OnlineAuctions/indexOnlineAuctions.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['inversionista', 'mixto']
                     }
@@ -110,7 +116,7 @@ const router = createRouter({
                     path: 'dashboard',
                     name: 'hipotecas-dashboard',
                     component: () => import('@/views/Dashboard.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['inversionista', 'mixto']
                     }
@@ -119,7 +125,7 @@ const router = createRouter({
                     path: 'Cuenta-Bancaria',
                     name: 'hipotecas-cuenta-bancaria',
                     component: () => import('@/views/pages/CuentasBancaria/indexCuentasBancarias.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['inversionista', 'mixto']
                     }
@@ -128,7 +134,7 @@ const router = createRouter({
                     path: 'Estado-Cuenta',
                     name: 'hipotecas-estado-cuenta',
                     component: () => import('@/views/pages/EstadoCuenta/indexEstadoCuenta.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['inversionista', 'mixto']
                     }
@@ -137,7 +143,7 @@ const router = createRouter({
                     path: 'Perfil',
                     name: 'hipotecas-perfil',
                     component: () => import('@/views/pages/Profile/indexProfile.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['inversionista', 'mixto']
                     }
@@ -146,7 +152,7 @@ const router = createRouter({
                     path: 'Confirmar-Cuenta',
                     name: 'hipotecas-confirmar-cuenta',
                     component: () => import('@/views/pages/ConfigurarCuenta/index.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['inversionista', 'mixto']
                     }
@@ -157,7 +163,7 @@ const router = createRouter({
         {
             path: '/tasas-fijas',
             component: AppLayout,
-            meta: { 
+            meta: {
                 requiresAuth: true,
                 allowedUserTypes: ['inversionista', 'mixto'],
                 section: 'tasas-fijas'
@@ -167,7 +173,7 @@ const router = createRouter({
                     path: '',
                     name: 'tasas-fijas',
                     component: () => import('@/views/TasasFijas/Dashboard.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['inversionista', 'mixto']
                     }
@@ -176,7 +182,7 @@ const router = createRouter({
                     path: 'Search',
                     name: 'tasas-fijas-Search',
                     component: () => import('@/views/TasasFijas/BuscarOportunidades.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['inversionista', 'mixto']
                     }
@@ -185,7 +191,7 @@ const router = createRouter({
                     path: 'dashboard',
                     name: 'tasas-fijas-dashboard',
                     component: () => import('@/views/TasasFijas/Dashboard.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['inversionista', 'mixto']
                     }
@@ -194,7 +200,7 @@ const router = createRouter({
                     path: 'Cuenta-Bancaria',
                     name: 'tasas-fijas-Cuenta-Bancaria',
                     component: () => import('@/views/TasasFijas/CuentasBancaria/indexCuentasBancarias.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['inversionista', 'mixto']
                     }
@@ -203,7 +209,7 @@ const router = createRouter({
                     path: 'Estado-Cuenta',
                     name: 'tasas-fijas-Estado-Cuenta',
                     component: () => import('@/views/TasasFijas/EstadoCuenta/indexEstadoCuenta.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['inversionista', 'mixto']
                     }
@@ -212,7 +218,7 @@ const router = createRouter({
                     path: 'Perfil',
                     name: 'tasas-fijas-perfil',
                     component: () => import('@/views/pages/Profile/indexProfile.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['inversionista', 'mixto']
                     }
@@ -221,7 +227,7 @@ const router = createRouter({
                     path: 'Confirmar-Cuenta',
                     name: 'tasas-fijas-confirmar-cuenta',
                     component: () => import('@/views/TasasFijas/ConfigurarCuenta/index.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['inversionista', 'mixto']
                     }
@@ -232,7 +238,7 @@ const router = createRouter({
         {
             path: '/cliente',
             component: AppLayout,
-            meta: { 
+            meta: {
                 requiresAuth: true,
                 allowedUserTypes: ['cliente', 'mixto'],
                 section: 'cliente'
@@ -242,7 +248,7 @@ const router = createRouter({
                     path: '',
                     name: 'cliente',
                     component: () => import('@/views/Cliente/Dashboard.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['cliente', 'mixto']
                     }
@@ -251,7 +257,7 @@ const router = createRouter({
                     path: 'dashboard',
                     name: 'cliente-dashboard',
                     component: () => import('@/views/Cliente/Dashboard.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['cliente', 'mixto']
                     }
@@ -260,7 +266,7 @@ const router = createRouter({
                     path: 'Cuenta-Bancaria',
                     name: 'cliente-Cuenta-Bancaria',
                     component: () => import('@/views/Cliente/CuentasBancaria/indexCuentasBancarias.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['cliente', 'mixto']
                     }
@@ -269,7 +275,7 @@ const router = createRouter({
                     path: 'Estado-Cuenta',
                     name: 'cliente-Estado-Cuenta',
                     component: () => import('@/views/Cliente/EstadoCuenta/indexEstadoCuenta.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['cliente', 'mixto']
                     }
@@ -278,7 +284,7 @@ const router = createRouter({
                     path: 'Perfil',
                     name: 'cliente-perfil',
                     component: () => import('@/views/pages/Profile/indexProfile.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['cliente', 'mixto']
                     }
@@ -287,7 +293,7 @@ const router = createRouter({
                     path: 'Confirmar-Cuenta',
                     name: 'cliente-confirmar-cuenta',
                     component: () => import('@/views/Cliente/ConfigurarCuenta/index.vue'),
-                    meta: { 
+                    meta: {
                         requiresAuth: true,
                         allowedUserTypes: ['cliente', 'mixto']
                     }
@@ -327,7 +333,7 @@ function canAccessRoute(route, userType) {
     if (!route.meta?.allowedUserTypes) {
         return true;
     }
-    
+
     // Verificar si el tipo de usuario está en la lista de tipos permitidos
     return route.meta.allowedUserTypes.includes(userType);
 }
@@ -338,19 +344,19 @@ router.beforeEach((to, from, next) => {
     console.log('  - Desde:', from.path);
     console.log('  - Hacia:', to.path);
     console.log('  - Nombre de ruta:', to.name);
-    
+
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
     console.log('  - Requiere auth:', requiresAuth);
-    
+
     const isAuthenticated = authService.isAuthenticated();
     console.log('  - Está autenticado:', isAuthenticated);
-    
+
     if (requiresAuth && !isAuthenticated) {
         console.log('🔒 Acceso denegado a área protegida, redirigiendo a login');
         next({ name: 'login' });
         return;
     }
-    
+
     if (to.name === 'login' && isAuthenticated) {
         console.log('✅ Ya autenticado, redirigiendo según tipo de usuario');
         const userType = getUserType();
@@ -358,33 +364,33 @@ router.beforeEach((to, from, next) => {
         next(defaultRoute);
         return;
     }
-    
+
     // Verificar permisos por tipo de usuario para rutas protegidas
     if (requiresAuth && isAuthenticated) {
         const userType = getUserType();
         console.log('  - Tipo de usuario:', userType);
-        
+
         // Verificar si alguna ruta en el matched requiere permisos específicos
-        const restrictedRoute = to.matched.find(record => 
+        const restrictedRoute = to.matched.find(record =>
             record.meta.allowedUserTypes && !record.meta.allowedUserTypes.includes(userType)
         );
-        
+
         if (restrictedRoute) {
             console.log('🚫 Acceso denegado por tipo de usuario');
             console.log('  - Tipos permitidos:', restrictedRoute.meta.allowedUserTypes);
             console.log('  - Tipo actual:', userType);
-            
+
             // Redirigir a la sección apropiada para el tipo de usuario
             const defaultRoute = getDefaultRouteForUserType(userType);
-            
+
             // Mostrar mensaje de error (opcional)
             // Puedes agregar un toast aquí si tienes el servicio disponible
-            
+
             next(defaultRoute);
             return;
         }
     }
-    
+
     console.log('✅ Navegación permitida');
     next();
 });
