@@ -69,7 +69,7 @@
 
               <!-- Texto y botón -->
               <div class="flex-1">
-                <p class="text-sm font-bold text-black mb-3 leading-snug">
+                <p class="text-sm font-bold text-white mb-3 leading-snug">
                   {{ notification.text }}
                 </p>
                 <div class="flex justify-end">
@@ -140,7 +140,7 @@
               'border-gray-300': !['personal', 'cuenta', 'deposito', 'reserva_pendiente'].includes(notification.type)
             }">
             <div class="flex items-start gap-4">
-              <div class="w-10 h-10 rounded-full flex items-center justify-center" :class="{
+              <!-- <div class="w-10 h-10 rounded-full flex items-center justify-center" :class="{
                 'bg-blue-100 text-blue-600': notification.type === 'personal',
                 'bg-yellow-100 text-yellow-600': notification.type === 'cuenta',
                 'bg-green-100 text-green-600': notification.type === 'deposito',
@@ -148,7 +148,7 @@
                 'bg-gray-100 text-gray-600': !['personal', 'cuenta', 'deposito', 'reserva_pendiente'].includes(notification.type)
               }">
                 <i :class="notification.icon + ' text-lg'" />
-              </div>
+              </div> -->
               <div class="flex-1">
                 <p class="text-sm text-gray-800 mb-3 leading-snug">{{ notification.text }}</p>
                 <div class="flex justify-end">
