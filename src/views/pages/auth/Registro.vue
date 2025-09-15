@@ -1,11 +1,11 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
-import { useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
 import FooterWidget from '@/components/landing/FooterWidget.vue';
 import TopbarWidget from '@/components/landing/TopbarWidget.vue';
-import { dniService } from '@/services/dniService.js';
 import admin2AuthService from '@/services/admin2AuthService.js';
+import { dniService } from '@/services/dniService.js';
+import { useToast } from 'primevue/usetoast';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const toast = useToast();
@@ -22,13 +22,55 @@ const numeroTelefono = ref('');
 const checked = ref(false);
 const loading = ref(false);
 const showErrors = ref(false);
+const documentType = ref(null);
+const documentTypes = ref([]);
 
 const ingredient = ref('inversionista');
 
 const showEmpresaDialog = ref(false);
 
+// Para manejar habilitación de campos
+const isDni = computed(() => documentType.value === 1)          // 1 → DNI
+const isCarnet = computed(() => documentType.value === 2)       // 2 → Carnet de extranjería
+
+// Cuando cambia el tipo de documento
+watch(documentType, (newVal) => {
+  // Limpia documento y datos de persona
+  document.value = ''
+  nombre.value = ''
+  apellidoPaterno.value = ''
+  apellidoMaterno.value = ''
+})
+
+onMounted(async () => {
+  try {
+    const baseUrl = import.meta.env.VITE_API_ADMIN1; // 👈 toma la URL desde .env
+    const response = await fetch(`${baseUrl}/tipo-documentos`);
+
+    if (!response.ok) throw new Error(`Error ${response.status} al obtener tipos de documento`);
+
+    const data = await response.json();
+    console.log('Tipos de documento cargados:', data);
+
+    documentTypes.value = data;
+    // .map(item => ({
+    //   id_tipo_documento: item.id_tipo_documento,
+    //   nombre_tipo_documento: item.nombre_tipo_documento
+    // }));
+
+  } catch (error) {
+    console.error('Fetch error:', error);
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'No se pudieron cargar los tipos de documento.',
+      life: 3000
+    });
+  }
+});
+
 watch(document, async (newVal) => {
-  if (newVal.length === 8) {
+  if (isDni.value && newVal.length === 8) {
     try {
       const { data } = await dniService.consultarDni(newVal);
       if (data.success) {
@@ -58,6 +100,7 @@ watch(document, async (newVal) => {
   }
 });
 
+
 const passwordValidations = computed(() => {
   const pwd = password.value;
   return {
@@ -81,12 +124,13 @@ const passwordsMatch = computed(() => {
 const isFormValid = computed(() => {
   return document.value && apellidoMaterno.value && apellidoPaterno.value &&
     alias.value && correoElectronico.value && isPasswordValid.value &&
-    passwordsMatch.value && numeroTelefono.value && checked.value;
+    passwordsMatch.value && numeroTelefono.value && checked.value &&
+    documentType.value;
 });
 
 const fieldValidations = computed(() => {
   return {
-    document: document.value.trim() !== '' && document.value.length === 8,
+    document: document.value.trim() !== '',  // ya no se valida la longitud
     nombre: nombre.value.trim() !== '',
     apellidoPaterno: apellidoPaterno.value.trim() !== '',
     apellidoMaterno: apellidoMaterno.value.trim() !== '',
@@ -95,9 +139,11 @@ const fieldValidations = computed(() => {
     password: isPasswordValid.value,
     confirmarPassword: passwordsMatch.value,
     numeroTelefono: numeroTelefono.value.trim() !== '',
-    checked: checked.value
+    checked: checked.value,
+    documentType: documentType.value !== null
   };
 });
+
 
 const getFieldClass = (fieldName) => {
   if (!showErrors.value) return '';
@@ -115,7 +161,7 @@ const handlePerfilChange = (value) => {
 
 const handleRegister = async () => {
   showErrors.value = true;
-  
+
   if (!isFormValid.value) {
     toast.add({
       severity: 'error',
@@ -134,6 +180,7 @@ const handleRegister = async () => {
       first_last_name: apellidoPaterno.value,
       second_last_name: apellidoMaterno.value,
       alias: alias.value,
+      tipo_documento_id: documentType.value,
       document: document.value,
       email: correoElectronico.value,
       password: password.value,
@@ -142,6 +189,7 @@ const handleRegister = async () => {
 
     const response = await admin2AuthService.register(payload);
 
+    // SI TODO ESTA OK, TE SALE ESTA NOTIFICACION
     toast.add({
       severity: 'success',
       summary: 'Registro exitoso',
@@ -149,7 +197,10 @@ const handleRegister = async () => {
       life: 4000
     });
 
+    // TERMINA LO ANTERIOR Y DIRECTO AL LOGIN
     router.push('/login');
+
+    // NO HAY MAS LOGICA
   } catch (error) {
     const msg = error?.response?.data?.message || 'Ocurrió un error al registrarte.';
     toast.add({
@@ -184,7 +235,7 @@ const contactarEspecialista = () => {
 
 <template>
   <div class="min-h-screen bg-white flex flex-col">
-    <Toast />
+    <Toast position="top-center" />
     <TopbarWidget />
 
     <!-- Contenido centrado -->
@@ -212,68 +263,62 @@ const contactarEspecialista = () => {
           <!-- Header -->
           <div class="text-center mb-8">
             <h2 class="text-2xl font-bold text-gray-800 mb-2">
-              Comienza a hacer crecer tu dinero
+              Regístrate
             </h2>
-            <p class="text-gray-600">Completa todos los campos para registrarme</p>
+            <p class="text-gray-600">¡Comienza a hacer crecer tu dinero!</p>
           </div>
 
           <!-- Formulario -->
           <form @submit.prevent="handleRegister" class="space-y-6">
 
             <!-- DNI/Documento -->
-            <div class="space-y-2">
-              <label class="text-sm font-medium text-gray-700">
-                Documento (DNI) <span class="text-red-500">*</span>
-              </label>
-              <InputText 
-                v-model="document" 
-                fluid 
-                placeholder="Ingresa tu DNI"
-                :class="getFieldClass('document')" 
-                class="compact-input"
-              />
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Tipo de Documento -->
+              <div>
+                <label class="text-sm font-medium text-gray-700">
+                  Tipo de Documento <span class="text-red-500">*</span>
+                </label>
+                <Dropdown v-model="documentType" :options="documentTypes" optionLabel="nombre_tipo_documento"
+                  optionValue="id_tipo_documento" placeholder="Seleccione el tipo de documento" class="w-full"
+                  appendTo="self" />
+              </div>
+
+              <!-- Documento -->
+              <div>
+                <label class="text-sm font-medium text-gray-700">
+                  Número de documento <span class="text-red-500">*</span>
+                </label>
+                <InputText v-model="document" placeholder="Ingresa el número" :class="getFieldClass('document')"
+                  class="w-full" />
+              </div>
             </div>
 
             <!-- Nombre -->
-            <div class="space-y-2">
-              <label class="text-sm font-medium text-gray-700">Nombre <span class="text-red-500">*</span></label>
-              <InputText 
-                v-model="nombre" 
-                fluid 
-                disabled 
-                placeholder="Ingresa tu nombre" 
-                :class="getFieldClass('nombre')"
-                class="compact-input"
-              />
+            <div class="w-full flex flex-col">
+              <label class="text-sm font-medium text-gray-700 mb-1">
+                Nombre <span class="text-red-500">*</span>
+              </label>
+              <InputText v-model="nombre" placeholder="Ingresa tu nombre" :disabled="isDni"
+                :class="getFieldClass('nombre') + ' w-full'" class="compact-input" />
             </div>
 
-            <!-- Apellidos -->
-            <div class="grid grid-cols-2 gap-4">
-              <div class="space-y-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Apellido Paterno -->
+              <div class="w-full">
                 <label class="text-sm font-medium text-gray-700">
                   Apellido Paterno <span class="text-red-500">*</span>
                 </label>
-                <InputText 
-                  v-model="apellidoPaterno" 
-                  placeholder="Apellido paterno" 
-                  disabled 
-                  fluid 
-                  :class="getFieldClass('apellidoPaterno')"
-                  class="compact-input"
-                />
+                <InputText v-model="apellidoPaterno" placeholder="Apellido paterno" :disabled="isDni"
+                  :class="getFieldClass('apellidoPaterno')" class="w-full compact-input" />
               </div>
-              <div class="space-y-2">
+
+              <!-- Apellido Materno -->
+              <div class="w-full">
                 <label class="text-sm font-medium text-gray-700">
                   Apellido Materno <span class="text-red-500">*</span>
                 </label>
-                <InputText 
-                  v-model="apellidoMaterno" 
-                  placeholder="Apellido materno" 
-                  fluid 
-                  disabled 
-                  :class="getFieldClass('apellidoMaterno')"
-                  class="compact-input"
-                />
+                <InputText v-model="apellidoMaterno" placeholder="Apellido materno" :disabled="isDni"
+                  :class="getFieldClass('apellidoMaterno')" class="w-full compact-input" />
               </div>
             </div>
 
@@ -282,13 +327,8 @@ const contactarEspecialista = () => {
               <label class="text-sm font-medium text-gray-700">
                 Alias <span class="text-red-500">*</span>
               </label>
-              <InputText 
-                v-model="alias" 
-                placeholder="Ingresa tu alias" 
-                fluid 
-                :class="getFieldClass('alias')"
-                class="compact-input"
-              />
+              <InputText v-model="alias" placeholder="Ingresa tu alias" fluid :class="getFieldClass('alias')"
+                class="compact-input" />
             </div>
 
             <!-- Correo electrónico -->
@@ -296,14 +336,8 @@ const contactarEspecialista = () => {
               <label class="text-sm font-medium text-gray-700">
                 Correo electrónico <span class="text-red-500">*</span>
               </label>
-              <InputText 
-                v-model="correoElectronico" 
-                type="email" 
-                placeholder="correo@ejemplo.com" 
-                fluid 
-                :class="getFieldClass('correoElectronico')"
-                class="compact-input"
-              />
+              <InputText v-model="correoElectronico" type="email" placeholder="correo@ejemplo.com" fluid
+                :class="getFieldClass('correoElectronico')" class="compact-input" />
             </div>
 
             <!-- Contraseña -->
@@ -311,46 +345,42 @@ const contactarEspecialista = () => {
               <label class="text-sm font-medium text-gray-700">
                 Contraseña <span class="text-red-500">*</span>
               </label>
-              <Password 
-                v-model="password" 
-                placeholder="Ingresa tu contraseña" 
-                :feedback="false" 
-                toggleMask 
-                fluid 
-                :class="getFieldClass('password')"
-                class="compact-password"
-              />
+              <Password v-model="password" placeholder="Ingresa tu contraseña" :feedback="false" toggleMask fluid
+                :class="getFieldClass('password')" class="compact-password" />
 
               <!-- Validaciones de contraseña -->
-              <div class="mt-2 space-y-1">
-                <div class="flex items-center gap-2 text-xs">
-                  <i
-                    :class="passwordValidations.hasUpperCase ? 'pi pi-check text-green-500' : 'pi pi-times text-red-500'"></i>
-                  <span :class="passwordValidations.hasUpperCase ? 'text-green-600' : 'text-red-600'">
-                    Al menos una mayúscula
-                  </span>
-                </div>
-                <div class="flex items-center gap-2 text-xs">
-                  <i
-                    :class="passwordValidations.hasNumber ? 'pi pi-check text-green-500' : 'pi pi-times text-red-500'"></i>
-                  <span :class="passwordValidations.hasNumber ? 'text-green-600' : 'text-red-600'">
-                    Al menos un número
-                  </span>
-                </div>
-                <div class="flex items-center gap-2 text-xs">
-                  <i
-                    :class="passwordValidations.hasMinLength ? 'pi pi-check text-green-500' : 'pi pi-times text-red-500'"></i>
-                  <span :class="passwordValidations.hasMinLength ? 'text-green-600' : 'text-red-600'">
-                    Mínimo 8 caracteres
-                  </span>
-                </div>
-                <div class="flex items-center gap-2 text-xs">
-                  <i
-                    :class="passwordValidations.hasSpecialChar ? 'pi pi-check text-green-500' : 'pi pi-times text-red-500'"></i>
-                  <span :class="passwordValidations.hasSpecialChar ? 'text-green-600' : 'text-red-600'">
-                    Al menos un carácter especial
-                  </span>
-                </div>
+              <div class="text-gray-500 space-y-1 mt-1">
+                <!-- Al menos una mayúscula -->
+                <span class="flex items-center gap-1">
+                  <i class="pi pi-check-circle text-lg"
+                    :class="passwordValidations.hasUpperCase ? 'text-green-500' : 'text-red-500'">
+                  </i>
+                  al menos una mayúscula
+                </span>
+
+                <!-- Al menos un número -->
+                <span class="flex items-center gap-1">
+                  <i class="pi pi-check-circle text-lg"
+                    :class="passwordValidations.hasNumber ? 'text-green-500' : 'text-red-500'">
+                  </i>
+                  al menos un número
+                </span>
+
+                <!-- Mínimo 8 caracteres -->
+                <span class="flex items-center gap-1">
+                  <i class="pi pi-check-circle text-lg"
+                    :class="passwordValidations.hasMinLength ? 'text-green-500' : 'text-red-500'">
+                  </i>
+                  mínimo de 8 caracteres
+                </span>
+
+                <!-- Al menos un carácter especial -->
+                <span class="flex items-center gap-1">
+                  <i class="pi pi-check-circle text-lg"
+                    :class="passwordValidations.hasSpecialChar ? 'text-green-500' : 'text-red-500'">
+                  </i>
+                  al menos un carácter especial
+                </span>
               </div>
             </div>
 
@@ -359,15 +389,8 @@ const contactarEspecialista = () => {
               <label class="text-sm font-medium text-gray-700">
                 Confirmar contraseña <span class="text-red-500">*</span>
               </label>
-              <Password 
-                v-model="confirmarPassword" 
-                placeholder="Confirma tu contraseña" 
-                :feedback="false" 
-                toggleMask
-                fluid 
-                :class="getFieldClass('confirmarPassword')"
-                class="compact-password"
-              />
+              <Password v-model="confirmarPassword" placeholder="Confirma tu contraseña" :feedback="false" toggleMask
+                fluid :class="getFieldClass('confirmarPassword')" class="compact-password" />
               <div v-if="confirmarPassword && passwordsMatch" class="flex items-center gap-2 text-xs text-green-600">
                 <i class="pi pi-check text-green-500"></i>
                 <span>Las contraseñas coinciden</span>
@@ -383,37 +406,22 @@ const contactarEspecialista = () => {
               <label class="text-sm font-medium text-gray-700">
                 Número de teléfono <span class="text-red-500">*</span>
               </label>
-              <InputText 
-                v-model="numeroTelefono" 
-                placeholder="Ingresa tu número de teléfono" 
-                fluid 
-                :class="getFieldClass('numeroTelefono')"
-                class="compact-input"
-              />
+              <InputText v-model="numeroTelefono" placeholder="Ingresa tu número de teléfono" fluid
+                :class="getFieldClass('numeroTelefono')" class="compact-input" />
             </div>
 
             <!-- Términos y condiciones -->
             <div class="flex items-start gap-3">
-              <Checkbox 
-                v-model="checked" 
-                inputId="terms" 
-                binary 
-                :class="getFieldClass('checked')"
-              />
+              <Checkbox v-model="checked" inputId="terms" binary :class="getFieldClass('checked')" />
               <label for="terms" class="text-sm text-gray-600 cursor-pointer">
-                Acepto los <a @click.prevent="goTerminos" class="text-[#FF4929] hover:underline">términos y condiciones</a>
+                Acepto los <a @click.prevent="goTerminos" class="text-[#FF4929] hover:underline">términos y
+                  condiciones</a>
               </label>
             </div>
 
             <!-- Botón de registro -->
-            <Button 
-              type="submit" 
-              :disabled="loading" 
-              :loading="loading" 
-              severity="contrast" 
-              fluid
-              class="register-button"
-            >
+            <Button type="submit" :disabled="loading" :loading="loading" severity="contrast" fluid
+              class="register-button">
               {{ loading ? 'Registrando...' : 'Registrarme' }}
             </Button>
 

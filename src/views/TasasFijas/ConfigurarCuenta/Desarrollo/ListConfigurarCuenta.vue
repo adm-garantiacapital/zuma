@@ -13,11 +13,11 @@
     <!-- Preguntas PEP -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="border p-3 rounded-lg">
-        <label class="block font-medium mb-2">¿Eres o has sido Persona Expuesta Políticamente (PEP)?</label>
+        <label class="block font-medium mb-2">¿Eres o has sido Persona Expuesta Políticamente (PEP)?<span class="text-red-500">*</span></label>
         <ToggleSwitch v-model="form.is_pep" />
       </div>
       <div class="border p-3 rounded-lg">
-        <label class="block font-medium mb-2">¿Eres pariente, cónyuge o conviviente de alguna persona PEP?</label>
+        <label class="block font-medium mb-2">¿Eres pariente, cónyuge o conviviente de alguna persona PEP?<span class="text-red-500">*</span></label>
         <ToggleSwitch v-model="form.has_relationship_pep" />
       </div>
     </div>
@@ -25,18 +25,18 @@
     <!-- Ubigeo -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div>
-        <label class="block font-medium mb-2">Departamento</label>
+        <label class="block font-medium mb-2">Departamento<span class="text-red-500">*</span></label>
         <Select v-model="form.department" :options="departamentos" optionLabel="ubigeo_name" dataKey="ubigeo_id"
           placeholder="Seleccione departamento" class="w-full" @change="onDepartamentoChange" />
       </div>
       <div>
-        <label class="block font-medium mb-2">Provincia</label>
+        <label class="block font-medium mb-2">Provincia<span class="text-red-500">*</span></label>
         <Select v-model="form.province" :options="provincias" optionLabel="ubigeo_name" dataKey="ubigeo_id"
           placeholder="Seleccione provincia" class="w-full" :disabled="!form.department"
           @change="onProvinciaChange" />
       </div>
       <div>
-        <label class="block font-medium mb-2">Distrito</label>
+        <label class="block font-medium mb-2">Distrito<span class="text-red-500">*</span></label>
         <Select v-model="form.district" :options="distritos" optionLabel="ubigeo_name" dataKey="ubigeo_id"
           placeholder="Seleccione distrito" class="w-full" :disabled="!form.province" />
       </div>
@@ -44,7 +44,7 @@
 
     <!-- Dirección -->
     <div>
-      <label class="block font-medium mb-2">Dirección</label>
+      <label class="block font-medium mb-2">Dirección<span class="text-red-500">*</span></label>
       <InputText v-model="form.address" class="w-full" placeholder="Ingrese su dirección" />
     </div>
 
@@ -52,7 +52,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <!-- DNI Parte Delantera -->
       <div>
-        <label class="block font-medium mb-3 text-gray-700">DNI - Parte Delantera</label>
+        <label class="block font-medium mb-3 text-gray-700">DNI - Parte Delantera<span class="text-red-500">*</span></label>
         <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-400 transition-colors duration-300 bg-gray-50 hover:bg-green-50">
           <input 
             type="file" 
@@ -133,7 +133,7 @@
 
       <!-- DNI Parte Trasera -->
       <div>
-        <label class="block font-medium mb-3 text-gray-700">DNI - Parte Trasera</label>
+        <label class="block font-medium mb-3 text-gray-700">DNI - Parte Trasera<span class="text-red-500">*</span></label>
         <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-400 transition-colors duration-300 bg-gray-50 hover:bg-green-50">
           <input 
             type="file" 

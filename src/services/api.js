@@ -1,6 +1,6 @@
 // api.js - Mejoras MÍNIMAS para producción
-import axios from 'axios';
 import router from '@/router';
+import axios from 'axios';
 
 function createApiClient(baseURL) {
   const client = axios.create({
@@ -18,11 +18,11 @@ function createApiClient(baseURL) {
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
-      
+
       // ✅ Logging seguro (sin datos sensibles)
       console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`);
       // ❌ NO logear headers ni data que pueden contener tokens/passwords
-      
+
       return config;
     },
     (error) => {
@@ -40,12 +40,12 @@ function createApiClient(baseURL) {
       // ✅ Logging seguro de errores
       const status = error.response?.status;
       console.error(`❌ API Error [${status}]:`, error.response?.data?.message || error.message);
-      
+
       if (status === 401) {
         console.warn('🔑 Token inválido o expirado, limpiando sesión...');
         localStorage.removeItem('api_token');
         localStorage.removeItem('customer_data');
-        
+
         if (router.currentRoute.value.name !== 'login') {
           router.push({ name: 'login' });
         }
@@ -54,7 +54,7 @@ function createApiClient(baseURL) {
       } else if (status >= 500) {
         console.error('🔥 Error del servidor');
       }
-      
+
       return Promise.reject(error);
     }
   );

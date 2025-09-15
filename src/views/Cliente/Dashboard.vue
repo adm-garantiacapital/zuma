@@ -4,7 +4,7 @@
 
     <div class="mb-10 rounded-3xl bg-[#6790FF] relative overflow-hidden">
         <div class="px-10 py-20 relative superior inline-block">
-            <h2 class="m-0 text-[#171717]">Bienvenido, {{ fullName }} a tu perfil del inversionista.</h2>
+            <h2 class="m-0 text-[#171717]">Bienvenido, {{ fullName }}, a tu perfil del inversionista.</h2>
         </div>
         <div class="mask absolute -top-14 -right-8">
             <img src="/imagenes/zuma/imagen-1.png" alt="Logo Zuma"
@@ -25,12 +25,12 @@
                 <Button label="Retiro" icon="pi pi-minus" iconPos="left"
                     class="border-button-black !border-none !text-[#171717] !bg-transparent hover:!bg-[#6790FF] focus:!border-none focus:!bg-[#FF4929] !font-bold !rounded-3xl !px-5 !py-3 !me-3 !transition !duration-100 !ease-in"
                     rounded @click="showRetiroDialog = true" />
-                
+
                 <!-- Botón para mostrar/ocultar montos -->
                 <Button :icon="showAmounts ? 'pi pi-eye' : 'pi pi-eye-slash'" severity="contrast" variant="outlined"
-                    rounded @click="toggleAmounts" :title="showAmounts ? 'Ocultar montos' : 'Mostrar montos'" 
+                    rounded @click="toggleAmounts" :title="showAmounts ? 'Ocultar montos' : 'Mostrar montos'"
                     class="!me-3" />
-                
+
                 <Button v-if="wallet" @click="showWallet" icon="pi pi-angle-up" aria-label="Mostrar Billetera"
                     variant="link" class="!text-black" />
                 <Button v-else @click="showWallet" icon="pi pi-angle-down" aria-label="Mostrar Billetera" variant="link"
@@ -110,11 +110,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import RevenueStreamWidget from "@/components/dashboard/RevenueStreamWidget.vue";
+import NotificationsWidget from "@/components/dashboardCliente/NotificationsWidget.vue";
 import profileService from '@/services/profileService';
 import reportsService from '@/services/reportsService';
-import NotificationsWidget from "@/components/dashboardCliente/NotificationsWidget.vue";
-import RevenueStreamWidget from "@/components/dashboard/RevenueStreamWidget.vue";
+import { onMounted, ref } from "vue";
 import AddDeposito from "./EstadoCuenta/Desarrollo/AddDeposito.vue";
 import AddRetiro from "./EstadoCuenta/Desarrollo/AddRetiro.vue";
 
@@ -208,7 +208,7 @@ const handleWithdrawSuccess = () => {
 onMounted(() => {
     loadProfile();
     loadBalances();
-    
+
     // Cargar la preferencia desde localStorage
     const savedShowAmounts = localStorage.getItem('showAmounts');
     if (savedShowAmounts !== null) {
