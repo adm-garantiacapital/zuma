@@ -64,14 +64,12 @@ import { RouterLink } from 'vue-router';
 
         <!-- Botones -->
         <div class="flex flex-col lg:flex-row gap-3 w-full lg:w-auto mt-4 lg:mt-0 border-t lg:border-0 pt-4 lg:pt-0">
-          <a href="https://zuma.com.pe/factoring/iniciar-sesion" class="w-full lg:w-auto">
-            <Button label="Iniciar Sesión" text rounded severity="contrast"
-              class="hover:bg-white hover:!text-[#6790FF] transition-all duration-300 w-full" />
-          </a>
-
-          <a href="https://zuma.com.pe/factoring/registrarme" class="w-full lg:w-auto"> <Button label="Registrarme"
-              severity="warn" rounded
-              class="bg-white text-[#6790FF] hover:bg-[#ffffffcc] transition-all duration-300 w-full" /> </a>
+          <RouterLink to="/login" class="w-full lg:w-auto">
+            <Button label="Iniciar Sesión" text rounded severity="contrast" class="hover:bg-white hover:!text-[#6790FF] transition-all duration-300 w-full" />
+          </RouterLink>
+          <RouterLink to="/registrarte" class="w-full lg:w-auto" >
+            <Button label="Registrarme" severity="warn" rounded  class="bg-white text-[#6790FF] hover:bg-[#ffffffcc] transition-all duration-300 w-full" />
+          </RouterLink>
         </div>
       </div>
     </div>
