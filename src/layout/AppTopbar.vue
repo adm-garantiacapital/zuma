@@ -30,7 +30,7 @@
           </div>
 
           <!-- Nombre completo - responsivo -->
-          <span class="text-sm font-medium text-gray-800 hidden sm:inline">{{ fullName }}</span>
+          <span class="text-sm font-bold text-gray-800 hidden sm:inline">{{ fullName }}</span>
           <i class="pi pi-chevron-down text-xs text-gray-600 transition-transform duration-200 hidden sm:inline"
             :class="{ 'rotate-180': showUserMenu }"></i>
         </button>
@@ -85,7 +85,7 @@
                 <i v-else class="pi pi-user text-gray-600"></i>
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-semibold text-gray-800 truncate">{{ fullName }}</p>
+                <p class="text-3xl font-semibold text-gray-800 truncate">{{ fullName }}</p>
                 <p class="text-xs text-gray-500 truncate">{{ userEmail }}</p>
               </div>
             </div>

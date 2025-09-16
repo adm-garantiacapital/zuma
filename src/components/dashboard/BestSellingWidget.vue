@@ -21,9 +21,31 @@ const submittingBid = ref(false);
 // Dialog para detalles completos
 const detailDialog = ref(false);
 
-// Simular múltiples fotos para el carrusel
+// ✅ Función mejorada para obtener imágenes
 const getAuctionImages = (auction) => {
-    return Array.isArray(auction.foto) ? auction.foto : [auction.foto];
+    if (!auction || !auction.foto) {
+        return [{ url: '/Propiedades/no-image.png', descripcion: 'Sin imagen' }];
+    }
+    
+    // Si foto es un array de objetos con url y descripcion
+    if (Array.isArray(auction.foto)) {
+        return auction.foto.map(img => ({
+            url: typeof img === 'string' ? img : img.url,
+            descripcion: typeof img === 'object' ? img.descripcion : 'Imagen de la propiedad'
+        }));
+    }
+    
+    // Si foto es un string (URL única)
+    if (typeof auction.foto === 'string') {
+        return [{ url: auction.foto, descripcion: 'Imagen de la propiedad' }];
+    }
+    
+    // Si foto es un objeto único
+    if (typeof auction.foto === 'object') {
+        return [auction.foto];
+    }
+    
+    return [{ url: '/Propiedades/no-image.png', descripcion: 'Sin imagen' }];
 };
 
 // Computed para calcular tiempo restante
@@ -95,7 +117,7 @@ const submitBid = async () => {
         submittingBid.value = true;
 
         await investmentService.invest({
-            auction_id: selectedAuction.value.subasta.id, // Corregido: usar subasta.id
+            auction_id: selectedAuction.value.subasta.id,
             amount: parseFloat(bidAmount.value)
         });
 
@@ -147,14 +169,55 @@ const openScheduleDialog = async (auction) => {
     }
 };
 
-// También asegúrate de que selectedAuction esté definido:
 const selectedAuction = ref(null);
 
-const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('es-PE', {
-        style: 'currency',
-        currency: 'PEN'
-    }).format(amount);
+// ✅ Función mejorada para formatear moneda que maneja objetos Money
+const formatCurrency = (moneyData) => {
+    // Si es un objeto Money del nuevo formato
+    if (moneyData && typeof moneyData === 'object' && moneyData.formatted) {
+        return moneyData.formatted;
+    }
+    
+    // Si es un objeto Money con amount y currency
+    if (moneyData && typeof moneyData === 'object' && moneyData.amount !== undefined) {
+        const currency = moneyData.currency || 'PEN';
+        return new Intl.NumberFormat('es-PE', {
+            style: 'currency',
+            currency: currency === 'PEN' ? 'PEN' : 'USD'
+        }).format(moneyData.amount);
+    }
+    
+    // Si es un número (fallback)
+    if (typeof moneyData === 'number') {
+        return new Intl.NumberFormat('es-PE', {
+            style: 'currency',
+            currency: 'PEN'
+        }).format(moneyData);
+    }
+    
+    // Si es string
+    if (typeof moneyData === 'string' && !isNaN(parseFloat(moneyData))) {
+        return new Intl.NumberFormat('es-PE', {
+            style: 'currency',
+            currency: 'PEN'
+        }).format(parseFloat(moneyData));
+    }
+    
+    return 'S/ 0.00';
+};
+
+// ✅ Función para obtener el valor numérico de Money objects (para comparaciones)
+const getMoneyAmount = (moneyData) => {
+    if (moneyData && typeof moneyData === 'object' && moneyData.amount !== undefined) {
+        return parseFloat(moneyData.amount);
+    }
+    if (typeof moneyData === 'number') {
+        return moneyData;
+    }
+    if (typeof moneyData === 'string' && !isNaN(parseFloat(moneyData))) {
+        return parseFloat(moneyData);
+    }
+    return 0;
 };
 
 const formatDate = (dateString) => {
@@ -188,7 +251,8 @@ onMounted(() => {
                             :showIndicators="true" :showNavigators="true" class="auction-carousel mb-4">
                             <template #item="carouselSlot">
                                 <div class="relative h-48">
-                                    <img :src="carouselSlot.data" :alt="auction.nombre"
+                                    <img :src="carouselSlot.data.url || carouselSlot.data" 
+                                         :alt="carouselSlot.data.descripcion || auction.nombre"
                                         class="w-full h-full object-cover rounded-lg" />
                                 </div>
                             </template>
@@ -211,8 +275,7 @@ onMounted(() => {
                             <!-- Valor estimado -->
                             <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
                                 <p class="text-xs text-blue-600 font-medium uppercase tracking-wide">Valor</p>
-                                <p class="text-lg font-bold text-blue-700">{{ formatCurrency(auction.valor_estimado) }}
-                                </p>
+                                <p class="text-lg font-bold text-blue-700">{{ formatCurrency(auction.valor_estimado) }}</p>
                             </div>
                             <!-- TEA -->
                             <div class="bg-purple-50 p-3 rounded-lg border border-purple-200">
@@ -250,10 +313,12 @@ onMounted(() => {
                     <div class="bg-gray-50 p-6 flex flex-col">
                         <div class="bg-red-50 p-4 rounded-lg border border-red-200 mb-4">
                             <p class="text-sm text-red-600 font-medium uppercase tracking-wide text-center">Valor Requerido</p>
-                            <p class="text-2xl font-bold text-red-700 text-center">{{
-                                formatCurrency(auction.valor_requerido) }}</p>
-                            <p class="text-sm text-red-600 text-center">PEN</p>
+                            <p class="text-2xl font-bold text-red-700 text-center">{{ formatCurrency(auction.valor_requerido) }}</p>
+                            <p class="text-sm text-red-600 text-center">{{ 
+                                auction.valor_requerido && auction.valor_requerido.currency || 'PEN' 
+                            }}</p>
                         </div>
+                        
                         <!-- Header con tiempo -->
                         <div class="mb-4 text-center">
                             <Tag :value="getTimeRemaining(auction.subasta.tiempo_finalizacion).text"
@@ -265,10 +330,8 @@ onMounted(() => {
 
                         <!-- Oferta actual destacada -->
                         <div class="bg-green-50 p-4 rounded-lg border border-green-200 mb-4">
-                            <p class="text-sm text-green-600 font-medium uppercase tracking-wide text-center">Oferta
-                                Actual</p>
-                            <p class="text-2xl font-bold text-green-700 text-center">{{
-                                formatCurrency(auction.monto_actual_mayor) }}</p>
+                            <p class="text-sm text-green-600 font-medium uppercase tracking-wide text-center">Oferta Actual</p>
+                            <p class="text-2xl font-bold text-green-700 text-center">{{ formatCurrency(auction.monto_actual_mayor) }}</p>
                             <p class="text-sm text-green-600 text-center">PEN</p>
                         </div>
 
@@ -292,13 +355,11 @@ onMounted(() => {
                                         </div>
                                         <div>
                                             <p class="font-semibold text-sm">{{ inversionista.nombre }}</p>
-                                            <p class="text-xs text-gray-500">{{
-                                                formatDate(inversionista.fecha_inversion) }}</p>
+                                            <p class="text-xs text-gray-500">{{ formatDate(inversionista.fecha_inversion) }}</p>
                                         </div>
                                     </div>
                                     <div class="text-right">
-                                        <p class="font-bold text-green-600 text-sm">{{
-                                            formatCurrency(inversionista.monto) }}</p>
+                                        <p class="font-bold text-green-600 text-sm">{{ formatCurrency(inversionista.monto) }}</p>
                                         <p v-if="index === 0" class="text-xs text-green-500">Mejor oferta</p>
                                     </div>
                                 </div>
@@ -348,7 +409,7 @@ onMounted(() => {
             <Message severity="info">
                 <div class="p-4 rounded-lg">
                     <div class="flex items-center gap-4">
-                        <img :src="Array.isArray(selectedAuction.foto) ? selectedAuction.foto[0] : selectedAuction.foto" 
+                        <img :src="getAuctionImages(selectedAuction)[0]?.url || getAuctionImages(selectedAuction)[0]" 
                              :alt="selectedAuction.nombre"
                             class="w-16 h-16 rounded-lg object-cover" />
                         <div>
@@ -364,13 +425,13 @@ onMounted(() => {
 
             <div class="field">
                 <label for="bidAmount" class="block text-sm font-medium mb-2">
-                    Tu oferta (mínimo: {{ formatCurrency(parseFloat(selectedAuction.monto_actual_mayor) + 0.01) }})
+                    Tu oferta (mínimo: {{ formatCurrency(getMoneyAmount(selectedAuction.monto_actual_mayor) + 0.01) }})
                 </label>
                 <InputNumber id="bidAmount" v-model="bidAmount"
-                    :min="parseFloat(selectedAuction.monto_actual_mayor) + 0.01" :step="0.01"
+                    :min="getMoneyAmount(selectedAuction.monto_actual_mayor) + 0.01" :step="0.01"
                     placeholder="Ingresa tu oferta" class="w-full" currency="PEN" locale="es-PE"
-                    :class="{ 'p-invalid': bidAmount && parseFloat(bidAmount) <= parseFloat(selectedAuction.monto_actual_mayor) }" />
-                <small v-if="bidAmount && parseFloat(bidAmount) <= parseFloat(selectedAuction.monto_actual_mayor)"
+                    :class="{ 'p-invalid': bidAmount && parseFloat(bidAmount) <= getMoneyAmount(selectedAuction.monto_actual_mayor) }" />
+                <small v-if="bidAmount && parseFloat(bidAmount) <= getMoneyAmount(selectedAuction.monto_actual_mayor)"
                     class="p-error">
                     La oferta debe ser mayor a la actual
                 </small>
@@ -382,9 +443,7 @@ onMounted(() => {
                     <ul class="text-xs space-y-1 ml-4">
                         <li>• Tu oferta es vinculante</li>
                         <li>• TEA: {{ selectedAuction.tea }}% | TEM: {{ selectedAuction.tem }}%</li>
-                        <li>• Tiempo restante: <strong>{{ getTimeRemaining(selectedAuction.subasta.tiempo_finalizacion).text
-                                }}</strong>
-                        </li>
+                        <li>• Tiempo restante: <strong>{{ getTimeRemaining(selectedAuction.subasta.tiempo_finalizacion).text }}</strong></li>
                         <li>• Hay {{ selectedAuction.total_inversionistas }} inversionistas compitiendo</li>
                         <li>• Recibirás notificaciones de cambios</li>
                         <li>• Cronograma: {{ selectedAuction.tipo_cronograma }}</li>
@@ -400,138 +459,134 @@ onMounted(() => {
                     @click="bidDialog = false" />
                 <Button label="Confirmar oferta" icon="pi pi-check" severity="contrast" rounded @click="submitBid"
                     :loading="submittingBid"
-                    :disabled="!bidAmount || parseFloat(bidAmount) <= parseFloat(selectedAuction?.monto_actual_mayor || 0)" />
+                    :disabled="!bidAmount || parseFloat(bidAmount) <= getMoneyAmount(selectedAuction?.monto_actual_mayor || 0)" />
             </div>
         </template>
     </Dialog>
 
     <!-- Dialog para detalles -->
     <Dialog v-model:visible="detailDialog" modal header="Detalles de la Propiedad" :style="{ width: '900px' }"
-    :closable="true">
-    <div v-if="selectedAuction" class="space-y-6">
-        <!-- Carrusel de imágenes en el diálogo -->
-        <div class="text-center">
-            <Carousel :value="getAuctionImages(selectedAuction)" :numVisible="1" :numScroll="1"
-                :showIndicators="true" :showNavigators="true" class="auction-carousel">
-                <template #item="carouselSlot">
-                    <div class="relative h-80">
-                        <img :src="carouselSlot.data" :alt="selectedAuction.nombre"
-                            class="w-full h-full object-cover rounded-lg" />
-                    </div>
-                </template>
-            </Carousel>
-        </div>
+        :closable="true">
+        <div v-if="selectedAuction" class="space-y-6">
+            <!-- Carrusel de imágenes en el diálogo -->
+            <div class="text-center">
+                <Carousel :value="getAuctionImages(selectedAuction)" :numVisible="1" :numScroll="1"
+                    :showIndicators="true" :showNavigators="true" class="auction-carousel">
+                    <template #item="carouselSlot">
+                        <div class="relative h-80">
+                            <img :src="carouselSlot.data.url || carouselSlot.data" 
+                                 :alt="carouselSlot.data.descripcion || selectedAuction.nombre"
+                                class="w-full h-full object-cover rounded-lg" />
+                        </div>
+                    </template>
+                </Carousel>
+            </div>
 
-        <!-- Información básica -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Información básica -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card>
+                    <template #title>Información General</template>
+                    <template #content>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="font-medium">Nombre:</span>
+                                <span>{{ selectedAuction.nombre }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Departamento:</span>
+                                <span>{{ selectedAuction.departamento }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Provincia:</span>
+                                <span>{{ selectedAuction.provincia }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Distrito:</span>
+                                <span>{{ selectedAuction.distrito }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Tipo Cronograma:</span>
+                                <span class="capitalize">{{ selectedAuction.tipo_cronograma }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Riesgo:</span>
+                                <Tag :value="selectedAuction.riesgo" severity="success" />
+                            </div>
+                        </div>
+                    </template>
+                </Card>
+
+                <Card>
+                    <template #title>Información Financiera</template>
+                    <template #content>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="font-medium">Oferta Actual:</span>
+                                <span class="font-bold text-green-600">{{ formatCurrency(selectedAuction.monto_actual_mayor) }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Valor:</span>
+                                <span class="font-bold text-blue-600">{{ formatCurrency(selectedAuction.valor_estimado) }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Valor Requerido:</span>
+                                <span class="font-bold text-purple-600">{{ formatCurrency(selectedAuction.valor_requerido) }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Valor Subasta:</span>
+                                <span class="font-bold text-orange-600">{{ formatCurrency(selectedAuction.valor_subasta) }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">TEA:</span>
+                                <span class="font-bold text-purple-600">{{ selectedAuction.tea }}%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">TEM:</span>
+                                <span class="font-bold text-orange-600">{{ selectedAuction.tem }}%</span>
+                            </div>
+                        </div>
+                    </template>
+                </Card>
+            </div>
+
+            <!-- Información de Subasta -->
             <Card>
-                <template #title>Información General</template>
+                <template #title>Información de Subasta</template>
                 <template #content>
-                    <div class="space-y-3 text-sm">
-                        <div class="flex justify-between">
-                            <span class="font-medium">Nombre:</span>
-                            <span>{{ selectedAuction.nombre }}</span>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="font-medium">Estado:</span>
+                                <Tag :value="selectedAuction.subasta.estado" 
+                                     :severity="selectedAuction.subasta.estado === 'activa' ? 'success' : 'secondary'" />
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Monto Inicial:</span>
+                                <span class="font-bold">{{ formatCurrency(selectedAuction.subasta.monto_inicial) }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Día de Subasta:</span>
+                                <span>{{ formatDate(selectedAuction.subasta.dia_subasta) }}</span>
+                            </div>
                         </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium">Departamento:</span>
-                            <span>{{ selectedAuction.departamento }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium">Provincia:</span>
-                            <span>{{ selectedAuction.provincia }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium">Distrito:</span>
-                            <span>{{ selectedAuction.distrito }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium">Tipo Cronograma:</span>
-                            <span class="capitalize">{{ selectedAuction.tipo_cronograma }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium">Riesgo:</span>
-                            <Tag :value="selectedAuction.riesgo" severity="success" />
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="font-medium">Hora Inicio:</span>
+                                <span>{{ selectedAuction.subasta.hora_inicio }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Hora Fin:</span>
+                                <span>{{ selectedAuction.subasta.hora_fin }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Tiempo Restante:</span>
+                                <Tag :value="getTimeRemaining(selectedAuction.subasta.tiempo_finalizacion).text"
+                                    :severity="getTimeRemaining(selectedAuction.subasta.tiempo_finalizacion).urgent ? 'danger' : 'success'" />
+                            </div>
                         </div>
                     </div>
                 </template>
             </Card>
-
-            <Card>
-                <template #title>Información Financiera</template>
-                <template #content>
-                    <div class="space-y-3 text-sm">
-                        <div class="flex justify-between">
-                            <span class="font-medium">Oferta Actual:</span>
-                            <span class="font-bold text-green-600">{{
-                                formatCurrency(selectedAuction.monto_actual_mayor) }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium">Valor:</span>
-                            <span class="font-bold text-blue-600">{{ formatCurrency(selectedAuction.valor_estimado)
-                                }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium">Valor Requerido:</span>
-                            <span class="font-bold text-purple-600">{{ formatCurrency(selectedAuction.valor_requerido)
-                                }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium">Valor Subasta:</span>
-                            <span class="font-bold text-orange-600">{{ formatCurrency(selectedAuction.valor_subasta)
-                                }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium">TEA:</span>
-                            <span class="font-bold text-purple-600">{{ selectedAuction.tea }}%</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium">TEM:</span>
-                            <span class="font-bold text-orange-600">{{ selectedAuction.tem }}%</span>
-                        </div>
-                    </div>
-                </template>
-            </Card>
-        </div>
-
-        <!-- Información de Subasta -->
-        <Card>
-            <template #title>Información de Subasta</template>
-            <template #content>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div class="space-y-3">
-                        <div class="flex justify-between">
-                            <span class="font-medium">Estado:</span>
-                            <Tag :value="selectedAuction.subasta.estado" 
-                                 :severity="selectedAuction.subasta.estado === 'activa' ? 'success' : 'secondary'" />
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium">Monto Inicial:</span>
-                            <span class="font-bold">{{ formatCurrency(selectedAuction.subasta.monto_inicial) }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium">Día de Subasta:</span>
-                            <span>{{ formatDate(selectedAuction.subasta.dia_subasta) }}</span>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="flex justify-between">
-                            <span class="font-medium">Hora Inicio:</span>
-                            <span>{{ selectedAuction.subasta.hora_inicio }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium">Hora Fin:</span>
-                            <span>{{ selectedAuction.subasta.hora_fin }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium">Tiempo Restante:</span>
-                            <Tag :value="getTimeRemaining(selectedAuction.subasta.tiempo_finalizacion).text"
-                                :severity="getTimeRemaining(selectedAuction.subasta.tiempo_finalizacion).urgent ? 'danger' : 'success'" />
-                        </div>
-                    </div>
-                </div>
-            </template>
-        </Card>
-
         <!-- TABLA COMPLETA DE INVERSIONISTAS EN DETALLE -->
         <Card>
             <template #title>

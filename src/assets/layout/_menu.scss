@@ -159,3 +159,7 @@
     overflow: hidden;
     transition: max-height 1s ease-in-out;
 }
+
+body.p-overflow-hidden {
+  padding-right: 0 !important;
+}
