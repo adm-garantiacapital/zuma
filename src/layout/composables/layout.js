@@ -50,6 +50,15 @@ export function useLayout() {
         }
     };
 
+    // ✅ corregido: refleja correctamente el colapsado/expandido
+    const isSidebarCollapsed = computed(() => {
+        if (window.innerWidth > 991) {
+            return layoutState.staticMenuDesktopInactive;
+        } else {
+            return !layoutState.staticMenuMobileActive;
+        }
+    });
+
     const isSidebarActive = computed(() => layoutState.overlayMenuActive || layoutState.staticMenuMobileActive);
 
     const isDarkTheme = computed(() => layoutConfig.darkTheme);
@@ -62,6 +71,7 @@ export function useLayout() {
         layoutConfig,
         layoutState,
         toggleMenu,
+        isSidebarCollapsed,
         isSidebarActive,
         isDarkTheme,
         getPrimary,

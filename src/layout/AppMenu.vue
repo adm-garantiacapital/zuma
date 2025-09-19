@@ -126,57 +126,57 @@ const model = computed(() => {
                 </div>
             </router-link>
 
-            <svg xmlns="http://www.w3.org/2000/svg" id="menu-icon" width="20" height="20" viewBox="0 0 26 22"
-                fill="none" @click="toggleMenu" class="menu-toggle-btn cursor-pointer">
-                <rect x="1.51078" y="1.5267" width="22.7718" height="19.1942" rx="5.31803"
-                    transform="rotate(-0.620767 1.51078 1.5267)" stroke="#171717" stroke-width="2" />
-                <line x1="11.0977" y1="20.5049" x2="11.0977" y2="1.35933" stroke="#171717" stroke-width="2" />
-                <path d="M5.39844 6.86353H7.79163" stroke="#171717" stroke-width="2" stroke-linecap="round" />
-                <path d="M5.39844 11.1711H7.79163" stroke="#171717" stroke-width="2" stroke-linecap="round" />
-            </svg>
+            <!-- Botón de toggle siempre visible -->
+            <button @click="toggleMenu" class="inline-flex items-center justify-center whitespace-nowrap text-sm 
+                font-medium ring-offset-background transition-colors focus-visible:outline-none 
+                focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none 
+                disabled:opacity-50 underline-offset-4 hover:underline rounded-full h-10 w-10 text-tertiary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 26 22" fill="none">
+                    <rect x="1.5" y="1.5" width="22.7" height="19.2" rx="5.3" stroke="#171717" stroke-width="2" />
+                    <line x1="11.1" y1="20.5" x2="11.1" y2="1.3" stroke="#171717" stroke-width="2" />
+                    <path d="M5.4 6.8H7.8" stroke="#171717" stroke-width="2" stroke-linecap="round" />
+                    <path d="M5.4 11.1H7.8" stroke="#171717" stroke-width="2" stroke-linecap="round" />
+                </svg>
+            </button>
         </div>
 
         <!-- Avatar y nombre -->
-        <div class="py-5 text-center my-5 px-4" :class="{ 'px-2': isSidebarCollapsed }">
-            <div class="avatar-zuma w-[104px] h-[116px] bg-[#E920AE] relative size-28 mx-auto rounded-2xl duration-200 overflow-hidden flex items-center justify-center text-white text-2xl "
+        <div class="py-5 text-center my-5 px-4 relative" :class="{ 'px-2': isSidebarCollapsed }">
+            <div class="avatar-zuma w-[104px] h-[116px] bg-[#E920AE] relative mx-auto rounded-2xl duration-200 overflow-hidden flex items-center justify-center text-white text-2xl"
                 :class="{ 'w-16 h-16': isSidebarCollapsed }">
                 <img v-if="profilePhoto" :src="profilePhoto" alt="Avatar" class="w-full h-full object-cover" />
                 <span v-else class="text-5xl rounded-3xl duration-200" :class="{ 'text-3xl': isSidebarCollapsed }">{{
                     initials }}</span>
             </div>
-            <h5 class="name-zuma text-center mt-2 mb-3 text-black text-xl" :class="{ 'hidden': isSidebarCollapsed }">
-                {{ fullName }}</h5>
 
-            <!-- Código de usuario mejorado -->
+            <!-- Nombre -->
+            <h5 class="name-zuma text-center mt-2 mb-3 text-black text-xl" :class="{ 'hidden': isSidebarCollapsed }">
+                {{ fullName }}
+            </h5>
+
+            <!-- Código de usuario con mejor estética -->
             <div class="user-code-container mx-auto"
                 :class="{ 'max-w-[200px]': !isSidebarCollapsed, 'hidden': isSidebarCollapsed }">
-                <div class="text-center mb-2">
-                    <!-- <span class="text-xs text-gray-600 font-medium">Código del inversionista</span> -->
-                </div>
                 <div class="relative">
-                    <div class="bg-gradient-to-r from-[#6790FF] to-[#FF4929] rounded-xl p-3 shadow-lg">
-                        <div class="flex items-center justify-between">
-                            <span class="text-white font-mono font-bold text-sm tracking-wider">
-                                {{ fullDoce }}
-                            </span>
-                            <button @click="copyUserCode"
-                                class="ml-2 p-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200 group"
-                                title="Copiar código">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    class="text-white group-hover:scale-110 transition-transform">
-                                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                                    <path d="m4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-                                </svg>
-                            </button>
-                        </div>
-                        <div class="mt-1">
-                            <span class="text-white/80 text-xs font-bold">Gana más, REFIRIENDO.</span>
-                        </div>
+                    <div
+                        class="bg-gradient-to-r from-[#6790FF] to-[#FF4929] rounded-xl p-3 shadow-lg flex flex-col items-center gap-1">
+                        <span class="text-white font-mono font-bold text-sm tracking-wider">
+                            {{ fullDoce }}
+                        </span>
+                        <button @click="copyUserCode"
+                            class="mt-1 p-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200 group"
+                            title="Copiar código">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="text-white group-hover:scale-110 transition-transform">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                                <path d="m4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                            </svg>
+                        </button>
+                        <span class="text-white/80 text-xs font-bold">Gana más, REFIRIENDO.</span>
                     </div>
 
-                    <!-- Tooltip de copiado -->
+                    <!-- Tooltip -->
                     <div v-if="showCopyTooltip"
                         class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs py-1 px-2 rounded shadow-lg animate-fade-in">
                         ¡Copiado!
