@@ -10,6 +10,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 const toast = useToast();
 const nombre = ref('');
+const nacionalidad = ref('');
 
 const document = ref('');
 const apellidoMaterno = ref('');
@@ -23,7 +24,10 @@ const checked = ref(false);
 const loading = ref(false);
 const showErrors = ref(false);
 const documentType = ref(null);
-const documentTypes = ref([]);
+const documentTypes = ref([
+   { id_tipo_documento: 1, nombre_tipo_documento: 'DNI' },
+  { id_tipo_documento: 3, nombre_tipo_documento: 'Carnet de extranjería' },
+]);
 
 const ingredient = ref('inversionista');
 
@@ -31,7 +35,7 @@ const showEmpresaDialog = ref(false);
 
 // Para manejar habilitación de campos
 const isDni = computed(() => documentType.value === 1)          // 1 → DNI
-const isCarnet = computed(() => documentType.value === 2)       // 2 → Carnet de extranjería
+const isCarnet = computed(() => documentType.value === 3)       // 2 → Carnet de extranjería
 
 // Cuando cambia el tipo de documento
 watch(documentType, (newVal) => {
@@ -132,6 +136,7 @@ const fieldValidations = computed(() => {
   return {
     document: document.value.trim() !== '',  // ya no se valida la longitud
     nombre: nombre.value.trim() !== '',
+    nacionalidad: nacionalidad.value.trim() !== '',
     apellidoPaterno: apellidoPaterno.value.trim() !== '',
     apellidoMaterno: apellidoMaterno.value.trim() !== '',
     alias: alias.value.trim() !== '',
@@ -179,6 +184,7 @@ const handleRegister = async () => {
       name: nombre.value,
       first_last_name: apellidoPaterno.value,
       second_last_name: apellidoMaterno.value,
+      nacionalidad: nacionalidad.value,
       alias: alias.value,
       tipo_documento_id: documentType.value,
       document: document.value,
@@ -320,6 +326,15 @@ const contactarEspecialista = () => {
                 <InputText v-model="apellidoMaterno" placeholder="Apellido materno" :disabled="isDni"
                   :class="getFieldClass('apellidoMaterno')" class="w-full compact-input" />
               </div>
+            </div>
+
+            <!-- Nacionalidad -->
+            <div class="space-y-2" v-if="documentType === 3">
+              <label class="text-sm font-medium text-gray-700">
+                Nacionalidad <span class="text-red-500">*</span>
+              </label>
+              <InputText v-model="nacionalidad" placeholder="Ingresa tu nacionalidad" fluid
+                :class="getFieldClass('nacionalidad')" class="compact-input" />
             </div>
 
             <!-- Alias -->
