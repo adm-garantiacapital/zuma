@@ -61,7 +61,7 @@
         <template #body="{ data }">
           <div class="flex gap-2 items-center">
             <i class="pi pi-calendar text-gray-500"></i>
-            <span class="font-medium">{{ formatDate(data.vencimiento) }}</span>
+            <span class="font-medium">{{ data.vencimiento }}</span>
           </div>
         </template>
       </Column>
