@@ -1,74 +1,136 @@
 <template>
   <div class="p-10 rounded-3xl bg-[#F0F1F9]">
-    <h3 class="text-[#171717] font-bold text-xl mb-6">Estados de cuenta</h3>
 
     <Tabs v-model:value="activeTab" @update:value="onTabChange">
-      <!-- Encabezado -->
-      <div class="flex justify-between items-center flex-wrap gap-4 mb-6">
-        <TabList class="flex gap-3">
-          <Tab value="0" as="div" class="flex items-center gap-2 px-4 py-2 bg-white shadow-sm cursor-pointer">
-            <Avatar shape="circle" class="w-8 h-8">
-              <img src="https://flagcdn.com/w80/pe.png" alt="Bandera de Perú" class="w-full h-full object-cover rounded-full" />
-            </Avatar>
-            <span class="font-bold whitespace-nowrap text-[#171717]">PEN</span>
-          </Tab>
-          <Tab value="1" as="div" class="flex items-center gap-2 px-4 py-2 bg-white shadow-sm cursor-pointer">
-            <Avatar shape="circle" class="w-8 h-8">
-              <img src="https://flagcdn.com/w80/us.png" alt="Bandera de Estados Unidos" class="w-full h-full object-cover rounded-full" />
-            </Avatar>
-            <span class="font-bold whitespace-nowrap text-[#171717]">USD</span>
-          </Tab>
-        </TabList>
+      <!-- Encabezado: Estados de cuenta + Monedas + Botones -->
 
-        <div class="flex gap-2">
-          <Button :icon="showAmounts ? 'pi pi-eye' : 'pi pi-eye-slash'" severity="contrast" variant="outlined"
-            rounded @click="toggleAmounts" :title="showAmounts ? 'Ocultar montos' : 'Mostrar montos'" />
+      <div class="flex justify-between items-center gap-4 mb-6 flex-wrap md:flex-nowrap">
+        <!-- Izquierda: Título + Monedas -->
+        <div class="flex items-center gap-4 flex-shrink-0">
+          <!-- Título -->
+          <h3 class="text-[#171717] font-bold text-xl m-0">Estados de cuenta</h3>
+
+          <!-- Cards de monedas -->
+          <div class="flex gap-2">
+            <!-- Card PEN -->
+            <div
+              :class="['flex items-center gap-2 px-3 py-2 rounded-3xl cursor-pointer shadow-sm', activeTab === '0' ? 'bg-white text-black' : 'bg-gray-100 text-gray-500']"
+              @click="activeTab = '0'; onTabChange('0');">
+              <Avatar shape="circle" class="w-6 h-6">
+                <img src="https://flagcdn.com/w80/pe.png" alt="Bandera de Perú"
+                  class="w-full h-full object-cover rounded-full" />
+              </Avatar>
+              <span class="font-semibold text-sm">PEN</span>
+            </div>
+            <!-- Card USD -->
+            <div
+              :class="['flex items-center gap-2 px-3 py-2 rounded-3xl cursor-pointer shadow-sm', activeTab === '1' ? 'bg-white text-black' : 'bg-gray-100 text-gray-500']"
+              @click="activeTab = '1'; onTabChange('1');">
+              <Avatar shape="circle" class="w-6 h-6">
+                <img src="https://flagcdn.com/w80/us.png" alt="Bandera de Estados Unidos"
+                  class="w-full h-full object-cover rounded-full" />
+              </Avatar>
+              <span class="font-semibold text-sm">USD</span>
+            </div>
+          </div>
+
+        </div>
+        <!-- Derecha: Toggle / Depósito / Retiro -->
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <Button :icon="showAmounts ? 'pi pi-eye' : 'pi pi-eye-slash'" severity="contrast" variant="outlined" rounded
+            @click="toggleAmounts" :title="showAmounts ? 'Ocultar montos' : 'Mostrar montos'" />
           <Button label="Depósito" icon="pi pi-plus" iconPos="left" severity="contrast" rounded
             @click="showDepositoDialog = true" />
           <Button label="Retiro" icon="pi pi-minus" iconPos="left" severity="contrast" variant="outlined" rounded
             @click="showRetiroDialog = true" />
         </div>
       </div>
-
       <!-- Panel PEN -->
-      <TabPanels>
-        <TabPanel value="0" as="div">
-          <div v-if="wallet" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div v-for="(label, key, index) in penLabels" :key="'pen-' + index">
-              <div class="rounded-3xl bg-white p-8 flex items-start gap-4 h-full shadow-sm">
-                <i :class="label.icon" class="text-[#171717] !text-[2.5rem] mt-1"></i>
-                <div>
-                  <h5 class="text-[#171717] font-semibold m-0">{{ label.title }}</h5>
-                  <h3 class="text-[#171717] font-bold text-base m-0">
-                    <span v-if="showAmounts">S/ {{ formatAmount(balances.pen[key]) }}</span>
-                    <span v-else class="text-gray-400">****</span>
-                  </h3>
-                  <a class="text-[#6790FF] font-medium text-sm mt-2 inline-block">Ver más...</a>
-                </div>
-              </div>
+      <TabPanel value="0" as="div">
+        <div v-if="wallet" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Saldo disponible -->
+          <div class="rounded-3xl bg-white p-8 flex items-start gap-4 h-full shadow-sm">
+            <img src="/icons/amount-available.svg" alt="" class="w-10  md:w-12">
+            <div>
+              <h5 class="text-[#171717] font-semibold m-0">Saldo disponible</h5>
+              <h3 class="text-[#171717] font-bold text-base m-0">
+                <span v-if="showAmounts">S/ {{ formatAmount(balances.pen.available) }}</span>
+                <span v-else class="text-gray-400">****</span>
+              </h3>
+              <!-- <a class="text-[#6790FF] font-medium text-sm mt-2 inline-block">Ver más...</a> -->
             </div>
           </div>
-        </TabPanel>
+          <!-- Total invertido -->
+          <div class="rounded-3xl bg-white p-8 flex items-start gap-4 h-full shadow-sm">
+            <img src="/icons/investment-amount.svg" alt="" class="w-10 md:w-16">
+            <div>
+              <h5 class="text-[#171717] font-semibold m-0">Total invertido</h5>
+              <h3 class="text-[#171717] font-bold text-base m-0">
+                <span v-if="showAmounts">S/ {{ formatAmount(balances.pen.invested) }}</span>
+                <span v-else class="text-gray-400">****</span>
+              </h3>
+              <!-- <a class="text-[#6790FF] font-medium text-sm mt-2 inline-block">Ver más...</a> -->
+            </div>
+          </div>
+          <!-- Retorno total -->
+          <div class="rounded-3xl bg-white p-8 flex items-start gap-4 h-full shadow-sm">
+            <img src="/icons/money-in-hands.svg" alt="" class="w-10 md:w-16">
+            <div>
+              <h5 class="text-[#171717] font-semibold m-0">Retorno total</h5>
+              <h3 class="text-[#171717] font-bold text-base m-0">
+                <span v-if="showAmounts">S/ {{ formatAmount(balances.pen.expectedReturn) }}</span>
+                <span v-else class="text-gray-400">****</span>
+              </h3>
+              <!-- <a class="text-[#6790FF] font-medium text-sm mt-2 inline-block">Ver más...</a> -->
+            </div>
+          </div>
+        </div>
+      </TabPanel>
 
-        <!-- Panel USD -->
-        <TabPanel value="1" as="div">
-          <div v-if="wallet" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div v-for="(label, key, index) in usdLabels" :key="'usd-' + index">
-              <div class="rounded-3xl bg-white p-8 flex items-start gap-4 h-full shadow-sm">
-                <i :class="label.icon" class="text-[#171717] !text-[2.5rem] mt-1"></i>
-                <div>
-                  <h5 class="text-[#171717] font-semibold m-0">{{ label.title }}</h5>
-                  <h3 class="text-[#171717] font-bold text-base m-0">
-                    <span v-if="showAmounts">$ {{ formatAmount(balances.usd[key]) }}</span>
-                    <span v-else class="text-gray-400">****</span>
-                  </h3>
-                  <a class="text-[#6790FF] font-medium text-sm mt-2 inline-block">Ver más...</a>
-                </div>
-              </div>
+      <!-- Panel USD -->
+      <TabPanel value="1" as="div">
+        <div v-if="wallet" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Saldo disponible -->
+          <div class="rounded-3xl bg-white p-8 flex items-start gap-4 h-full shadow-sm">
+            <img src="/icons/amount-available.svg" alt="" class="w-10  md:w-12">
+            <div>
+              <h5 class="text-[#171717] font-semibold m-0">Saldo disponible</h5>
+              <h3 class="text-[#171717] font-bold text-base m-0">
+                <span v-if="showAmounts">$ {{ formatAmount(balances.usd.available) }}</span>
+                <span v-else class="text-gray-400">****</span>
+              </h3>
+              <!-- <a class="text-[#6790FF] font-medium text-sm mt-2 inline-block">Ver más...</a> -->
             </div>
           </div>
-        </TabPanel>
-      </TabPanels>
+
+          <!-- Total invertido -->
+          <div class="rounded-3xl bg-white p-8 flex items-start gap-4 h-full shadow-sm">
+            <img src="/icons/investment-amount.svg" alt="" class="w-10 md:w-16">
+            <div>
+              <h5 class="text-[#171717] font-semibold m-0">Total invertido</h5>
+              <h3 class="text-[#171717] font-bold text-base m-0">
+                <span v-if="showAmounts">$ {{ formatAmount(balances.usd.invested) }}</span>
+                <span v-else class="text-gray-400">****</span>
+              </h3>
+              <!-- <a class="text-[#6790FF] font-medium text-sm mt-2 inline-block">Ver más...</a> -->
+            </div>
+          </div>
+
+          <!-- Retorno total -->
+          <div class="rounded-3xl bg-white p-8 flex items-start gap-4 h-full shadow-sm">
+            <img src="/icons/money-in-hands.svg" alt="" class="w-10 md:w-16">
+            <div>
+              <h5 class="text-[#171717] font-semibold m-0">Retorno total</h5>
+              <h3 class="text-[#171717] font-bold text-base m-0">
+                <span v-if="showAmounts">$ {{ formatAmount(balances.usd.expectedReturn) }}</span>
+                <span v-else class="text-gray-400">****</span>
+              </h3>
+              <!-- <a class="text-[#6790FF] font-medium text-sm mt-2 inline-block">Ver más...</a> -->
+            </div>
+          </div>
+        </div>
+      </TabPanel>
+
     </Tabs>
   </div>
 
@@ -78,10 +140,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import reportsService from '@/services/reportsService'
+import { computed, onMounted, ref } from 'vue'
 import AddDeposito from './AddDeposito.vue'
 import AddRetiro from './AddRetiro.vue'
-import reportsService from '@/services/reportsService'
 
 // Emits
 const emit = defineEmits(['currency-changed', 'deposit-success', 'withdraw-success'])

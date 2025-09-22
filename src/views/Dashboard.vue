@@ -18,56 +18,64 @@
 
   <section class="bg-[#f5f6fb] rounded-2xl p-6 m-6">
     <!-- HEADER -->
-    <div class="flex justify-between items-center mb-4">
-      <div>
-        <h3
-          class="sans-serif text-lg sm:text-xl md:text-2xl scroll-m-20 text-md font-semibold m-0 tracking-tight text-black">
-          Mi billetera
-        </h3>
+    <div class="flex flex-wrap items-center gap-4 mb-6 justify-between">
+      <!-- Izquierda: Título + Monedas -->
+      <div class="flex items-center gap-4">
+        <!-- Título -->
+        <div>
+          <h3 class="sans-serif text-lg sm:text-xl md:text-2xl font-semibold text-black m-0 tracking-tight">
+            Mi billetera
+          </h3>
+        </div>
+
+        <!-- Monedas PEN / USD -->
+        <div class="flex gap-2">
+          <!-- Card PEN -->
+          <button @click="setActiveTab('PEN')"
+            :class="['flex items-center gap-2 px-3 py-1 rounded-3xl cursor-pointer', activeTab === 'PEN' ? 'bg-white text-black shadow-sm' : 'bg-gray-100 text-gray-500']">
+            <img src="/imagenes/zuma/pen.png" class="w-5 h-5" />
+            <span class="font-bold text-sm">PEN</span>
+          </button>
+
+          <!-- Card USD -->
+          <button @click="setActiveTab('USD')"
+            :class="['flex items-center gap-2 px-3 py-1 rounded-3xl cursor-pointer', activeTab === 'USD' ? 'bg-white text-black shadow-sm' : 'bg-gray-100 text-gray-500']">
+            <img src="/imagenes/zuma/usd.png" class="w-5 h-5" />
+            <span class="font-bold text-sm">USD</span>
+          </button>
+        </div>
       </div>
-      <div class="flex gap-2 items-center">
-        <div @click="toggleAmounts" class="hidden md:flex gap-1 cursor-pointer">
-          <Icon v-if="showAmounts" icon="solar:eye-outline" width="20" height="20" style="color: #000" />
-          <!-- Icono oculto -->
-          <Icon v-else icon="mage:eye-off" width="24" height="24" style="color: #000" />
-          <div v-if="showAmounts" class="hidden md:flex text-black">
-            Ocultar
-          </div>
-          <div v-else class="hidden md:flex text-black">
-            Mostrar
+
+      <!-- Derecha: Toggle / Depósito / Retiro -->
+      <div class="flex items-center gap-3">
+        <!-- Toggle amounts -->
+        <div @click="toggleAmounts" class="hidden md:flex items-center gap-2 cursor-pointer">
+          <Icon v-if="showAmounts" icon="solar:eye-outline" width="22" height="22" style="color: #000" />
+          <Icon v-else icon="mage:eye-off" width="22" height="22" style="color: #000" />
+          <div class="text-black hover:underline">
+            {{ showAmounts ? 'Ocultar' : 'Mostrar' }}
           </div>
         </div>
 
+        <!-- Depósito -->
         <button
-          class="bg-black hidden text-white rounded-full py-3 text-sm  md:flex gap-1 !px-3 sm:!px-4 hover:bg-zinc-800"
-          @click="showDepositoDialog = true">+ Depósito</button>
-        <button
-          class="border border-black hidden rounded-full px-6 py-3 hover:bg-blue-400 hover:text-white hover:border-blue-400 text-md md:flex gap-1 sm:!px-4 "
-          @click="showRetiroDialog = true">- Retiro</button>
+          class="bg-black text-white rounded-full px-5 py-2 text-sm hidden md:flex items-center gap-2 hover:bg-zinc-800"
+          @click="showDepositoDialog = true">
+          + Depósito
+        </button>
 
+        <!-- Retiro -->
+        <button
+          class="border border-black rounded-full px-5 py-2 text-sm hidden md:flex items-center gap-2 hover:bg-blue-400 hover:text-white hover:border-blue-400 hover:underline"
+          @click="showRetiroDialog = true">
+          - Retiro
+        </button>
       </div>
-
-      <div class="flex gap-2 items-center md:hidden">
-        <div @click="toggleAmounts">
-          <Icon v-if="showAmounts" icon="solar:eye-outline" width="20" height="20" style="color: #000" />
-          <!-- Icono oculto -->
-          <Icon v-else icon="mage:eye-off" width="24" height="24" style="color: #000" />
-        </div>
-        <button
-          class="bg-black flex text-white rounded-full py-2 md:py-3 text-sm font-semibold md:hidden gap-1 !px-3 sm:!px-4"
-          @click="showDepositoDialog = true">+</button>
-        <button
-          class="border flex border-black rounded-full px-3  hover:bg-blue-400 hover:text-white hover:border-blue-400 py-2 md:py-3 text-md md:hidden gap-1 sm:!px-4 "
-          @click="showRetiroDialog = true">-</button>
-
-      </div>
-
-
-
     </div>
 
+
     <!-- TABS -->
-    <div class="flex gap-2 mb-6">
+    <!-- <div class="flex gap-2 mb-6">
 
       <button @click="setActiveTab('PEN')" :class="[
         'flex flex-col items-center px-3 py-1 transition-colors',
@@ -84,7 +92,7 @@
         ]" />
       </button>
 
-      <!-- Botón USD -->
+      
       <button @click="setActiveTab('USD')" :class="[
         'flex flex-col items-center px-3 py-1 transition-colors',
         activeTab === 'USD' ? 'text-black' : 'text-gray-500'
@@ -99,7 +107,7 @@
           activeTab === 'USD' ? 'bg-black' : 'bg-transparent'
         ]" />
       </button>
-    </div>
+    </div> -->
 
     <!-- CONTENT -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -112,12 +120,21 @@
               <div class="scroll-m-20 text-md md:text-lg font-semibold tracking-tight">Saldo disponible
               </div>
               <div class="text-xl font-bold">
-                {{ showAmounts ? (activeTab === 'PEN' ? `S/ ${balances.PEN.amount.toFixed(2)}` : `$
-                ${balances.USD.amount.toFixed(2)}`) : '•••••' }}
+                {{ showAmounts
+                  ? (activeTab === 'PEN'
+                    ? `S/ ${balances.PEN.amount.toLocaleString('es-PE', {
+                      minimumFractionDigits: 2, maximumFractionDigits: 2
+                    })}`
+                    : `$ ${balances.USD.amount.toLocaleString('es-PE', {
+                      minimumFractionDigits: 2, maximumFractionDigits: 2
+                    })}`
+                  )
+                  : '•••••'
+                }}
               </div>
               <RouterLink :to="'hipotecas/Estado-Cuenta'">
                 <div class="mt-2 text-blue-400 hover:border-b-2 border-blue-400">
-                  Ver mas detalles
+                  Ver más detalles
                 </div>
               </RouterLink>
 
@@ -133,14 +150,25 @@
           <div>
             <div class="scroll-m-20 text-md md:text-lg font-semibold tracking-tight">Total invertido</div>
             <div class="text-2xl font-bold">
-              {{ showAmounts ? (activeTab === 'PEN' ? `S/ ${balances.PEN.invested_amount.toFixed(2)}` : `$
-              ${balances.USD.invested_amount.toFixed(2)}`) : '•••••' }}
+              {{ showAmounts
+                ? (activeTab === 'PEN'
+                  ? `S/ ${balances.PEN.invested_amount.toLocaleString('es-PE', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  })}`
+                  : `$ ${balances.USD.invested_amount.toLocaleString('es-PE', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  })}`
+                )
+                : '•••••'
+              }}
             </div>
-            <RouterLink :to="'hipotecas/Estado-Cuenta'">
+            <!-- <RouterLink :to="'hipotecas/Estado-Cuenta'">
               <div class="mt-2 text-blue-400 hover:border-b-2 border-blue-400">
                 Ver mas detalles
               </div>
-            </RouterLink>
+            </RouterLink> -->
 
           </div>
         </div>
@@ -152,14 +180,25 @@
           <div>
             <div class="scroll-m-20 text-md md:text-lg font-semibold tracking-tight">Retorno esperado</div>
             <div class="text-2xl font-bold">
-              {{ showAmounts ? (activeTab === 'PEN' ? `S/ ${balances.PEN.expected_amount.toFixed(2)}` : `$
-              ${balances.USD.expected_amount.toFixed(2)}`) : '•••••' }}
+              {{ showAmounts
+                ? (activeTab === 'PEN'
+                  ? `S/ ${balances.PEN.expected_amount.toLocaleString('es-PE', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  })}`
+                  : `$ ${balances.USD.expected_amount.toLocaleString('es-PE', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  })}`
+                )
+                : '•••••'
+              }}
             </div>
-            <RouterLink :to="'hipotecas/Estado-Cuenta'">
+            <!-- <RouterLink :to="'hipotecas/Estado-Cuenta'">
               <div class="mt-2 text-blue-400 hover:border-b-2 border-blue-400">
                 Ver mas detalles
               </div>
-            </RouterLink>
+            </RouterLink> -->
           </div>
         </div>
       </div>
