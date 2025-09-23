@@ -25,7 +25,7 @@ const loading = ref(false);
 const showErrors = ref(false);
 const documentType = ref(null);
 const documentTypes = ref([
-   { id_tipo_documento: 1, nombre_tipo_documento: 'DNI' },
+  { id_tipo_documento: 1, nombre_tipo_documento: 'DNI' },
   { id_tipo_documento: 3, nombre_tipo_documento: 'Carnet de extranjería' },
 ]);
 
@@ -195,18 +195,33 @@ const handleRegister = async () => {
 
     const response = await admin2AuthService.register(payload);
 
-    // SI TODO ESTA OK, TE SALE ESTA NOTIFICACION
-    toast.add({
-      severity: 'success',
-      summary: 'Registro exitoso',
-      detail: response.data.message || 'Te enviaremos un correo para confirmar tu cuenta.',
-      life: 4000
-    });
+    // si la API respondió éxito (status 201 o status success)
+    if (response.status === 201 || response.data?.status === 'success') {
+      toast.add({
+        severity: 'success',
+        summary: 'Registro exitoso',
+        detail: response.data.message || 'Te enviaremos un correo para confirmar tu cuenta.',
+        life: 4000
+      });
 
-    // TERMINA LO ANTERIOR Y DIRECTO AL LOGIN
-    router.push('/login');
+      // redirigir solo en éxito
+      router.push({
+        path: '/verificar-cuenta',
+        query: {
+          email: payload.email,
+          userId: response.data.data.userId
+        }
+      });
 
-    // NO HAY MAS LOGICA
+    } else {
+      // si vino un 200 raro sin éxito
+      toast.add({
+        severity: 'warn',
+        summary: 'Registro no completado',
+        detail: response.data.message || 'Intenta nuevamente.',
+        life: 4000
+      });
+    }
   } catch (error) {
     const msg = error?.response?.data?.message || 'Ocurrió un error al registrarte.';
     toast.add({
