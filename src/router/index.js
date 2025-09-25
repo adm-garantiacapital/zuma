@@ -75,6 +75,12 @@ const router = createRouter({
             component: () => import('@/views/pages/auth/blog/PostDetail.vue'),
             props: true // Permite pasar el parámetro como prop al componente
         },
+
+        {
+            path: '/blog/:id',
+            name: 'blog-detail',
+            component: () => import('@/views/pages/auth/blog/PostDetail.vue'),
+        },
         // SECCIÓN HIPOTECAS - Solo para inversionista y mixto
         {
             path: '/hipotecas',
