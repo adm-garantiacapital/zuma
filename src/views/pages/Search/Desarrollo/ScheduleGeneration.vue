@@ -627,10 +627,10 @@ const breadcrumbItems = computed(() => [
 ]);
 
 const formatCurrency = (value, currency = 'PEN') => {
-  if (!value && value !== 0) return '-';
+  if (value === null || value === undefined || isNaN(value)) return '-';
   
   const currencySymbols = {
-    'USD': '',
+    'USD': '$',
     'PEN': 'S/',
     'EUR': '€',
     'SOL': 'S/',
