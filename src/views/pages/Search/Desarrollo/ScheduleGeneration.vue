@@ -630,13 +630,12 @@ const formatCurrency = (value, currency = 'PEN') => {
   if (value === null || value === undefined || isNaN(value)) return '-';
   
   const currencySymbols = {
-    'USD': ',
+    'USD': '$',
     'PEN': 'S/',
     'EUR': '€',
     'SOL': 'S/',
     'SOLES': 'S/'
   };
-  
   const symbol = currencySymbols[currency?.toUpperCase()] || 'S/';
   return `${symbol}${new Intl.NumberFormat('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)}`;
 };
