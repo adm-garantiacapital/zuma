@@ -33,14 +33,14 @@
             <div class="bg-blue-50 rounded-xl p-4">
               <div class="text-sm text-blue-600 font-medium mb-1">VALOR GENERAL</div> 
               <div class="text-2xl font-bold text-blue-900">
-                {{ formatCurrency(solicitud.valor_general.amount, solicitud.valor_general.currency) }}
+                {{ formatCurrency(solicitud.valor_general?.amount, solicitud.valor_general?.currency) }}
               </div>
             </div>
             
             <div class="bg-green-50 rounded-xl p-4">
               <div class="text-sm text-green-600 font-medium mb-1">VALOR REQUERIDO</div>
               <div class="text-2xl font-bold text-green-900">
-                {{ formatCurrency(solicitud.valor_requerido.amount, solicitud.valor_requerido.currency) }}
+                {{ formatCurrency(solicitud.valor_requerido?.amount, solicitud.valor_requerido?.currency) }}
               </div>
             </div>
             
@@ -75,7 +75,7 @@
             <div>
               <div class="text-sm text-gray-600 mb-1">Ingreso Promedio</div>
               <div class="font-semibold text-gray-900">
-                {{ formatCurrency(solicitud.ingreso_promedio, solicitud.currency.codigo) }}
+                {{ formatCurrency(solicitud.ingreso_promedio, solicitud.currency?.codigo) }}
               </div>
             </div>
           </div>
@@ -184,13 +184,13 @@
                     <div>
                       <div class="text-xs text-gray-600">Valor Estimado</div>
                       <div class="font-semibold text-gray-900">
-                        {{ formatCurrency(property.valor_estimado.amount, property.valor_estimado.currency) }}
+                        {{ formatCurrency(property.valor_estimado?.amount, property.valor_estimado?.currency) }}
                       </div>
                     </div>
                     <div>
                       <div class="text-xs text-gray-600">Valor Subasta</div>
                       <div class="font-semibold text-green-600">
-                        {{ formatCurrency(property.valor_subasta.amount, property.valor_subasta.currency) }}
+                        {{ formatCurrency(property.valor_subasta?.amount, property.valor_subasta?.currency) }}
                       </div>
                     </div>
                   </div>
@@ -280,7 +280,7 @@
             <Column field="capital" header="Capital" sortable style="min-width: 10rem">
               <template #body="slotProps">
                 <span class="font-semibold">
-                  {{ formatCurrency(slotProps.data.capital, solicitud.currency.codigo) }}
+                  {{ formatCurrency(slotProps.data.capital, solicitud.currency?.codigo) }}
                 </span>
               </template>
             </Column>
@@ -288,7 +288,7 @@
             <Column field="intereses" header="Intereses" sortable style="min-width: 10rem">
               <template #body="slotProps">
                 <span class="text-purple-600 font-semibold">
-                  {{ formatCurrency(slotProps.data.intereses, solicitud.currency.codigo) }}
+                  {{ formatCurrency(slotProps.data.intereses, solicitud.currency?.codigo) }}
                 </span>
               </template>
             </Column>
@@ -296,7 +296,7 @@
             <Column field="total_cuota" header="Total Cuota" sortable style="min-width: 10rem">
               <template #body="slotProps">
                 <span class="font-bold text-green-600">
-                  {{ formatCurrency(slotProps.data.total_cuota, solicitud.currency.codigo) }}
+                  {{ formatCurrency(slotProps.data.total_cuota, solicitud.currency?.codigo) }}
                 </span>
               </template>
             </Column>
@@ -314,19 +314,19 @@
               <div>
                 <div class="text-sm text-blue-600 mb-1">Total Capital</div>
                 <div class="text-xl font-bold text-blue-900">
-                  {{ formatCurrency(calculateTotal(investor.payment_schedules, 'capital'), solicitud.currency.codigo) }}
+                  {{ formatCurrency(calculateTotal(investor.payment_schedules, 'capital'), solicitud.currency?.codigo) }}
                 </div>
               </div>
               <div>
                 <div class="text-sm text-purple-600 mb-1">Total Intereses</div>
                 <div class="text-xl font-bold text-purple-900">
-                  {{ formatCurrency(calculateTotal(investor.payment_schedules, 'intereses'), solicitud.currency.codigo) }}
+                  {{ formatCurrency(calculateTotal(investor.payment_schedules, 'intereses'), solicitud.currency?.codigo) }}
                 </div>
               </div>
               <div>
                 <div class="text-sm text-green-600 mb-1">Total a Pagar</div>
                 <div class="text-xl font-bold text-green-900">
-                  {{ formatCurrency(calculateTotal(investor.payment_schedules, 'total_cuota'), solicitud.currency.codigo) }}
+                  {{ formatCurrency(calculateTotal(investor.payment_schedules, 'total_cuota'), solicitud.currency?.codigo) }}
                 </div>
               </div>
             </div>
@@ -377,7 +377,7 @@
             </div>
             <div>
               <div class="text-sm text-gray-600">Moneda</div>
-              <div class="font-semibold">{{ solicitud.currency.nombre }} ({{ solicitud.currency.codigo }})</div>
+              <div class="font-semibold">{{ solicitud.currency?.nombre }} ({{ solicitud.currency?.codigo }})</div>
             </div>
             <div>
               <div class="text-sm text-gray-600">Configuraciones</div>
@@ -404,13 +404,13 @@
             <div class="bg-blue-50 rounded-lg p-4">
               <div class="text-sm text-blue-600 mb-1">Valor General</div>
               <div class="text-2xl font-bold text-blue-900">
-                {{ formatCurrency(solicitud.valor_general.amount, solicitud.valor_general.currency) }}
+                {{ formatCurrency(solicitud.valor_general?.amount, solicitud.valor_general?.currency) }}
               </div>
             </div>
             <div class="bg-green-50 rounded-lg p-4">
               <div class="text-sm text-green-600 mb-1">Valor Requerido</div>
               <div class="text-2xl font-bold text-green-900">
-                {{ formatCurrency(solicitud.valor_requerido.amount, solicitud.valor_requerido.currency) }}
+                {{ formatCurrency(solicitud.valor_requerido?.amount, solicitud.valor_requerido?.currency) }}
               </div>
             </div>
           </div>
@@ -499,7 +499,7 @@
           <div class="text-sm text-blue-600 mb-2">Hipoteca</div>
           <div class="font-bold text-lg text-blue-900">{{ solicitud?.codigo }}</div>
           <div class="text-sm text-gray-600 mt-1">
-            Valor requerido: {{ formatCurrency(solicitud?.valor_requerido.amount, solicitud?.valor_requerido.currency) }}
+            Valor requerido: {{ formatCurrency(solicitud?.valor_requerido?.amount, solicitud?.valor_requerido?.currency) }}
           </div>
         </div>
 
@@ -510,15 +510,15 @@
             <InputNumber 
               v-model="ofertaForm.monto" 
               mode="currency" 
-              :currency="solicitud?.currency.codigo || 'PEN'"
+              :currency="solicitud?.currency?.codigo || 'PEN'"
               locale="es-PE"
               class="w-full"
               :min="0"
-              :max="solicitud?.valor_requerido.amount"
+              :max="solicitud?.valor_requerido?.amount"
               placeholder="Ingrese el monto"
             />
             <small class="text-gray-500">
-              Máximo: {{ formatCurrency(solicitud?.valor_requerido.amount, solicitud?.valor_requerido.currency) }}
+              Máximo: {{ formatCurrency(solicitud?.valor_requerido?.amount, solicitud?.valor_requerido?.currency) }}
             </small>
           </div>
 
@@ -553,7 +553,7 @@
           <div class="space-y-1">
             <div class="flex justify-between">
               <span class="text-sm text-gray-600">Monto:</span>
-              <span class="font-semibold">{{ formatCurrency(ofertaForm.monto || 0, solicitud?.currency.codigo) }}</span>
+              <span class="font-semibold">{{ formatCurrency(ofertaForm.monto || 0, solicitud?.currency?.codigo) }}</span>
             </div>
             <div class="flex justify-between">
               <span class="text-sm text-gray-600">TEA:</span>
@@ -630,7 +630,7 @@ const formatCurrency = (value, currency = 'PEN') => {
   if (value === null || value === undefined || isNaN(value)) return '-';
   
   const currencySymbols = {
-    'USD': '$',
+    'USD': ',
     'PEN': 'S/',
     'EUR': '€',
     'SOL': 'S/',
@@ -708,7 +708,7 @@ const submitOferta = () => {
     return;
   }
 
-  if (ofertaForm.value.monto > solicitud.value.valor_requerido.amount) {
+  if (ofertaForm.value.monto > solicitud.value?.valor_requerido?.amount) {
     toast.add({ 
       severity: 'error', 
       summary: 'Error', 
