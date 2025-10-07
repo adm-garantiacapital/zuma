@@ -56,51 +56,50 @@
           </template>
 
           <Column selectionMode="multiple" style="width: 3rem" :exportable="false" />
-          <Column field="nombre" header="Nombre de la propiedad" sortable style="min-width: 15rem" />
-          <Column field="descripcion" header="Descripcion de la propiedad" sortable style="min-width: 20rem" />
+          <Column field="codigo" header="Codigo" sortable style="min-width: 15rem" />
+          <Column field="propiedades_count" header="N Propiedades" sortable style="min-width: 20rem" />
           
-          <Column field="Moneda" header="Moneda" sortable style="min-width: 5rem">
+          <Column field="currency" header="Moneda" sortable style="min-width: 5rem">
             <template #body="slotProps">
-              <Tag :value="slotProps.data.Moneda" severity="info" />
+              <Tag :value="slotProps.data.currency" severity="info" />
             </template>
           </Column>
           
-          <Column field="valor_estimado" header="Valor" sortable style="min-width: 8rem">
+          <Column field="valor_general" header="Valor" sortable style="min-width: 8rem">
             <template #body="slotProps">
-              <span class="font-semibold">{{ formatCurrency(slotProps.data.valor_estimado, slotProps.data.Moneda) }}</span>
+              <span class="font-semibold">{{ formatCurrency(slotProps.data.valor_general, slotProps.data.currency) }}</span>
             </template>
           </Column>
           
-          <Column field="requerido" header="Requiere" sortable style="min-width: 8rem">
+          <Column field="valor_requerido" header="Requiere" sortable style="min-width: 8rem">
             <template #body="slotProps">
-              <span class="font-semibold text-green-600">{{ formatCurrency(slotProps.data.requerido, slotProps.data.Moneda) }}</span>
+              <span class="font-semibold text-green-600">{{ formatCurrency(slotProps.data.valor_requerido, slotProps.data.currency) }}</span>
             </template>
           </Column>
           
-          <Column field="tea" header="TEM" sortable style="min-width: 8rem">
+          <Column field="configuracion_subasta.tem" header="TEM" sortable style="min-width: 8rem">
             <template #body="slotProps">
-              <Tag :value="formatPercentage(slotProps.data.tea)" severity="success" />
+              <Tag :value="formatPercentage(slotProps.data.configuracion_subasta?.tem)" severity="success" />
             </template>
-          </Column>
-          
-          <Column field="foto" header="Imagen">
+          </Column>       
+           
+          <Column field="configuracion_subasta.tipo_cronograma" header="Tipo Cronograma" sortable style="min-width: 12rem">
             <template #body="slotProps">
-              <div class="flex justify-center">
-                <Image 
-                  v-if="slotProps.data.foto && slotProps.data.foto.length > 0" 
-                  :src="slotProps.data.foto[0]"
-                  class="rounded" 
-                  :alt="slotProps.data.nombre || 'Imagen de propiedad'" 
-                  preview 
-                  width="50"
-                  style="width: 64px" 
-                />
-                <div v-else class="w-16 h-16 bg-gray-100 rounded-lg border border-gray-200 flex items-center justify-center">
-                  <i class="pi pi-image text-gray-400 text-xl"></i>
-                </div>
-              </div>
+              <Tag :value="slotProps.data.configuracion_subasta?.tipo_cronograma || '-'" severity="info" />
             </template>
-          </Column>
+          </Column>       
+           
+          <Column field="configuracion_subasta.riesgo" header="Riesgo" sortable style="min-width: 8rem">
+            <template #body="slotProps">
+              <Tag :value="slotProps.data.configuracion_subasta?.riesgo || '-'" severity="warning" />
+            </template>
+          </Column>       
+           
+          <Column field="configuracion_subasta.meses" header="Meses" sortable style="min-width: 8rem">
+            <template #body="slotProps">
+              <Tag :value="slotProps.data.configuracion_subasta?.meses || '-'" severity="secondary" />
+            </template>
+          </Column>         
           
           <Column field="detalles" header="">
             <template #body="slotProps">
@@ -109,7 +108,7 @@
                 outlined 
                 severity="contrast" 
                 size="small"
-                @click="scheduleRef?.open(slotProps.data)" 
+                @click="goToDetails(slotProps.data)" 
               />
             </template>
           </Column>
@@ -142,23 +141,20 @@
       </div>
     </div>
   </div>
-
-  <ScheduleGeneration ref="scheduleRef" />
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
 import { propertyService } from '@/services/propertyService.js';
 import { currencyService } from '@/services/currencyService.js';
-import Image from 'primevue/image';
 import Tag from 'primevue/tag';
-import ScheduleGeneration from './ScheduleGeneration.vue';
 import Billetera from './Billetera.vue';
 
+const router = useRouter();
 const toast = useToast();
-const scheduleRef = ref(null);
 
 const products = ref([]);
 const selectedProducts = ref();
@@ -177,6 +173,18 @@ const items = ref([{ label: 'Subastas de hipotecas' }, { label: 'Buscar hipoteca
 
 const selectedCurrency = ref(null);
 const currencyOptions = ref([]);
+
+// Método para navegar a los detalles de la hipoteca
+const goToDetails = (property) => {
+  console.log('Navegando a detalles de hipoteca:', property);
+  
+  router.push({
+    name: 'hipoteca-detalle',
+    params: { 
+      id: property.id 
+    }
+  });
+};
 
 const formatCurrency = (value, currency = 'USD') => {
   if (!value && value !== 0) return '-';
@@ -198,7 +206,8 @@ const formatCurrency = (value, currency = 'USD') => {
 
 const formatPercentage = (value) => {
   if (!value && value !== 0) return '0%';
-  return `${parseFloat(value).toFixed(1)}%`;
+  const numValue = parseFloat(value);
+  return `${(numValue / 100).toFixed(3)}%`;
 };
 
 const clearFilters = () => {

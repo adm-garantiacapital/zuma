@@ -61,7 +61,7 @@ const hipotecasMenu = [
         ]
     },
     {
-        items: [{ label: 'Buscar hipotecas', icon: 'buscar', to: '/hipotecas/buscar' }]
+        items: [{ label: 'Buscar solicitud', icon: 'buscar', to: '/hipotecas/buscar' }]
     },
     {
         items: [{ label: 'Subastas en línea', icon: 'datos', to: '/hipotecas/subasta' }]

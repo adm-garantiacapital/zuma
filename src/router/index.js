@@ -110,6 +110,15 @@ const router = createRouter({
                     }
                 },
                 {
+                    path: 'detalle/:id',
+                    name: 'hipoteca-detalle',
+                    component: () => import('@/views/pages/Search/Desarrollo/ScheduleGeneration.vue'),
+                    meta: {
+                        requiresAuth: true,
+                        allowedUserTypes: ['inversionista', 'mixto']
+                    }
+                },
+                {
                     path: 'subasta',
                     name: 'hipotecas-online',
                     component: () => import('@/views/pages/OnlineAuctions/indexOnlineAuctions.vue'),
