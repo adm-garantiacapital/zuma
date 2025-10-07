@@ -1,5 +1,15 @@
 <script setup>
 import ServiceCard from './ServiceCard.vue';
+
+import SlideCard from './SlideCard.vue';
+
+const items = [
+  { name: 'Invertimos juntos', to: 'Hipotecas', image:'icons/icono.svg' },
+  { name: 'Libre de comisión', to: 'Hipotecas', image:'icons/time-is-money.svg' },
+  { name: 'Rentabilidad Inmediata', to: 'Hipotecas', image:'icons/time-is-money.svg' },
+];
+
+
 </script>
 
 <template>
@@ -13,13 +23,16 @@ import ServiceCard from './ServiceCard.vue';
             }" class="rounded-3xl bg-neutral-300 h-full" />
 
 
-            <!-- Tasas Fijas -->
+            <!-- Tasas Fijas 
             <ServiceCard to="/tasas-fijas" image="/imagenes/zuma/imagen-3.png" image-position="right" :title-props="{
                 text: 'Tasas fijas',
                 className: 'text-black hover:text-white font-bold',
                 background: '#d4d4d4'
             }" class="rounded-3xl bg-neutral-300 h-full " />
+            -->            
 
+            <SlideCard :items="items"/>
+            
             <!-- Hipotecas -->
             <ServiceCard to="/hipotecas" image="/imagenes/zuma/imagen-4.png" image-position="right" :title-props="{
                 text: 'Hipotecas',

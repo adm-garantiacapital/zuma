@@ -151,7 +151,7 @@ const model = computed(() => {
 
             <!-- Nombre -->
             <h5 class="name-zuma text-center mt-2 mb-3 text-black text-xl" :class="{ 'hidden': isSidebarCollapsed }">
-                {{ fullName }}
+                Bienvenido, {{ fullName }}
             </h5>
 
             <!-- Código de usuario con mejor estética -->
@@ -196,7 +196,7 @@ const model = computed(() => {
 
         <!-- Sección final -->
         <div class="announce-zuma px-4" :class="{ 'px-2': isSidebarCollapsed }">
-            <div class="mt-20 p-5 rounded-3xl bg-[#FF4929] text-center" :class="{ 'hidden': isSidebarCollapsed }">
+            <div class="mt-20 p-5 rounded-3xl bg-[#F0F1F9] text-center" :class="{ 'hidden': isSidebarCollapsed }">
                 <img src="/imagenes/landing/logo-zuma.svg" alt="Logo Zuma" class="inline-block w-14" />
                 <h3 class="text-center my-3 text-[#171717] font-noto">¿Tienes alguna duda?</h3>
                 <p class="text-[#171717] mb-3">Tenemos especialistas que te podrán ayudar.</p>
