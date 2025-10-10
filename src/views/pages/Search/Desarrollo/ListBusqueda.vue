@@ -56,8 +56,8 @@
           </template>
 
           <Column selectionMode="multiple" style="width: 3rem" :exportable="false" />
-          <Column field="codigo" header="Codigo" sortable style="min-width: 15rem" />
-          <Column field="propiedades_count" header="N Propiedades" sortable style="min-width: 20rem" />
+          <Column field="codigo" header="Codigo" sortable style="min-width: 10rem" />
+          <Column field="propiedades_count" header="Nº" sortable style="min-width: 5rem" />
           
           <Column field="currency" header="Moneda" sortable style="min-width: 5rem">
             <template #body="slotProps">
@@ -101,7 +101,7 @@
             </template>
           </Column>         
           
-          <Column field="detalles" header="">
+          <Column field="detalles" header="" style="min-width: 12rem">
             <template #body="slotProps">
               <Button 
                 label="Revisar detalles" 
