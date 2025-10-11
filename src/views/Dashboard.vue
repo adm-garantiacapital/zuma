@@ -4,7 +4,15 @@
     <div class=" mb-6 md:mb-10 rounded-3xl border bg-[#6790FF] text-card-foreground shadow-sm relative overflow-hidden">
       <div class="mx-5     p-4 sm:px-6 md:px-8 lg:px-15 md:mx-5 lg:mx-10 py-6 sm:py-10 md:py-15 relative superior">
         <h3 class="scroll-m-20 text-base sm:text-xl md:text-2xl font-bold text-white max-w-32 md:max-w-full">
-          <span className='text-black'>Zuma</span> invierte contigo, Participamos en cada oportunidad que ves
+          <div className='flex gap-2 mb-2'>
+            <img
+              src="/imagenes/landing/logo-zuma.svg"
+              alt="logo"
+              className="h-auto w-auto max-w-[140px] object-contain duration-200"
+            /> 
+            <span>invierte contigo, </span> 
+          </div>          
+          <span className='w-full d-inline-block'>Participamos en cada oportunidad que ves</span>
         </h3>
       </div>
       <a class="mask absolute -top-12 sm:-top-16 -right-5" href="https://fondeo.apros.global/" target="_blank">
