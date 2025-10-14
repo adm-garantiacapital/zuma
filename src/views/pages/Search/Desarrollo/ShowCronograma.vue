@@ -258,9 +258,25 @@ const formatCurrency = (value, currency = 'PEN') => {
 };
 
 const formatPercentage = (value) => {
-  if (!value && value !== 0) return '0.00%';
+  if (value === null || value === undefined || isNaN(value)) return '0.00%';
+  
   const numValue = parseFloat(value);
-  return `${numValue.toFixed(2)}%`;
+  
+  // Si el valor es mayor a 100, probablemente ya está en formato porcentaje multiplicado por 100
+  // Por ejemplo: 3137.00 significa 3137.00% que es 31.37 en decimal
+  if (numValue > 100) {
+    return `${(numValue / 100).toFixed(2)}%`;
+  } 
+  // Si el valor es mayor a 1 pero menor o igual a 100, está en formato porcentaje normal
+  // Por ejemplo: 15.5 significa 15.5%
+  else if (numValue > 1) {
+    return `${numValue.toFixed(2)}%`;
+  }
+  // Si el valor es menor o igual a 1, está en formato decimal
+  // Por ejemplo: 0.155 significa 15.5%
+  else {
+    return `${(numValue * 100).toFixed(2)}%`;
+  }
 };
 
 const formatDate = (dateString) => {

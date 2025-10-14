@@ -18,12 +18,25 @@
         
         <!-- Columna IZQUIERDA (6 columnas): Carrusel + Métricas + Botones -->
         <div class="col-span-12 lg:col-span-6">
-          <!-- Image Gallery Carousel -->
+          <!-- Selector de Propiedades -->
+          <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
+            <Button 
+              v-for="property in solicitud.properties" 
+              :key="property.id"
+              :label="property.nombre" 
+              :severity="selectedPropertyId === property.id ? 'primary' : 'secondary'"
+              size="small"
+              outlined
+              @click="selectProperty(property.id)"
+              class="whitespace-nowrap"
+            />
+          </div>
+
+          <!-- Image Gallery Carousel para propiedad seleccionada -->
           <div class="rounded-xl overflow-hidden mb-4">
             <Galleria 
-              v-if="allImages.length > 0"
-              v-model:activeIndex="activeImageIndex"
-              :value="allImages" 
+              v-if="getSelectedPropertyImages().length > 0"
+              :value="getSelectedPropertyImages()" 
               :numVisible="3" 
               :responsiveOptions="responsiveOptions"
               containerStyle="max-width: 100%"
@@ -34,14 +47,16 @@
               thumbnailsPosition="bottom">
               <template #item="slotProps">
                 <div class="relative">
-                  <img :src="slotProps.item.url" :alt="slotProps.item.descripcion" class="w-full h-[400px] object-cover" />
+                  <img :src="slotProps.item.url" :alt="slotProps.item.descripcion" 
+                       class="w-full h-[400px] object-cover" />
                   <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
                     <h3 class="text-white font-bold">{{ slotProps.item.propertyName }}</h3>
                   </div>
                 </div>
               </template>
               <template #thumbnail="slotProps">
-                <img :src="slotProps.item.url" :alt="slotProps.item.descripcion" class="w-full h-16 object-cover" />
+                <img :src="slotProps.item.url" :alt="slotProps.item.descripcion" 
+                     class="w-full h-16 object-cover" />
               </template>
             </Galleria>
             <div v-else class="flex items-center justify-center h-[400px] bg-gray-100 rounded-xl">
@@ -54,9 +69,9 @@
 
           <!-- Métricas debajo del carrusel -->
           <div class="grid grid-cols-2 gap-3 mb-4">
-            <!-- Valor -->
+            <!-- Valor General -->
             <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
-              <div class="text-xs text-blue-700 font-semibold mb-1">VALOR</div>
+              <div class="text-xs text-blue-700 font-semibold mb-1">VALOR GENERAL</div>
               <div class="text-xl font-bold text-blue-900">
                 {{ formatCurrency(solicitud?.valor_general?.amount, solicitud?.valor_general?.currency) }}
               </div>
@@ -90,7 +105,7 @@
           <!-- Botones debajo de las métricas -->
           <div class="space-y-2">
             <Button 
-              label="Ver Detalle Completo" 
+              label="Ver Detalle" 
               icon="pi pi-info-circle" 
               outlined
               fluid
@@ -114,72 +129,52 @@
             
             <!-- Información de Valor Requerido -->
             <div class="space-y-4 mb-6">
+              <!-- Código de Solicitud -->
+              <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-4 border border-indigo-200">
+                <div class="text-sm text-indigo-700 font-semibold mb-1">CÓDIGO</div>
+                <div class="text-2xl font-bold text-indigo-900">
+                  {{ solicitud?.codigo }}
+                </div>
+                <div class="text-xs text-indigo-600 mt-1">
+                  Estado: <span class="capitalize font-medium">{{ solicitud?.estado }}</span>
+                </div>
+              </div>
+
               <!-- Valor Requerido -->
-              <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-6 border border-red-200">
+              <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
                 <div class="flex items-center gap-3 mb-3">
-                  <i class="pi pi-money-bill text-red-600 text-3xl"></i>
+                  <i class="pi pi-money-bill text-emerald-600 text-3xl"></i>
                   <div>
-                    <div class="text-sm text-red-700 font-semibold">VALOR REQUERIDO</div>
-                    <div class="text-3xl font-bold text-red-900">
+                    <div class="text-sm text-emerald-700 font-semibold">VALOR REQUERIDO</div>
+                    <div class="text-3xl font-bold text-emerald-900">
                       {{ formatCurrency(solicitud?.valor_requerido?.amount, solicitud?.valor_requerido?.currency) }}
                     </div>
                   </div>
                 </div>
-                <div class="text-xs text-red-700">Monto solicitado por el deudor</div>
+                <div class="text-xs text-emerald-700">Monto solicitado por el deudor</div>
               </div>
 
               <!-- Lista de ofertas -->
-              <div v-if="ofertas.length > 0" class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+              <div v-if="ofertas.length > 0" class="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
                 <div class="flex items-center justify-between mb-3">
-                  <h3 class="text-sm font-semibold text-gray-700">
+                  <h3 class="text-sm font-semibold text-yellow-700">
                     <i class="pi pi-users mr-2"></i>
-                    Ofertas Registradas
+                    Inversionistas Participando
                   </h3>
-                  <Tag :value="ofertas.length" severity="info" />
+                  <Tag :value="ofertas.length" severity="warning" />
                 </div>
-                <div class="space-y-2 max-h-48 overflow-y-auto">
+                <div class="space-y-2 max-h-60 overflow-y-auto">
                   <div 
                     v-for="(oferta, index) in ofertas" 
                     :key="oferta.id"
-                    class="bg-white rounded-lg p-3 border border-gray-200"
+                    class="bg-white rounded-lg p-3 border border-yellow-100"
                     :class="{ 'border-green-400 bg-green-50': oferta.investors_id === currentUserId }"
                   >
-                    <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center justify-between">
                       <div class="flex items-center gap-2">
-                        <!-- Medalla de posición -->
-                        <div class="flex-shrink-0">
-                          <div 
-                            v-if="index === 0"
-                            class="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-white font-bold text-xs shadow-md"
-                            title="Primer Lugar"
-                          >
-                            1°
-                          </div>
-                          <div 
-                            v-else-if="index === 1"
-                            class="w-8 h-8 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 flex items-center justify-center text-white font-bold text-xs shadow-md"
-                            title="Segundo Lugar"
-                          >
-                            2°
-                          </div>
-                          <div 
-                            v-else-if="index === 2"
-                            class="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-xs shadow-md"
-                            title="Tercer Lugar"
-                          >
-                            3°
-                          </div>
-                          <div 
-                            v-else
-                            class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-blue-700 font-bold text-xs"
-                          >
-                            {{ index + 1 }}
-                          </div>
-                        </div>
-                        
-                        <i class="pi pi-user text-blue-500"></i>
+                        <Tag :value="`#${index + 1}`" severity="info" class="text-xs" />
                         <span class="text-sm font-medium text-gray-700">
-                          {{ oferta.investor?.alias || oferta.investor?.name || 'Inversionista' }}
+                          {{ oferta.investor?.alias || oferta.investor?.name || 'Sin alias' }}
                         </span>
                         <Tag 
                           v-if="oferta.investors_id === currentUserId" 
@@ -188,9 +183,9 @@
                           class="text-xs"
                         />
                       </div>
-                    </div>
-                    <div class="text-xs text-gray-500 pl-14">
-                      {{ formatDate(oferta.created_at) }}
+                      <div class="text-xs text-gray-500">
+                        {{ formatDateTime(oferta.created_at) }}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -206,7 +201,7 @@
                     <div class="bg-white rounded-lg p-2 border border-green-200">
                       <div class="text-xs text-gray-600">Fecha de oferta:</div>
                       <div class="text-sm font-semibold text-gray-800">
-                        {{ formatDate(miOferta.created_at) }}
+                        {{ formatDateTime(miOferta.created_at) }}
                       </div>
                     </div>
                   </div>
@@ -248,243 +243,135 @@
       :solicitud="solicitud"
     />
 
-    <!-- Dialog de Detalle Completo -->
-    <Dialog 
-      v-model:visible="showDetalleDialog" 
-      modal 
-      :style="{ width: '90vw', maxWidth: '1200px' }"
-      header="Detalle Completo de la Solicitud"
-      :maximizable="true"
-    >
-      <div v-if="solicitud" class="space-y-6">
-        <!-- Información Principal -->
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <div class="text-xs text-blue-600 font-semibold mb-1">CÓDIGO DE SOLICITUD</div>
-              <div class="text-2xl font-bold text-blue-900">{{ solicitud.codigo }}</div>
-            </div>
-            <div>
-              <div class="text-xs text-blue-600 font-semibold mb-1">ESTADO</div>
-              <Tag 
-                :value="solicitud.estado.toUpperCase()" 
-                :severity="solicitud.estado === 'activa' ? 'success' : 'warning'"
-                class="text-sm"
+    <!-- Diálogo de Detalles -->
+    <Dialog v-model:visible="showDetalleDialog" modal header="Detalles de la Solicitud" :style="{ width: '900px' }"
+        :closable="true">
+        <div v-if="solicitud" class="space-y-6">
+            <!-- Selector de Propiedades en el diálogo -->
+            <div class="flex gap-2 overflow-x-auto pb-2">
+              <Button 
+                v-for="property in solicitud.properties" 
+                :key="property.id"
+                :label="property.nombre" 
+                :severity="selectedPropertyId === property.id ? 'primary' : 'secondary'"
+                size="small"
+                outlined
+                @click="selectProperty(property.id)"
+                class="whitespace-nowrap"
               />
             </div>
-            <div>
-              <div class="text-xs text-blue-600 font-semibold mb-1">FECHA DE CREACIÓN</div>
-              <div class="text-lg font-semibold text-blue-900">{{ formatDate(solicitud.created_at) }}</div>
+
+            <!-- Carrusel de imágenes en el diálogo -->
+            <div class="text-center">
+                <Carousel :value="getSelectedPropertyImages()" :numVisible="1" :numScroll="1"
+                    :showIndicators="true" :showNavigators="true" class="auction-carousel">
+                    <template #item="carouselSlot">
+                        <div class="relative h-80">
+                            <img :src="carouselSlot.data.url" 
+                                 :alt="carouselSlot.data.descripcion"
+                                class="w-full h-full object-cover rounded-lg" />
+                        </div>
+                    </template>
+                </Carousel>
             </div>
-          </div>
+
+            <!-- Información básica -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card>
+                    <template #title>Información General</template>
+                    <template #content>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="font-medium">Código:</span>
+                                <span>{{ solicitud.codigo }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Estado:</span>
+                                <Tag :value="solicitud.estado" 
+                                     :severity="solicitud.estado === 'en_subasta' ? 'success' : 'secondary'" />
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Tipo Cronograma:</span>
+                                <span class="capitalize">{{ solicitud.configuracion_subasta?.tipo_cronograma }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Riesgo:</span>
+                                <Tag :value="solicitud.configuracion_subasta?.riesgo" severity="success" />
+                            </div>
+                        </div>
+                    </template>
+                </Card>
+
+                <Card>
+                    <template #title>Información Financiera</template>
+                    <template #content>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="font-medium">Valor General:</span>
+                                <span class="font-bold text-blue-600">{{ formatCurrency(solicitud.valor_general?.amount, solicitud.valor_general?.currency) }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">Valor Requerido:</span>
+                                <span class="font-bold text-purple-600">{{ formatCurrency(solicitud.valor_requerido?.amount, solicitud.valor_requerido?.currency) }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">TEA:</span>
+                                <span class="font-bold text-purple-600">{{ formatPercentage(solicitud.configuracion_subasta?.tea) }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">TEM:</span>
+                                <span class="font-bold text-orange-600">{{ formatPercentage(solicitud.configuracion_subasta?.tem) }}</span>
+                            </div>
+                        </div>
+                    </template>
+                </Card>
+            </div>
+
+            <!-- Propiedades asociadas -->
+            <Card v-if="solicitud.properties && solicitud.properties.length > 0">
+                <template #title>Propiedades Asociadas</template>
+                <template #content>
+                    <div class="space-y-4">
+                        <div v-for="property in solicitud.properties" :key="property.id"
+                             class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-semibold text-gray-800">{{ property.nombre }}</h4>
+                                <Tag :value="property.estado" 
+                                     :severity="property.estado === 'activo' ? 'success' : 'secondary'" />
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <span class="text-gray-600">Ubicación:</span>
+                                    <p class="font-medium">{{ property.distrito }}, {{ property.provincia }}, {{ property.departamento }}</p>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600">Valor Estimado:</span>
+                                    <p class="font-bold text-green-600">{{ formatCurrency(property.valor_estimado?.amount, property.valor_estimado?.currency) }}</p>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <span class="text-gray-600">Dirección:</span>
+                                <p class="font-medium">{{ property.direccion }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </Card>
         </div>
 
-        <!-- Datos del Deudor -->
-        <div class="bg-white rounded-xl p-5 border border-gray-200">
-          <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <i class="pi pi-user text-purple-600"></i>
-            Datos del Deudor
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-purple-50 rounded-lg p-4">
-              <div class="text-xs text-purple-700 font-semibold mb-1">NOMBRE COMPLETO</div>
-              <div class="text-base font-bold text-purple-900">{{ solicitud.investor?.nombre || 'N/A' }}</div>
+        <template #footer>
+            <div class="flex gap-2 justify-end">
+                <Button label="Cerrar" icon="pi pi-times" severity="secondary" class="p-button-text"
+                    @click="showDetalleDialog = false" />
+                <Button v-if="!yaHaOfertado && solicitud?.estado === 'en_subasta'" 
+                        label="Participar en Subasta" 
+                        icon="pi pi-money-bill" 
+                        severity="contrast" 
+                        rounded
+                        :loading="ofertando"
+                        @click="showDetalleDialog = false; confirmarOferta()" />
             </div>
-            <div class="bg-purple-50 rounded-lg p-4">
-              <div class="text-xs text-purple-700 font-semibold mb-1">PROFESIÓN / OCUPACIÓN</div>
-              <div class="text-base font-semibold text-purple-900">{{ solicitud.profesion_ocupacion || 'N/A' }}</div>
-            </div>
-            <div class="bg-purple-50 rounded-lg p-4">
-              <div class="text-xs text-purple-700 font-semibold mb-1">FUENTE DE INGRESO</div>
-              <div class="text-base font-semibold text-purple-900">{{ solicitud.fuente_ingreso || 'N/A' }}</div>
-            </div>
-            <div class="bg-purple-50 rounded-lg p-4">
-              <div class="text-xs text-purple-700 font-semibold mb-1">INGRESO PROMEDIO</div>
-              <div class="text-base font-bold text-purple-900">{{ formatCurrency(solicitud.ingreso_promedio, 'PEN') }}</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Valores y Configuración Financiera -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Valores -->
-          <div class="bg-white rounded-xl p-5 border border-gray-200">
-            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <i class="pi pi-dollar text-green-600"></i>
-              Valores Financieros
-            </h3>
-            <div class="space-y-3">
-              <div class="bg-green-50 rounded-lg p-4 border-l-4 border-green-500">
-                <div class="text-xs text-green-700 font-semibold mb-1">VALOR GENERAL</div>
-                <div class="text-xl font-bold text-green-900">
-                  {{ formatCurrency(solicitud.valor_general?.amount, solicitud.valor_general?.currency) }}
-                </div>
-              </div>
-              <div class="bg-red-50 rounded-lg p-4 border-l-4 border-red-500">
-                <div class="text-xs text-red-700 font-semibold mb-1">VALOR REQUERIDO</div>
-                <div class="text-xl font-bold text-red-900">
-                  {{ formatCurrency(solicitud.valor_requerido?.amount, solicitud.valor_requerido?.currency) }}
-                </div>
-              </div>
-              <div class="bg-blue-50 rounded-lg p-4 border-l-4 border-blue-500">
-                <div class="text-xs text-blue-700 font-semibold mb-1">MONEDA</div>
-                <div class="text-lg font-bold text-blue-900">
-                  {{ solicitud.currency?.nombre }} ({{ solicitud.currency?.simbolo }})
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Configuración de Subasta -->
-          <div class="bg-white rounded-xl p-5 border border-gray-200">
-            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <i class="pi pi-cog text-orange-600"></i>
-              Configuración de Subasta
-            </h3>
-            <div class="space-y-3">
-              <div class="bg-orange-50 rounded-lg p-4">
-                <div class="text-xs text-orange-700 font-semibold mb-1">TEA (Tasa Efectiva Anual)</div>
-                <div class="text-xl font-bold text-orange-900">{{ formatPercentage(solicitud.configuracion_subasta?.tea) }}</div>
-              </div>
-              <div class="bg-orange-50 rounded-lg p-4">
-                <div class="text-xs text-orange-700 font-semibold mb-1">TEM (Tasa Efectiva Mensual)</div>
-                <div class="text-xl font-bold text-orange-900">{{ formatPercentage(solicitud.configuracion_subasta?.tem) }}</div>
-              </div>
-              <div class="bg-orange-50 rounded-lg p-4">
-                <div class="text-xs text-orange-700 font-semibold mb-1">TIPO DE CRONOGRAMA</div>
-                <div class="text-lg font-bold text-orange-900 capitalize">{{ solicitud.configuracion_subasta?.tipo_cronograma || 'N/A' }}</div>
-              </div>
-              <div class="bg-orange-50 rounded-lg p-4">
-                <div class="text-xs text-orange-700 font-semibold mb-1">NIVEL DE RIESGO</div>
-                <Tag 
-                  :value="solicitud.configuracion_subasta?.riesgo || 'N/A'" 
-                  severity="warning"
-                  class="text-base font-bold"
-                />
-              </div>
-              <div class="bg-orange-50 rounded-lg p-4">
-                <div class="text-xs text-orange-700 font-semibold mb-1">PLAZO</div>
-                <div class="text-lg font-bold text-orange-900">{{ solicitud.configuracion_subasta?.plazo?.nombre || 'N/A' }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Propiedades -->
-        <div class="bg-white rounded-xl p-5 border border-gray-200">
-          <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <i class="pi pi-home text-teal-600"></i>
-            Propiedades en Garantía
-          </h3>
-          <div v-for="property in solicitud.properties" :key="property.id" class="mb-4 last:mb-0">
-            <div class="bg-teal-50 rounded-lg p-4 border border-teal-200">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div>
-                  <div class="text-xs text-teal-700 font-semibold mb-1">NOMBRE DE LA PROPIEDAD</div>
-                  <div class="text-base font-bold text-teal-900">{{ property.nombre }}</div>
-                </div>
-                <div>
-                  <div class="text-xs text-teal-700 font-semibold mb-1">TIPO DE INMUEBLE</div>
-                  <div class="text-base font-semibold text-teal-900">{{ property.tipo_inmueble?.nombre || 'N/A' }}</div>
-                </div>
-                <div>
-                  <div class="text-xs text-teal-700 font-semibold mb-1">UBICACIÓN</div>
-                  <div class="text-sm text-teal-900">
-                    {{ property.departamento }}, {{ property.provincia }}, {{ property.distrito }}
-                  </div>
-                  <div class="text-xs text-teal-700 mt-1">{{ property.direccion }}</div>
-                </div>
-                <div>
-                  <div class="text-xs text-teal-700 font-semibold mb-1">VALOR ESTIMADO</div>
-                  <div class="text-lg font-bold text-teal-900">
-                    {{ formatCurrency(property.valor_estimado?.amount, property.valor_estimado?.currency) }}
-                  </div>
-                </div>
-                <div>
-                  <div class="text-xs text-teal-700 font-semibold mb-1">ESTADO</div>
-                  <Tag 
-                    :value="property.estado.toUpperCase()" 
-                    :severity="property.estado === 'activo' ? 'success' : 'warning'"
-                  />
-                </div>
-                <div>
-                  <div class="text-xs text-teal-700 font-semibold mb-1">IMÁGENES</div>
-                  <div class="text-base font-semibold text-teal-900">{{ property.imagenes?.length || 0 }} imágenes</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Configuraciones de Inversores -->
-        <div v-if="solicitud.property_investors && solicitud.property_investors.length > 0" class="bg-white rounded-xl p-5 border border-gray-200">
-          <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <i class="pi pi-users text-indigo-600"></i>
-            Configuraciones de Inversores
-          </h3>
-          <div class="space-y-4">
-            <div 
-              v-for="(investor, index) in solicitud.property_investors" 
-              :key="investor.id"
-              class="bg-indigo-50 rounded-lg p-4 border border-indigo-200"
-            >
-              <div class="flex items-center justify-between mb-3">
-                <h4 class="text-sm font-bold text-indigo-900">Configuración #{{ index + 1 }}</h4>
-                <Tag 
-                  :value="`Estado: ${investor.configuracion?.estado}`" 
-                  severity="info"
-                />
-              </div>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div class="bg-white rounded p-3">
-                  <div class="text-xs text-indigo-700 font-semibold mb-1">TEA</div>
-                  <div class="text-base font-bold text-indigo-900">{{ formatPercentage(investor.configuracion?.tea) }}</div>
-                </div>
-                <div class="bg-white rounded p-3">
-                  <div class="text-xs text-indigo-700 font-semibold mb-1">TEM</div>
-                  <div class="text-base font-bold text-indigo-900">{{ formatPercentage(investor.configuracion?.tem) }}</div>
-                </div>
-                <div class="bg-white rounded p-3">
-                  <div class="text-xs text-indigo-700 font-semibold mb-1">TOTAL CUOTAS</div>
-                  <div class="text-base font-bold text-indigo-900">{{ investor.payment_schedules?.length || 0 }} cuotas</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Resumen de Cuotas -->
-        <div v-if="solicitud.property_investors && solicitud.property_investors.length > 0" class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-300">
-          <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <i class="pi pi-chart-line text-gray-700"></i>
-            Resumen de Plan de Pagos
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="bg-white rounded-lg p-4 text-center shadow-sm">
-              <div class="text-xs text-gray-600 font-semibold mb-1">TOTAL CUOTAS</div>
-              <div class="text-2xl font-bold text-gray-900">{{ solicitud.property_investors[0]?.payment_schedules?.length || 0 }}</div>
-            </div>
-            <div class="bg-white rounded-lg p-4 text-center shadow-sm">
-              <div class="text-xs text-gray-600 font-semibold mb-1">PRIMERA CUOTA</div>
-              <div class="text-lg font-bold text-gray-900">
-                {{ formatCurrency(solicitud.property_investors[0]?.payment_schedules?.[0]?.total_cuota, 'PEN') }}
-              </div>
-            </div>
-            <div class="bg-white rounded-lg p-4 text-center shadow-sm">
-              <div class="text-xs text-gray-600 font-semibold mb-1">ÚLTIMA CUOTA</div>
-              <div class="text-lg font-bold text-gray-900">
-                {{ formatCurrency(solicitud.property_investors[0]?.payment_schedules?.slice(-1)[0]?.total_cuota, 'PEN') }}
-              </div>
-            </div>
-            <div class="bg-white rounded-lg p-4 text-center shadow-sm">
-              <div class="text-xs text-gray-600 font-semibold mb-1">VENCIMIENTO FINAL</div>
-              <div class="text-sm font-bold text-gray-900">
-                {{ formatDateShort(solicitud.property_investors[0]?.payment_schedules?.slice(-1)[0]?.vencimiento) }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        </template>
     </Dialog>
 
     <!-- Dialog de Confirmación de Oferta -->
@@ -523,6 +410,47 @@
         />
       </template>
     </Dialog>
+
+    <!-- Dialog de Ya Ofertaste -->
+    <Dialog 
+      v-model:visible="showYaOfertasteDialog" 
+      modal 
+      :style="{ width: '500px' }"
+      header="Ya has ofertado"
+    >
+      <div class="flex flex-col items-center text-center gap-4">
+        <i class="pi pi-check-circle text-green-500 text-5xl"></i>
+        <div class="space-y-2">
+          <h3 class="text-lg font-bold text-green-800">¡Ya has participado en esta subasta!</h3>
+          <p class="text-gray-600">
+            Tu oferta ha sido registrada exitosamente. Puedes seguir el progreso de la subasta desde tu panel de control.
+          </p>
+        </div>
+        
+        <div v-if="miOferta" class="bg-gray-50 rounded-lg p-4 w-full border border-gray-200">
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <div class="text-gray-600">Fecha de oferta:</div>
+              <div class="font-semibold">{{ formatDateTime(miOferta.created_at) }}</div>
+            </div>
+            <div>
+              <div class="text-gray-600">Código:</div>
+              <div class="font-semibold">{{ solicitud?.codigo }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <div class="flex justify-center w-full">
+          <Button 
+            label="Entendido" 
+            icon="pi pi-check" 
+            severity="success"
+            @click="showYaOfertasteDialog = false" 
+          />
+        </div>
+      </template>
+    </Dialog>
   </div>
 </template>
 
@@ -534,6 +462,8 @@ import Galleria from 'primevue/galleria';
 import Button from 'primevue/button';
 import Tag from 'primevue/tag';
 import Dialog from 'primevue/dialog';
+import Carousel from 'primevue/carousel';
+import Card from 'primevue/card';
 import ProgressSpinner from 'primevue/progressspinner';
 import ShowCronograma from './ShowCronograma.vue';
 import { solicitudService } from '@/services/solicitud.js';
@@ -560,7 +490,9 @@ const activeImageIndex = ref(0);
 const showCronogramaDialog = ref(false);
 const showDetalleDialog = ref(false);
 const showConfirmDialog = ref(false);
+const showYaOfertasteDialog = ref(false);
 const currentUserId = ref(null);
+const selectedPropertyId = ref(null);
 
 const responsiveOptions = ref([
   {
@@ -580,6 +512,44 @@ const responsiveOptions = ref([
 // Obtener el ID desde el prop o desde la ruta
 const getSolicitudId = () => {
   return props.solicitudId || route.params.id;
+};
+
+// Seleccionar propiedad
+const selectProperty = (propertyId) => {
+  selectedPropertyId.value = propertyId;
+};
+
+// Obtener imágenes de la propiedad seleccionada
+const getSelectedPropertyImages = () => {
+  if (!solicitud.value || !solicitud.value.properties) return [];
+  
+  const targetPropertyId = selectedPropertyId.value || (solicitud.value.properties[0]?.id || null);
+  
+  const property = solicitud.value.properties.find(p => p.id === targetPropertyId);
+  if (!property) return [];
+  
+  const images = [];
+  if (property.imagenes && Array.isArray(property.imagenes) && property.imagenes.length > 0) {
+    property.imagenes.forEach(imagen => {
+      images.push({
+        url: imagen.url || '/Propiedades/no-image.png',
+        descripcion: imagen.descripcion || 'Imagen de la propiedad',
+        propertyName: property.nombre || 'Propiedad',
+        propertyId: property.id
+      });
+    });
+  }
+  
+  if (images.length === 0) {
+    images.push({
+      url: '/Propiedades/no-image.png',
+      descripcion: 'Sin imagen disponible',
+      propertyName: property.nombre || 'Propiedad',
+      propertyId: property.id
+    });
+  }
+  
+  return images;
 };
 
 // Cargar solicitud desde la API
@@ -608,6 +578,10 @@ const loadSolicitud = async () => {
       if (!solicitud.value) {
         error.value = 'No se encontraron datos de la solicitud';
       } else {
+        // Inicializar la propiedad seleccionada
+        if (solicitud.value.properties && solicitud.value.properties.length > 0) {
+          selectedPropertyId.value = solicitud.value.properties[0].id;
+        }
         await loadOfertas();
       }
     } else {
@@ -657,6 +631,13 @@ const loadOfertas = async () => {
     if (response.data && response.data.success) {
       ofertas.value = response.data.data || [];
       console.log('✅ Ofertas cargadas:', ofertas.value);
+      
+      // Mostrar diálogo si ya ofertó
+      if (yaHaOfertado.value) {
+        setTimeout(() => {
+          showYaOfertasteDialog.value = true;
+        }, 500);
+      }
     }
   } catch (err) {
     console.error('❌ Error al cargar ofertas:', err);
@@ -687,6 +668,13 @@ const miOferta = computed(() => {
 
 // Mostrar diálogo de confirmación
 const confirmarOferta = () => {
+  // Si ya ofertó, mostrar el diálogo de "Ya ofertaste"
+  if (yaHaOfertado.value) {
+    showYaOfertasteDialog.value = true;
+    return;
+  }
+  
+  // Si no ha ofertado, mostrar el diálogo de confirmación normal
   showConfirmDialog.value = true;
 };
 
@@ -706,7 +694,7 @@ const realizarOferta = async () => {
 
   try {
     console.log('📡 Realizando oferta para solicitud_bid_id:', solicitud.value.id);
-    const response = await bidService.createSubasta(solicitud.value.id);
+    const response = await bidService.create(solicitud.value.id);
     
     if (response.data && response.data.success) {
       toast.add({
@@ -727,6 +715,8 @@ const realizarOferta = async () => {
     
     if (err.response?.status === 409) {
       errorMessage = 'Ya has ofertado en esta solicitud';
+      // Si ya ofertó, mostrar el diálogo correspondiente
+      showYaOfertasteDialog.value = true;
     } else if (err.response?.status === 403) {
       errorMessage = 'No tienes permisos para ofertar';
     } else if (err.response?.data?.message) {
@@ -743,23 +733,6 @@ const realizarOferta = async () => {
     ofertando.value = false;
   }
 };
-
-// Computed: todas las imágenes de las propiedades en un solo carrusel
-const allImages = computed(() => {
-  const images = [];
-  solicitud.value?.properties?.forEach(property => {
-    if (property.imagenes && property.imagenes.length > 0) {
-      property.imagenes.forEach(imagen => {
-        images.push({
-          ...imagen,
-          propertyName: property.nombre,
-          propertyId: property.id
-        });
-      });
-    }
-  });
-  return images;
-});
 
 // Formatear moneda
 const formatCurrency = (value, currency = 'PEN') => {
@@ -791,19 +764,26 @@ const formatPercentage = (value) => {
   }
 };
 
-// Formatear fecha con hora completa, minutos, segundos y AM/PM
-const formatDate = (dateString) => {
+// Formatear fecha con hora completa
+const formatDateTime = (dateString) => {
   if (!dateString) return '-';
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('es-PE', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: true
-  }).format(date);
+  
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '-';
+    
+    return new Intl.DateTimeFormat('es-PE', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    }).format(date);
+  } catch (error) {
+    return '-';
+  }
 };
 
 // Formatear fecha corta (solo fecha)

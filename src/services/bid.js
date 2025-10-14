@@ -13,7 +13,7 @@ export const bidService = {
   },
 
   createSubasta(solicitudBidId) {
-    return apiAdmin1.post('/bids', { 
+    return apiAdmin1.post('/bids/subasta', { 
       solicitud_bid_id: solicitudBidId 
     });
   },

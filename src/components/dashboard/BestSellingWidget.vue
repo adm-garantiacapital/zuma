@@ -14,6 +14,8 @@
 
     <!-- Content -->
     <div v-else-if="solicitudes.length > 0" class="space-y-6">
+      <!-- Header con botón de exportación -->
+
       <div v-for="solicitud in solicitudes" :key="solicitud.id" 
            class="bg-white rounded-2xl shadow-sm p-6">
         <div class="grid grid-cols-12 gap-6">
@@ -188,6 +190,7 @@
                       v-for="(bid, index) in solicitudBids[solicitud.id]" 
                       :key="bid.id"
                       class="bg-white rounded-lg p-3 border border-yellow-100"
+                      :class="{ 'border-green-400 bg-green-50': bid.investors_id === currentUserId }"
                     >
                       <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
@@ -195,6 +198,12 @@
                           <span class="text-sm font-medium text-gray-700">
                             {{ bid.investor?.alias || 'Sin alias' }}
                           </span>
+                          <Tag 
+                            v-if="bid.investors_id === currentUserId" 
+                            value="Tú" 
+                            severity="success"
+                            class="text-xs"
+                          />
                         </div>
                         <div class="text-xs text-gray-500">
                           {{ formatDateTime(bid.created_at) }}
@@ -213,13 +222,18 @@
                   rounded
                   :severity="getActionButtonSeverity(solicitud)"
                   :loading="participatingSolicitudId === solicitud.id"
-                  :disabled="isAuctionExpired(solicitud.subasta)"
+                  :disabled="isAuctionExpired(solicitud.subasta) || hasAlreadyParticipated(solicitud.id)"
                   fluid
                   @click="handleAction(solicitud)"
                 />
                 <div v-if="isAuctionExpired(solicitud.subasta)" class="text-center mt-2">
                   <span class="text-xs text-red-600 font-semibold">
                     <i class="pi pi-times-circle mr-1"></i>Subasta finalizada
+                  </span>
+                </div>
+                <div v-if="hasAlreadyParticipated(solicitud.id)" class="text-center mt-2">
+                  <span class="text-xs text-blue-600 font-semibold">
+                    <i class="pi pi-check-circle mr-1"></i>Ya participaste en esta subasta
                   </span>
                 </div>
               </div>
@@ -301,6 +315,49 @@
           <Button label="Confirmar Participación" icon="pi pi-check" severity="success" 
                   :loading="participatingSolicitudId === selectedSolicitud?.id"
                   @click="confirmarParticipacion" />
+        </div>
+      </template>
+    </Dialog>
+
+    <!-- Diálogo de Ya Participó -->
+    <Dialog v-model:visible="alreadyParticipatedDialog" modal header="Ya Participaste" :style="{ width: '500px' }">
+      <div class="space-y-4">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+          <i class="pi pi-check-circle text-blue-600 text-4xl mb-3"></i>
+          <p class="text-blue-800 font-semibold text-lg mb-2">
+            ¡Ya has participado en esta subasta!
+          </p>
+          <p class="text-blue-700 text-sm">
+            Tu oferta ha sido registrada exitosamente. Puedes seguir el progreso de la subasta desde tu panel de control.
+          </p>
+        </div>
+        
+        <div v-if="selectedSolicitud" class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <div class="text-gray-600">Código:</div>
+              <div class="font-semibold">{{ selectedSolicitud.codigo }}</div>
+            </div>
+            <div>
+            </div>
+          </div>
+          <div class="mt-3 p-3 bg-green-50 rounded-lg border border-green-200">
+            <div class="flex items-center gap-2">
+              <i class="pi pi-info-circle text-green-600"></i>
+              <span class="text-green-700 text-sm">Tu oferta está siendo procesada</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <template #footer>
+        <div class="flex justify-center w-full">
+          <Button 
+            label="Entendido" 
+            icon="pi pi-check" 
+            severity="primary"
+            @click="alreadyParticipatedDialog = false" 
+          />
         </div>
       </template>
     </Dialog>
@@ -431,20 +488,32 @@
                         severity="contrast" 
                         rounded
                         :loading="participatingSolicitudId === selectedSolicitud.id"
-                        :disabled="isAuctionExpired(selectedSolicitud.subasta)"
+                        :disabled="isAuctionExpired(selectedSolicitud.subasta) || hasAlreadyParticipated(selectedSolicitud.id)"
                         @click="detailDialog = false; handleAction(selectedSolicitud)" />
             </div>
         </template>
     </Dialog>
 
     <!-- Dialog para Cronograma -->
-    <Dialog v-model:visible="scheduleDialog" modal header="Cronograma de Pagos" :style="{ width: '800px' }"
+    <Dialog v-model:visible="scheduleDialog" modal header="Cronograma de Pagos" :style="{ width: '900px' }"
         :closable="true">
         <div v-if="selectedSolicitud" class="space-y-4">
-            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <h4 class="font-semibold text-blue-800 mb-2">{{ selectedSolicitud.codigo }}</h4>
-                <p class="text-blue-600 text-sm">Inversor: {{ selectedSolicitud.investor?.nombre }}</p>
-                <p class="text-blue-600 text-sm">Valor Requerido: {{ formatCurrency(selectedSolicitud.valor_requerido?.amount, selectedSolicitud.valor_requerido?.currency) }}</p>
+            <!-- Header del cronograma con botón de exportación -->
+            <div class="flex justify-between items-center mb-4">
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 flex-1">
+                    <h4 class="font-semibold text-blue-800 mb-2">{{ selectedSolicitud.codigo }}</h4>
+                    <p class="text-blue-600 text-sm">Inversor: {{ selectedSolicitud.investor?.nombre || 'N/A' }}</p>
+                    <p class="text-blue-600 text-sm">Valor Requerido: {{ formatCurrency(selectedSolicitud.valor_requerido?.amount, selectedSolicitud.valor_requerido?.currency) }}</p>
+                </div>
+                
+                <Button 
+                    label="Exportar Cronograma" 
+                    icon="pi pi-file-excel" 
+                    severity="success" 
+                    @click="exportScheduleToExcel"
+                    :loading="exportingSchedule"
+                    class="ml-4"
+                />
             </div>
 
             <!-- Selector de Cronograma -->
@@ -462,6 +531,28 @@
             </div>
 
             <div v-if="scheduleData && scheduleData.length > 0">
+                <!-- Resumen del cronograma -->
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                            <div class="text-sm text-green-700 font-semibold">Total Cuotas</div>
+                            <div class="text-xl font-bold text-green-900">{{ scheduleData.length }}</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-green-700 font-semibold">Total Capital</div>
+                            <div class="text-xl font-bold text-green-900">
+                                {{ formatCurrency(calculateTotalCapital()) }}
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-green-700 font-semibold">Total Intereses</div>
+                            <div class="text-xl font-bold text-green-900">
+                                {{ formatCurrency(calculateTotalIntereses()) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <DataTable :value="scheduleData" responsiveLayout="scroll" 
                           :paginator="true" :rows="10"
                           class="p-datatable-sm">
@@ -500,8 +591,10 @@
         </div>
 
         <template #footer>
-            <Button label="Cerrar" icon="pi pi-times" severity="secondary" 
-                    @click="scheduleDialog = false" />
+            <div class="flex gap-2 justify-end">
+                <Button label="Cerrar" icon="pi pi-times" severity="secondary" 
+                        @click="scheduleDialog = false" />
+            </div>
         </template>
     </Dialog>
   </div>
@@ -536,6 +629,7 @@ const total = ref(0);
 const detailDialog = ref(false);
 const scheduleDialog = ref(false);
 const confirmDialog = ref(false);
+const alreadyParticipatedDialog = ref(false);
 const selectedSolicitud = ref(null);
 const scheduleData = ref([]);
 const selectedPropertyId = ref(null);
@@ -544,6 +638,18 @@ const participatingSolicitudId = ref(null);
 const solicitudBids = ref({});
 const countdownInterval = ref(null);
 const currentTime = ref(new Date());
+const exporting = ref(false);
+const exportingSchedule = ref(false);
+
+// Obtener ID del usuario actual desde localStorage
+const currentUserId = computed(() => {
+  try {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    return user.id || null;
+  } catch {
+    return null;
+  }
+});
 
 const responsiveOptions = ref([
   {
@@ -559,6 +665,164 @@ const responsiveOptions = ref([
     numVisible: 1
   }
 ]);
+
+// Verificar si el usuario actual ya participó en una subasta
+const hasAlreadyParticipated = (solicitudId) => {
+  const bids = solicitudBids.value[solicitudId] || [];
+  
+  if (!currentUserId.value || bids.length === 0) return false;
+  
+  // Verificar si el usuario actual está en la lista de bids
+  return bids.some(bid => bid.investors_id === currentUserId.value);
+};
+
+// Obtener la oferta del usuario actual
+const getMiOferta = (solicitudId) => {
+  const bids = solicitudBids.value[solicitudId] || [];
+  
+  if (!currentUserId.value) return null;
+  return bids.find(bid => bid.investors_id === currentUserId.value);
+};
+
+// Obtener fecha de participación
+const getParticipationDate = (solicitudId) => {
+  const miOferta = getMiOferta(solicitudId);
+  if (miOferta) {
+    return formatDateTime(miOferta.created_at);
+  }
+  return 'No disponible';
+};
+
+// Exportar cronograma a Excel
+const exportScheduleToExcel = async () => {
+  if (!scheduleData.value || scheduleData.value.length === 0) {
+    toast.add({
+      severity: 'warn',
+      summary: 'Advertencia',
+      detail: 'No hay datos de cronograma para exportar',
+      life: 3000
+    });
+    return;
+  }
+
+  exportingSchedule.value = true;
+  
+  try {
+    // Preparar datos para exportación
+    const excelData = scheduleData.value.map((item, index) => ({
+      'N° Cuota': item.cuota || index + 1,
+      'Vencimiento': item.vencimiento || '',
+      'Capital': item.capital || 0,
+      'Intereses': item.intereses || 0,
+      'Total Cuota': item.total_cuota || 0,
+      'Estado': item.estado || 'pendiente'
+    }));
+
+    // Agregar fila de totales
+    const totales = {
+      'N° Cuota': 'TOTALES',
+      'Vencimiento': '',
+      'Capital': calculateTotalCapital(),
+      'Intereses': calculateTotalIntereses(),
+      'Total Cuota': calculateTotalCapital() + calculateTotalIntereses(),
+      'Estado': ''
+    };
+    excelData.push(totales);
+
+    // Crear workbook y worksheet
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(excelData);
+
+    // Añadir worksheet al workbook
+    const sheetName = `Cronograma_${selectedSolicitud.value?.codigo || 'Solicitud'}`;
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+
+    // Generar archivo y descargar
+    const fileName = `cronograma_${selectedSolicitud.value?.codigo || 'solicitud'}_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+
+    toast.add({
+      severity: 'success',
+      summary: 'Éxito',
+      detail: 'Cronograma exportado correctamente',
+      life: 3000
+    });
+
+  } catch (error) {
+    console.error('Error al exportar cronograma a Excel:', error);
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'No se pudo exportar el cronograma',
+      life: 3000
+    });
+  } finally {
+    exportingSchedule.value = false;
+  }
+};
+
+// Calcular total de capital
+const calculateTotalCapital = () => {
+  if (!scheduleData.value || scheduleData.value.length === 0) return 0;
+  return scheduleData.value.reduce((total, item) => total + (item.capital || 0), 0);
+};
+
+// Calcular total de intereses
+const calculateTotalIntereses = () => {
+  if (!scheduleData.value || scheduleData.value.length === 0) return 0;
+  return scheduleData.value.reduce((total, item) => total + (item.intereses || 0), 0);
+};
+
+// Exportar a Excel (solicitudes principales)
+const exportToExcel = async () => {
+  exporting.value = true;
+  
+  try {
+    // Preparar datos para exportación
+    const excelData = solicitudes.value.map(solicitud => ({
+      'Código': solicitud.codigo || '',
+      'Estado': solicitud.estado || '',
+      'Valor General': formatCurrency(solicitud?.valor_general?.amount, solicitud?.valor_general?.currency),
+      'Valor Requerido': formatCurrency(solicitud?.valor_requerido?.amount, solicitud?.valor_requerido?.currency),
+      'TEA': formatPercentage(solicitud?.configuracion_subasta?.tea),
+      'TEM': formatPercentage(solicitud?.configuracion_subasta?.tem),
+      'Riesgo': solicitud?.configuracion_subasta?.riesgo || 'N/A',
+      'Tipo Cronograma': solicitud?.configuracion_subasta?.tipo_cronograma || '',
+      'Propiedades': solicitud.properties?.map(p => p.nombre).join(', ') || '',
+      'Participantes': solicitudBids.value[solicitud.id]?.length || 0,
+      'Tiempo Restante': solicitud?.subasta ? getCountdown(solicitud.subasta) : 'N/A'
+    }));
+
+    // Crear workbook y worksheet
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(excelData);
+
+    // Añadir worksheet al workbook
+    XLSX.utils.book_append_sheet(wb, ws, 'Solicitudes de Subasta');
+
+    // Generar archivo y descargar
+    const fileName = `solicitudes_subasta_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+
+    toast.add({
+      severity: 'success',
+      summary: 'Éxito',
+      detail: 'Datos exportados correctamente',
+      life: 3000
+    });
+
+  } catch (error) {
+    console.error('Error al exportar a Excel:', error);
+    toast.add({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'No se pudo exportar los datos',
+      life: 3000
+    });
+  } finally {
+    exporting.value = false;
+  }
+};
 
 // Iniciar intervalo de actualización del tiempo
 const startCountdownTimer = () => {
@@ -705,6 +969,11 @@ const loadBidsForSolicitud = async (solicitudId) => {
       // Ordenar por fecha de creación (primero el más antiguo)
       bids.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
       solicitudBids.value[solicitudId] = bids;
+      
+      // Debug: mostrar información de las ofertas
+      console.log(`📊 Ofertas para solicitud ${solicitudId}:`, bids);
+      console.log(`👤 Usuario actual ID:`, currentUserId.value);
+      console.log(`❓ ¿Ya participó?:`, hasAlreadyParticipated(solicitudId));
     }
   } catch (err) {
     console.error('Error al cargar ofertas:', err);
@@ -758,6 +1027,12 @@ const mostrarConfirmacion = (solicitud) => {
   confirmDialog.value = true;
 };
 
+// Mostrar diálogo de ya participó
+const mostrarYaParticipoDialog = (solicitud) => {
+  selectedSolicitud.value = solicitud;
+  alreadyParticipatedDialog.value = true;
+};
+
 // Confirmar participación
 const confirmarParticipacion = async () => {
   if (!selectedSolicitud.value) return;
@@ -778,10 +1053,16 @@ const participarEnSubasta = async (solicitud) => {
     return;
   }
 
+  // Verificar si ya participó usando la nueva lógica
+  if (hasAlreadyParticipated(solicitud.id)) {
+    mostrarYaParticipoDialog(solicitud);
+    return;
+  }
+
   participatingSolicitudId.value = solicitud.id;
   
   try {
-    const response = await bidService.create(solicitud.id);
+    const response = await bidService.createSubasta(solicitud.id);
     
     if (response.data && response.data.success) {
       toast.add({ 
@@ -791,6 +1072,7 @@ const participarEnSubasta = async (solicitud) => {
         life: 3000 
       });
       
+      // Recargar las ofertas para esta solicitud
       await loadBidsForSolicitud(solicitud.id);
       
       emit('auctionSelected', solicitud);
@@ -799,12 +1081,18 @@ const participarEnSubasta = async (solicitud) => {
     }
   } catch (err) {
     console.error('Error al participar en subasta:', err);
-    toast.add({ 
-      severity: 'error', 
-      summary: 'Error', 
-      detail: err.response?.data?.message || 'No se pudo participar en la subasta', 
-      life: 3000 
-    });
+    
+    // Si el error es que ya participó, mostrar el diálogo
+    if (err.response?.status === 409 || err.response?.data?.message?.includes('ya participó')) {
+      mostrarYaParticipoDialog(solicitud);
+    } else {
+      toast.add({ 
+        severity: 'error', 
+        summary: 'Error', 
+        detail: err.response?.data?.message || 'No se pudo participar en la subasta', 
+        life: 3000 
+      });
+    }
   } finally {
     participatingSolicitudId.value = null;
   }
@@ -861,6 +1149,9 @@ const getActionButtonLabel = (solicitud) => {
     if (isAuctionExpired(solicitud.subasta)) {
       return 'Subasta Finalizada';
     }
+    if (hasAlreadyParticipated(solicitud.id)) {
+      return 'Ya Participas';
+    }
     return 'Participar en Subasta';
   }
   if (estado === 'pendiente') return 'En Proceso';
@@ -876,6 +1167,9 @@ const getActionButtonIcon = (solicitud) => {
   if (estado === 'en_subasta') {
     if (isAuctionExpired(solicitud.subasta)) {
       return 'pi pi-lock';
+    }
+    if (hasAlreadyParticipated(solicitud.id)) {
+      return 'pi pi-check-circle';
     }
     return 'pi pi-bolt';
   }
@@ -893,6 +1187,9 @@ const getActionButtonSeverity = (solicitud) => {
     if (isAuctionExpired(solicitud.subasta)) {
       return 'secondary';
     }
+    if (hasAlreadyParticipated(solicitud.id)) {
+      return 'info';
+    }
     return 'contrast';
   }
   if (estado === 'pendiente') return 'warning';
@@ -906,7 +1203,11 @@ const handleAction = (solicitud) => {
   
   const estado = solicitud.estado || '';
   if (estado === 'en_subasta' && !isAuctionExpired(solicitud.subasta)) {
-    mostrarConfirmacion(solicitud);
+    if (hasAlreadyParticipated(solicitud.id)) {
+      mostrarYaParticipoDialog(solicitud);
+    } else {
+      mostrarConfirmacion(solicitud);
+    }
   } else {
     verDetalle(solicitud);
   }
