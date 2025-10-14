@@ -3,6 +3,7 @@ import FooterWidget from '@/components/landing/FooterWidget.vue';
 import TopbarWidget from '@/components/landing/TopbarWidget.vue';
 import admin2AuthService from '@/services/admin2AuthService.js';
 import { dniService } from '@/services/dniService.js';
+import { twilioService } from '@/services/twilioService.js';
 import { useToast } from 'primevue/usetoast';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
@@ -34,12 +35,11 @@ const ingredient = ref('inversionista');
 const showEmpresaDialog = ref(false);
 
 // Para manejar habilitación de campos
-const isDni = computed(() => documentType.value === 1)          // 1 → DNI
-const isCarnet = computed(() => documentType.value === 3)       // 2 → Carnet de extranjería
+const isDni = computed(() => documentType.value === 1)
+const isCarnet = computed(() => documentType.value === 3)
 
 // Cuando cambia el tipo de documento
 watch(documentType, (newVal) => {
-  // Limpia documento y datos de persona
   document.value = ''
   nombre.value = ''
   apellidoPaterno.value = ''
@@ -48,7 +48,7 @@ watch(documentType, (newVal) => {
 
 onMounted(async () => {
   try {
-    const baseUrl = import.meta.env.VITE_API_ADMIN1; // 👈 toma la URL desde .env
+    const baseUrl = import.meta.env.VITE_API_ADMIN1;
     const response = await fetch(`${baseUrl}/tipo-documentos`);
 
     if (!response.ok) throw new Error(`Error ${response.status} al obtener tipos de documento`);
@@ -57,10 +57,6 @@ onMounted(async () => {
     console.log('Tipos de documento cargados:', data);
 
     documentTypes.value = data;
-    // .map(item => ({
-    //   id_tipo_documento: item.id_tipo_documento,
-    //   nombre_tipo_documento: item.nombre_tipo_documento
-    // }));
 
   } catch (error) {
     console.error('Fetch error:', error);
@@ -134,7 +130,7 @@ const isFormValid = computed(() => {
 
 const fieldValidations = computed(() => {
   return {
-    document: document.value.trim() !== '',  // ya no se valida la longitud
+    document: document.value.trim() !== '',
     nombre: nombre.value.trim() !== '',
     nacionalidad: nacionalidad.value.trim() !== '',
     apellidoPaterno: apellidoPaterno.value.trim() !== '',
@@ -161,6 +157,32 @@ const handlePerfilChange = (value) => {
     setTimeout(() => {
       ingredient.value = 'inversionista';
     }, 100);
+  }
+};
+
+// Función auxiliar para enviar WhatsApp
+const enviarMensajeWhatsApp = async (telefono, nombreCompleto, userId) => {
+  try {
+    // Asegurarse de que el número tenga el formato correcto (sin espacios ni caracteres especiales)
+    const telefonoLimpio = telefono.replace(/\D/g, '');
+    
+    // Crear mensaje personalizado
+    const mensaje = `¡Hola ${nombreCompleto}! 🎉\n\nTu registro ha sido exitoso. Por favor, verifica tu cuenta usando el código que te enviaremos por correo electrónico.\n\n¡Bienvenido a nuestra plataforma de inversiones!`;
+    
+    await twilioService.enviarMensaje(telefonoLimpio, mensaje);
+    
+    console.log('Mensaje de WhatsApp enviado correctamente');
+    
+    toast.add({
+      severity: 'success',
+      summary: 'Notificación enviada',
+      detail: 'Te hemos enviado un mensaje de WhatsApp con la confirmación.',
+      life: 3000
+    });
+  } catch (error) {
+    console.error('Error al enviar WhatsApp:', error);
+    // No mostramos error al usuario para no interrumpir el flujo de registro
+    // pero lo registramos en consola
   }
 };
 
@@ -197,6 +219,9 @@ const handleRegister = async () => {
 
     // si la API respondió éxito (status 201 o status success)
     if (response.status === 201 || response.data?.status === 'success') {
+      const nombreCompleto = `${nombre.value} ${apellidoPaterno.value}`;
+      const userId = response.data.data.userId;
+      
       toast.add({
         severity: 'success',
         summary: 'Registro exitoso',
@@ -204,12 +229,15 @@ const handleRegister = async () => {
         life: 4000
       });
 
+      // Enviar mensaje de WhatsApp (sin bloquear la navegación)
+      enviarMensajeWhatsApp(numeroTelefono.value, nombreCompleto, userId);
+
       // redirigir solo en éxito
       router.push({
         path: '/verificar-cuenta',
         query: {
           email: payload.email,
-          userId: response.data.data.userId
+          userId: userId
         }
       });
 
