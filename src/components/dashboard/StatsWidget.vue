@@ -4,12 +4,10 @@ import ServiceCard from './ServiceCard.vue';
 import SlideCard from './SlideCard.vue';
 
 const items = [
-  { name: 'Invertimos juntos', to: 'Hipotecas', image:'icons/icono.svg' },
-  { name: 'Libre de comisión', to: 'Hipotecas', image:'icons/time-is-money.svg' },
-  { name: 'Rentabilidad Inmediata', to: 'Hipotecas', image:'icons/time-is-money.svg' },
-];
+  { name: 'Invierte con garantia hipotecaria', to: 'Hipotecas', image:'icons/icono.svg' },
+  { name: 'Tu capital siempre protegido', to: 'Hipotecas', image:'icons/time-is-money.svg' }
 
-
+]
 </script>
 
 <template>
