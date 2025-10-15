@@ -3,7 +3,6 @@ import FooterWidget from '@/components/landing/FooterWidget.vue';
 import TopbarWidget from '@/components/landing/TopbarWidget.vue';
 import admin2AuthService from '@/services/admin2AuthService.js';
 import { dniService } from '@/services/dniService.js';
-import { twilioService } from '@/services/twilioService.js';
 import { useToast } from 'primevue/usetoast';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
@@ -12,7 +11,6 @@ const router = useRouter();
 const toast = useToast();
 const nombre = ref('');
 const nacionalidad = ref('');
-
 const document = ref('');
 const apellidoMaterno = ref('');
 const apellidoPaterno = ref('');
@@ -31,20 +29,19 @@ const documentTypes = ref([
 ]);
 
 const ingredient = ref('inversionista');
-
 const showEmpresaDialog = ref(false);
 
 // Para manejar habilitación de campos
-const isDni = computed(() => documentType.value === 1)
-const isCarnet = computed(() => documentType.value === 3)
+const isDni = computed(() => documentType.value === 1);
+const isCarnet = computed(() => documentType.value === 3);
 
 // Cuando cambia el tipo de documento
 watch(documentType, (newVal) => {
-  document.value = ''
-  nombre.value = ''
-  apellidoPaterno.value = ''
-  apellidoMaterno.value = ''
-})
+  document.value = '';
+  nombre.value = '';
+  apellidoPaterno.value = '';
+  apellidoMaterno.value = '';
+});
 
 onMounted(async () => {
   try {
@@ -100,7 +97,6 @@ watch(document, async (newVal) => {
   }
 });
 
-
 const passwordValidations = computed(() => {
   const pwd = password.value;
   return {
@@ -122,17 +118,24 @@ const passwordsMatch = computed(() => {
 });
 
 const isFormValid = computed(() => {
-  return document.value && apellidoMaterno.value && apellidoPaterno.value &&
+  const baseValidation = document.value && apellidoMaterno.value && apellidoPaterno.value &&
     alias.value && correoElectronico.value && isPasswordValid.value &&
     passwordsMatch.value && numeroTelefono.value && checked.value &&
-    documentType.value;
+    documentType.value && nombre.value;
+
+  // Si es carnet de extranjería, también validar nacionalidad
+  if (isCarnet.value) {
+    return baseValidation && nacionalidad.value.trim() !== '';
+  }
+
+  return baseValidation;
 });
 
 const fieldValidations = computed(() => {
   return {
     document: document.value.trim() !== '',
     nombre: nombre.value.trim() !== '',
-    nacionalidad: nacionalidad.value.trim() !== '',
+    nacionalidad: isCarnet.value ? nacionalidad.value.trim() !== '' : true,
     apellidoPaterno: apellidoPaterno.value.trim() !== '',
     apellidoMaterno: apellidoMaterno.value.trim() !== '',
     alias: alias.value.trim() !== '',
@@ -145,7 +148,6 @@ const fieldValidations = computed(() => {
   };
 });
 
-
 const getFieldClass = (fieldName) => {
   if (!showErrors.value) return '';
   return fieldValidations.value[fieldName] ? '' : 'p-invalid';
@@ -157,32 +159,6 @@ const handlePerfilChange = (value) => {
     setTimeout(() => {
       ingredient.value = 'inversionista';
     }, 100);
-  }
-};
-
-// Función auxiliar para enviar WhatsApp
-const enviarMensajeWhatsApp = async (telefono, nombreCompleto, userId) => {
-  try {
-    // Asegurarse de que el número tenga el formato correcto (sin espacios ni caracteres especiales)
-    const telefonoLimpio = telefono.replace(/\D/g, '');
-    
-    // Crear mensaje personalizado
-    const mensaje = `¡Hola ${nombreCompleto}! 🎉\n\nTu registro ha sido exitoso. Por favor, verifica tu cuenta usando el código que te enviaremos por correo electrónico.\n\n¡Bienvenido a nuestra plataforma de inversiones!`;
-    
-    await twilioService.enviarMensaje(telefonoLimpio, mensaje);
-    
-    console.log('Mensaje de WhatsApp enviado correctamente');
-    
-    toast.add({
-      severity: 'success',
-      summary: 'Notificación enviada',
-      detail: 'Te hemos enviado un mensaje de WhatsApp con la confirmación.',
-      life: 3000
-    });
-  } catch (error) {
-    console.error('Error al enviar WhatsApp:', error);
-    // No mostramos error al usuario para no interrumpir el flujo de registro
-    // pero lo registramos en consola
   }
 };
 
@@ -206,7 +182,7 @@ const handleRegister = async () => {
       name: nombre.value,
       first_last_name: apellidoPaterno.value,
       second_last_name: apellidoMaterno.value,
-      nacionalidad: nacionalidad.value,
+      nacionalidad: nacionalidad.value || null,
       alias: alias.value,
       tipo_documento_id: documentType.value,
       document: document.value,
@@ -217,32 +193,28 @@ const handleRegister = async () => {
 
     const response = await admin2AuthService.register(payload);
 
-    // si la API respondió éxito (status 201 o status success)
-    if (response.status === 201 || response.data?.status === 'success') {
-      const nombreCompleto = `${nombre.value} ${apellidoPaterno.value}`;
-      const userId = response.data.data.userId;
+    // Si la API respondió éxito (status 201 o success)
+    if (response.status === 201 || response.data?.success) {
+      const userId = response.data.data?.userId || response.data.data?.id;
       
       toast.add({
         severity: 'success',
         summary: 'Registro exitoso',
-        detail: response.data.message || 'Te enviaremos un correo para confirmar tu cuenta.',
-        life: 4000
+        detail: response.data.message || 'Te hemos enviado un correo y un mensaje de WhatsApp para verificar tu cuenta.',
+        life: 5000
       });
 
-      // Enviar mensaje de WhatsApp (sin bloquear la navegación)
-      enviarMensajeWhatsApp(numeroTelefono.value, nombreCompleto, userId);
-
-      // redirigir solo en éxito
+      // Redirigir a la página de verificación
       router.push({
         path: '/verificar-cuenta',
         query: {
           email: payload.email,
-          userId: userId
+          userId: userId,
+          phone: payload.telephone
         }
       });
 
     } else {
-      // si vino un 200 raro sin éxito
       toast.add({
         severity: 'warn',
         summary: 'Registro no completado',
@@ -251,6 +223,7 @@ const handleRegister = async () => {
       });
     }
   } catch (error) {
+    console.error('Error en registro:', error);
     const msg = error?.response?.data?.message || 'Ocurrió un error al registrarte.';
     toast.add({
       severity: 'error',
@@ -407,38 +380,31 @@ const contactarEspecialista = () => {
                 :class="getFieldClass('password')" class="compact-password" />
 
               <!-- Validaciones de contraseña -->
-              <div class="text-gray-500 space-y-1 mt-1">
-                <!-- Al menos una mayúscula -->
-                <span class="flex items-center gap-1">
-                  <i class="pi pi-check-circle text-lg"
+              <div class="text-xs text-gray-500 space-y-1 mt-2">
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-check-circle"
                     :class="passwordValidations.hasUpperCase ? 'text-green-500' : 'text-red-500'">
                   </i>
-                  al menos una mayúscula
-                </span>
-
-                <!-- Al menos un número -->
-                <span class="flex items-center gap-1">
-                  <i class="pi pi-check-circle text-lg"
+                  <span>al menos una mayúscula</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-check-circle"
                     :class="passwordValidations.hasNumber ? 'text-green-500' : 'text-red-500'">
                   </i>
-                  al menos un número
-                </span>
-
-                <!-- Mínimo 8 caracteres -->
-                <span class="flex items-center gap-1">
-                  <i class="pi pi-check-circle text-lg"
+                  <span>al menos un número</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-check-circle"
                     :class="passwordValidations.hasMinLength ? 'text-green-500' : 'text-red-500'">
                   </i>
-                  mínimo de 8 caracteres
-                </span>
-
-                <!-- Al menos un carácter especial -->
-                <span class="flex items-center gap-1">
-                  <i class="pi pi-check-circle text-lg"
+                  <span>mínimo de 8 caracteres</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-check-circle"
                     :class="passwordValidations.hasSpecialChar ? 'text-green-500' : 'text-red-500'">
                   </i>
-                  al menos un carácter especial
-                </span>
+                  <span>al menos un carácter especial</span>
+                </div>
               </div>
             </div>
 
