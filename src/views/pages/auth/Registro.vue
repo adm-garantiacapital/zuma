@@ -11,7 +11,6 @@ const router = useRouter();
 const toast = useToast();
 const nombre = ref('');
 const nacionalidad = ref('');
-
 const document = ref('');
 const apellidoMaterno = ref('');
 const apellidoPaterno = ref('');
@@ -30,25 +29,23 @@ const documentTypes = ref([
 ]);
 
 const ingredient = ref('inversionista');
-
 const showEmpresaDialog = ref(false);
 
 // Para manejar habilitación de campos
-const isDni = computed(() => documentType.value === 1)          // 1 → DNI
-const isCarnet = computed(() => documentType.value === 3)       // 2 → Carnet de extranjería
+const isDni = computed(() => documentType.value === 1);
+const isCarnet = computed(() => documentType.value === 3);
 
 // Cuando cambia el tipo de documento
 watch(documentType, (newVal) => {
-  // Limpia documento y datos de persona
-  document.value = ''
-  nombre.value = ''
-  apellidoPaterno.value = ''
-  apellidoMaterno.value = ''
-})
+  document.value = '';
+  nombre.value = '';
+  apellidoPaterno.value = '';
+  apellidoMaterno.value = '';
+});
 
 onMounted(async () => {
   try {
-    const baseUrl = import.meta.env.VITE_API_ADMIN1; // 👈 toma la URL desde .env
+    const baseUrl = import.meta.env.VITE_API_ADMIN1;
     const response = await fetch(`${baseUrl}/tipo-documentos`);
 
     if (!response.ok) throw new Error(`Error ${response.status} al obtener tipos de documento`);
@@ -57,10 +54,6 @@ onMounted(async () => {
     console.log('Tipos de documento cargados:', data);
 
     documentTypes.value = data;
-    // .map(item => ({
-    //   id_tipo_documento: item.id_tipo_documento,
-    //   nombre_tipo_documento: item.nombre_tipo_documento
-    // }));
 
   } catch (error) {
     console.error('Fetch error:', error);
@@ -104,7 +97,6 @@ watch(document, async (newVal) => {
   }
 });
 
-
 const passwordValidations = computed(() => {
   const pwd = password.value;
   return {
@@ -126,17 +118,24 @@ const passwordsMatch = computed(() => {
 });
 
 const isFormValid = computed(() => {
-  return document.value && apellidoMaterno.value && apellidoPaterno.value &&
+  const baseValidation = document.value && apellidoMaterno.value && apellidoPaterno.value &&
     alias.value && correoElectronico.value && isPasswordValid.value &&
     passwordsMatch.value && numeroTelefono.value && checked.value &&
-    documentType.value;
+    documentType.value && nombre.value;
+
+  // Si es carnet de extranjería, también validar nacionalidad
+  if (isCarnet.value) {
+    return baseValidation && nacionalidad.value.trim() !== '';
+  }
+
+  return baseValidation;
 });
 
 const fieldValidations = computed(() => {
   return {
-    document: document.value.trim() !== '',  // ya no se valida la longitud
+    document: document.value.trim() !== '',
     nombre: nombre.value.trim() !== '',
-    nacionalidad: nacionalidad.value.trim() !== '',
+    nacionalidad: isCarnet.value ? nacionalidad.value.trim() !== '' : true,
     apellidoPaterno: apellidoPaterno.value.trim() !== '',
     apellidoMaterno: apellidoMaterno.value.trim() !== '',
     alias: alias.value.trim() !== '',
@@ -148,7 +147,6 @@ const fieldValidations = computed(() => {
     documentType: documentType.value !== null
   };
 });
-
 
 const getFieldClass = (fieldName) => {
   if (!showErrors.value) return '';
@@ -184,7 +182,7 @@ const handleRegister = async () => {
       name: nombre.value,
       first_last_name: apellidoPaterno.value,
       second_last_name: apellidoMaterno.value,
-      nacionalidad: nacionalidad.value,
+      nacionalidad: nacionalidad.value || null,
       alias: alias.value,
       tipo_documento_id: documentType.value,
       document: document.value,
@@ -195,26 +193,28 @@ const handleRegister = async () => {
 
     const response = await admin2AuthService.register(payload);
 
-    // si la API respondió éxito (status 201 o status success)
-    if (response.status === 201 || response.data?.status === 'success') {
+    // Si la API respondió éxito (status 201 o success)
+    if (response.status === 201 || response.data?.success) {
+      const userId = response.data.data?.userId || response.data.data?.id;
+      
       toast.add({
         severity: 'success',
         summary: 'Registro exitoso',
-        detail: response.data.message || 'Te enviaremos un correo para confirmar tu cuenta.',
-        life: 4000
+        detail: response.data.message || 'Te hemos enviado un correo y un mensaje de WhatsApp para verificar tu cuenta.',
+        life: 5000
       });
 
-      // redirigir solo en éxito
+      // Redirigir a la página de verificación
       router.push({
         path: '/verificar-cuenta',
         query: {
           email: payload.email,
-          userId: response.data.data.userId
+          userId: userId,
+          phone: payload.telephone
         }
       });
 
     } else {
-      // si vino un 200 raro sin éxito
       toast.add({
         severity: 'warn',
         summary: 'Registro no completado',
@@ -223,6 +223,7 @@ const handleRegister = async () => {
       });
     }
   } catch (error) {
+    console.error('Error en registro:', error);
     const msg = error?.response?.data?.message || 'Ocurrió un error al registrarte.';
     toast.add({
       severity: 'error',
@@ -380,38 +381,31 @@ const contactarEspecialista = () => {
                 :class="getFieldClass('password')" class="compact-password" />
 
               <!-- Validaciones de contraseña -->
-              <div class="text-gray-500 space-y-1 mt-1">
-                <!-- Al menos una mayúscula -->
-                <span class="flex items-center gap-1">
-                  <i class="pi pi-check-circle text-lg"
+              <div class="text-xs text-gray-500 space-y-1 mt-2">
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-check-circle"
                     :class="passwordValidations.hasUpperCase ? 'text-green-500' : 'text-red-500'">
                   </i>
-                  al menos una mayúscula
-                </span>
-
-                <!-- Al menos un número -->
-                <span class="flex items-center gap-1">
-                  <i class="pi pi-check-circle text-lg"
+                  <span>al menos una mayúscula</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-check-circle"
                     :class="passwordValidations.hasNumber ? 'text-green-500' : 'text-red-500'">
                   </i>
-                  al menos un número
-                </span>
-
-                <!-- Mínimo 8 caracteres -->
-                <span class="flex items-center gap-1">
-                  <i class="pi pi-check-circle text-lg"
+                  <span>al menos un número</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-check-circle"
                     :class="passwordValidations.hasMinLength ? 'text-green-500' : 'text-red-500'">
                   </i>
-                  mínimo de 8 caracteres
-                </span>
-
-                <!-- Al menos un carácter especial -->
-                <span class="flex items-center gap-1">
-                  <i class="pi pi-check-circle text-lg"
+                  <span>mínimo de 8 caracteres</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-check-circle"
                     :class="passwordValidations.hasSpecialChar ? 'text-green-500' : 'text-red-500'">
                   </i>
-                  al menos un carácter especial
-                </span>
+                  <span>al menos un carácter especial</span>
+                </div>
               </div>
             </div>
 

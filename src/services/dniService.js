@@ -1,6 +1,4 @@
-    // services/dniService.js
-    import { apiAdmin1 } from './api.js';
-
+import { apiAdmin1 } from './api.js';
     export const dniService = {
     consultarDni(dni) {
         if (!dni || !/^\d{8}$/.test(dni)) {
@@ -8,4 +6,4 @@
         }
         return apiAdmin1.get(`/consultar-dni/${dni}`);
     }
-    };
+};
