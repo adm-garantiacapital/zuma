@@ -261,7 +261,7 @@ const submitContactForm = async () => {
     };
 
     // Usar el servicio contactRequestService
-    const response = await contactRequestService.submitInternalRequest(payload);
+    const response = await contactRequestService.submitContactRequest(payload);
 
     // Mostrar toast de éxito
     toast.add({
