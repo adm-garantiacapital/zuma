@@ -67,7 +67,7 @@ function candidates(p) {
     if (key) list.push(`${window.location.origin.replace(/\/$/, '')}/s3/images/${key}`)
 
     // 5) Placeholder
-    list.push('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop&crop=center')
+    list.push('')
     return list
 }
 

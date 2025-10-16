@@ -42,8 +42,7 @@
             class="shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
             <template #header>
               <div class="relative overflow-hidden">
-                <img :src="getImageUrl(post)" alt="Imagen del artículo" class="w-full h-64 object-cover"
-                  @error="onImgError($event, post)" />
+                <img :src="normalizeUrl(post?.imagen_url)" alt="Imagen del artículo" class="w-full h-64 object-cover" />
 
                 <div class="absolute top-4 left-4">
                   <Tag :value="productLabel(post)" severity="success" class="font-semibold" />
@@ -176,6 +175,12 @@ const productMap = reactive({})
 const currentPage = ref(1)
 const perPage = ref(12)
 const meta = reactive({ current_page: 1, last_page: 1, total: 0 })
+
+
+function normalizeUrl(u = '') {
+  // turn "http:\/\/127.0.0.1:8000\/s3\/images\/foo.png" into "http://127.0.0.1:8000/s3/images/foo.png"
+  return String(u).replace(/\\\//g, '/').replace(/\\:/g, ':');
+}
 
 
 
@@ -326,38 +331,13 @@ function readArticle(id) {
   router.push({ name: 'blog-detail', params: { id: String(id) } })
 }
 
-// ---- Imagen con fallback
-const imgTry = reactive({})
-
-function imageCandidates(post) {
-  const fname = post?.imagen
-  const list = []
-
-  // Backend now sends the canonical proxy URL already (http://127.0.0.1:8000/s3/images/<file>)
-  if (post?.imagen_url) list.push(post.imagen_url)
-
-  // Fallback to the same proxy route if imagen_url wasn’t included
-  if (fname) list.push(`${ORIGIN}/s3/images/${fname}`)
-
-  // Last-resort placeholder
-  list.push('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&h=300&fit=crop&crop=center')
-  return list
-}
 
 
-function getImageUrl(post) {
-  const id = post?.id ?? 'tmp'
-  if (imgTry[id] == null) imgTry[id] = 0
-  const list = imageCandidates(post)
-  return list[Math.min(imgTry[id], list.length - 1)]
-}
 
-function onImgError(e, post) {
-  const id = post?.id ?? 'tmp'
-  const list = imageCandidates(post)
-  imgTry[id] = (imgTry[id] ?? 0) + 1
-  if (imgTry[id] < list.length) e.target.src = list[imgTry[id]]
-}
+
+
+
+
 
 function formatDate(date) {
   if (!date) return ''

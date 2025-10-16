@@ -167,8 +167,8 @@ const route = useRoute()
 
 // URL helpers
 const origin = computed(() => (apiUrl || '').replace(/\/(api|admin\/api)\/?$/, ''))
-const UNSPLASH = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1600&h=900&fit=crop&crop=center'
-const storageBase = computed(() => `${origin.value}/s3/images`)
+const UNSPLASH = ''
+const storageBase = computed(() => `${origin.value}/s3/public/images`)
 
 function buildCandidates(name) {
     if (!name) return [UNSPLASH]
