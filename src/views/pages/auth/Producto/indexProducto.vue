@@ -76,7 +76,7 @@
     <h1 class="text-[#171717] block m-0 text-center relative -top-3">Facturas</h1>
     <div class="text-center">
       <div class="bg-[#edeae4] rounded-[50px] px-3 inline-block">
-        <h5 class="text-[#FF4929] block m-0 text-center font-bold">Invierte desde $25</h5>
+        <h5 class="text-[#FF4929] block m-0 text-center font-bold">Invierte desde $25 o S/. 100</h5>
       </div>
     </div>
     <p class="text-[#171717] mt-10 px-10 text-justify">¡Bienvenido al mundo del factoring! Esta alternativa de inversión
@@ -89,7 +89,7 @@
       y prestigiosas de tu país. Invierte desde $25. Easy.
     </p>
     <div class="flex justify-end gap-2">
-      <Button label="Quiero saber más" severity="warn" rounded @click="() => registrarYRedirigir(1, 'https://zuma.com.pe/factoring')"
+      <Button label="Quiero Invertir" severity="warn" rounded @click="() => registrarYRedirigir(1, 'https://zuma.com.pe/factoring/registrarme')"
         class="!text-lg !px-10 !py-2 !my-6 !border-none !mx-auto !bg-[#FF4929] !text-white hover:!bg-[#6790FF] transition-all duration-300" />
     </div>
   </Dialog>
