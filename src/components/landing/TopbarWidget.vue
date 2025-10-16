@@ -39,9 +39,17 @@ import { RouterLink } from 'vue-router';
           <li>
             <RouterLink to="/productos"
               class="text-[#171717] font-semibold text-lg hover:text-[#ffffff] transition duration-300">
-              Productos
+              Inversiones
             </RouterLink>
           </li>
+          <!--
+          <li>
+            <RouterLink to="/inversiones"
+              class="text-[#171717] font-semibold text-lg hover:text-[#ffffff] transition duration-300">
+              Inversiones
+            </RouterLink>
+          </li>
+          -->
           <li>
             <RouterLink to="/prestamos"
               class="text-[#171717] font-semibold text-lg hover:text-[#ffffff] transition duration-300">

@@ -12,7 +12,7 @@
           </h1>
           <ul class="mt-10 space-y-3 text-xl text-[#171717]">
             <li class="flex items-center gap-3 font-medium pe-20">
-              <span>La única plataforma de <b>crowdfactoring</b> que invierte junto a ti en todas las operaciones</span>
+              <span>La única plataforma que invierte <b> junto a ti</b> en todas las operaciones de factoring</span>
             </li>
           </ul>
         </div>
@@ -67,7 +67,7 @@
           </div>
         </a>
 
-        <!-- Botón 3 -->
+        <!-- 
         <a @click="() => registrarYRedirigir(3, 'https://zuma.com.pe/tasas-fijas')" rel="noopener noreferrer">
           <div
             class="w-96 h-28 bg-white hover:bg-[#6790FF] hover:text-white transition-all duration-300 rounded-full flex items-center gap-6 shadow-md cursor-pointer px-8 hover:scale-110 group">
@@ -83,6 +83,7 @@
             </span>
           </div>
         </a>
+        Botón 3 -->
       </div>
     </div>
   </div>

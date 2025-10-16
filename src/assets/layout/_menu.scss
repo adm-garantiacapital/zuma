@@ -2,7 +2,7 @@
 
 .layout-sidebar {
     position: absolute;
-    width: 20rem;
+    width: 18.216rem;
     z-index: 999;
     overflow-y: auto;
     user-select: none;
@@ -10,7 +10,7 @@
         transform var(--layout-section-transition-duration),
         left var(--layout-section-transition-duration);
     background-color: var(--surface-overlay);
-    padding: 0.5rem 1.5rem;
+    padding: 0.5rem 0rem;
 }
 
 .layout-menu {

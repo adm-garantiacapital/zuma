@@ -6,5 +6,10 @@ export const contactRequestService = {
   },
   submitInternalRequest(payload) {
     return apiAdmin1.post('/contact-request/internal', payload);
+  },
+  
+  submitContactNewsLetter(payload){
+    return apiAdmin1.post('/contact-request/newsletter', payload);
   }
+
 };

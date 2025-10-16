@@ -114,10 +114,10 @@
             Explora nuestros productos
           </h2>
 
-          <div class="grid md:grid-cols-3 lg:grid-cols-3 gap-4 text-center justify-center">
+          <div class="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto mt-12 w-full">
             <Button v-for="p in products" :key="p.id" :label="p.nombre || p.name || `Producto ${p.id}`"
-              :icon="p.icon || 'pi pi-briefcase'" class="p-3 text-center hover:scale-105 transition-transform"
-              :class="p.class || '!bg-[#6790FF] !border-none text-white hover:opacity-90'"
+              :icon="p.icon || 'pi pi-briefcase'" class="w-full md:w-1/3 sm:w-1/2 p-3 text-center hover:scale-105 transition-transform"
+              :class="p.class || '!bg-[#6790FF] !border-none text-white hover:opacity-90 w-full md:w-1/3 sm:w-[40%]'"
               @click="$router?.push?.('/login') ?? (window.location.href = '/login')" />
           </div>
         </div>

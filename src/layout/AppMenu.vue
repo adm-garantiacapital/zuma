@@ -61,7 +61,7 @@ const hipotecasMenu = [
         ]
     },
     {
-        items: [{ label: 'Buscar hipotecas', icon: 'buscar', to: '/hipotecas/buscar' }]
+        items: [{ label: 'Buscar solicitud', icon: 'buscar', to: '/hipotecas/buscar' }]
     },
     {
         items: [{ label: 'Subastas en línea', icon: 'datos', to: '/hipotecas/subasta' }]
@@ -116,9 +116,9 @@ const model = computed(() => {
 
 <template>
     <ul class="layout-menu">
-        <div class="layout-topbar-logo-container pt-5 flex items-center justify-between px-4">
+        <div class="layout-topbar-logo-container pt-1 flex items-center justify-between px-2">
             <router-link to="/" class="layout-topbar-logo flex items-center gap-3">
-                <div class="flex items-center justify-center rounded-lg bg-white text-sidebar-primary-foreground">
+                <div class="p-2 flex items-center justify-center rounded-lg bg-white text-sidebar-primary-foreground">
                     <img id="zuma" src="/imagenes/landing/logo-zuma.svg" alt="Logo Zuma"
                         :class="{ 'hidden': isSidebarCollapsed, 'block': !isSidebarCollapsed, 'h-auto w-auto max-w-[140px] object-contain duration-200': true }" />
                     <img id="zuma-m" src="/imagenes/landing/logo-zuma-m.svg" alt="Logo Zuma"
@@ -131,7 +131,7 @@ const model = computed(() => {
                 font-medium ring-offset-background transition-colors focus-visible:outline-none 
                 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none 
                 disabled:opacity-50 underline-offset-4 hover:underline rounded-full h-10 w-10 text-tertiary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 26 22" fill="none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="22" viewBox="0 0 26 22" fill="none">
                     <rect x="1.5" y="1.5" width="22.7" height="19.2" rx="5.3" stroke="#171717" stroke-width="2" />
                     <line x1="11.1" y1="20.5" x2="11.1" y2="1.3" stroke="#171717" stroke-width="2" />
                     <path d="M5.4 6.8H7.8" stroke="#171717" stroke-width="2" stroke-linecap="round" />
@@ -142,7 +142,8 @@ const model = computed(() => {
 
         <!-- Avatar y nombre -->
         <div class="py-5 text-center my-5 px-4 relative" :class="{ 'px-2': isSidebarCollapsed }">
-            <div class="avatar-zuma w-[104px] h-[116px] bg-[#E920AE] relative mx-auto rounded-2xl duration-200 overflow-hidden flex items-center justify-center text-white text-2xl"
+            <div class="avatar-zuma w-[112px] h-[112px] bg-[#E920AE] relative mx-auto rounded-3xl duration-200 overflow-hidden flex 
+            items-center justify-center text-white text-2xl"
                 :class="{ 'w-16 h-16': isSidebarCollapsed }">
                 <img v-if="profilePhoto" :src="profilePhoto" alt="Avatar" class="w-full h-full object-cover" />
                 <span v-else class="text-5xl rounded-3xl duration-200" :class="{ 'text-3xl': isSidebarCollapsed }">{{
@@ -150,16 +151,19 @@ const model = computed(() => {
             </div>
 
             <!-- Nombre -->
-            <h5 class="name-zuma text-center mt-2 mb-3 text-black text-xl" :class="{ 'hidden': isSidebarCollapsed }">
-                {{ fullName }}
+            <h5 class="name-zuma text-center mt-4 mb-3 text-black text-xl" :class="{ 'hidden': isSidebarCollapsed }">
+                Bienvenido, {{ fullName }}
             </h5>
 
             <!-- Código de usuario con mejor estética -->
             <div class="user-code-container mx-auto"
-                :class="{ 'max-w-[200px]': !isSidebarCollapsed, 'hidden': isSidebarCollapsed }">
-                <div class="relative">
-                    <div
-                        class="bg-gradient-to-r from-[#6790FF] to-[#FF4929] rounded-xl p-3 shadow-lg flex flex-col items-center gap-1">
+                :class="{ 'max-w-[200px]': !isSidebarCollapsed, 'hidden': isSidebarCollapsed }">                
+                <div
+                    class="bg-gradient-to-r from-[#6790FF] to-[#FF4929] rounded-xl w-fit  mt-3 shadow-lg flex flex-col items-center gap-1 mx-auto px-4 pt-2 pb-4"
+                    
+                    >
+
+                    <div class="flex gap-3 items-center ">
                         <span class="text-white font-mono font-bold text-sm tracking-wider">
                             {{ fullDoce }}
                         </span>
@@ -168,35 +172,39 @@ const model = computed(() => {
                             title="Copiar código">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="text-white group-hover:scale-110 transition-transform">
+                                stroke-linejoin="round"
+                                class="text-white group-hover:scale-110 transition-transform">
                                 <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
                                 <path d="m4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
                             </svg>
                         </button>
-                        <span class="text-white/80 text-xs font-bold">Gana más, REFIRIENDO.</span>
                     </div>
+                    <span class="text-white/80 text-xs font-bold">Gana más, REFIRIENDO.</span>
+                </div>
 
-                    <!-- Tooltip -->
-                    <div v-if="showCopyTooltip"
-                        class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs py-1 px-2 rounded shadow-lg animate-fade-in">
-                        ¡Copiado!
-                        <div
-                            class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-800">
-                        </div>
+                <!-- Tooltip -->
+                <div v-if="showCopyTooltip"
+                    class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs py-1 px-2 rounded shadow-lg animate-fade-in">
+                    ¡Copiado!
+                    <div
+                        class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-800">
                     </div>
                 </div>
+                
             </div>
         </div>
-
-        <!-- Menú dinámico -->
-        <template v-for="(item, i) in model" :key="item">
-            <app-menu-item v-if="!item.separator" :item="item" :index="i"
-                :collapsed="isSidebarCollapsed"></app-menu-item>
-        </template>
+        <div class="px-2">
+            <!-- Menú dinámico -->
+            <template v-for="(item, i) in model" :key="item">
+                <app-menu-item v-if="!item.separator" :item="item" :index="i"
+                    :collapsed="isSidebarCollapsed"></app-menu-item>
+            </template>
+        </div>
+            
 
         <!-- Sección final -->
-        <div class="announce-zuma px-4" :class="{ 'px-2': isSidebarCollapsed }">
-            <div class="mt-20 p-5 rounded-3xl bg-[#FF4929] text-center" :class="{ 'hidden': isSidebarCollapsed }">
+        <div class="announce-zuma p-3" :class="{ 'px-2': isSidebarCollapsed }">
+            <div class="mt-20 p-5 rounded-3xl bg-[#F0F1F9] text-center" :class="{ 'hidden': isSidebarCollapsed }">
                 <img src="/imagenes/landing/logo-zuma.svg" alt="Logo Zuma" class="inline-block w-14" />
                 <h3 class="text-center my-3 text-[#171717] font-noto">¿Tienes alguna duda?</h3>
                 <p class="text-[#171717] mb-3">Tenemos especialistas que te podrán ayudar.</p>
