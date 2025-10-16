@@ -29,15 +29,18 @@
               <span><strong>Dinero en 7 días</strong> luego de presentar los documentos</span>
             </li>
           </ul>
-
           <div class="mt-8 flex gap-4">
-            <button class="bg-[#FF4929] text-white font-medium px-6 py-3 rounded-full hover:bg-[#e64022]">
+            <a 
+              href="https://wa.me/51932575779?text=Hola,%20me%20interesa%20obtener%20información%20sobre%20préstamos%20con%20garantía%20hipotecaria" 
+              target="_blank"
+              rel="noopener noreferrer"
+              class="bg-[#FF4929] text-white font-medium px-6 py-3 rounded-full hover:bg-[#e64022] inline-block transition-colors duration-300">
               Solicita información
-            </button>
-            <button class="bg-white text-[#FF4929] font-bold px-6 py-3 rounded-full hover:bg-[#fff5f3]">
+            </a>
+<!---            <button class="bg-white text-[#FF4929] font-bold px-6 py-3 rounded-full hover:bg-[#fff5f3]">
               Simulador de cuotas
             </button>
-
+          -->
           </div>
         </div>
 
