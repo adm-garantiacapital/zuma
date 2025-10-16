@@ -51,7 +51,7 @@
           </div>
 
           <div class="absolute -bottom-4 left-0 right-0 z-50 flex justify-center">
-            <Button label="Gloria a ti señor" severity="warn" rounded @click="depositos = true"
+            <Button label="Quiero saber más" severity="warn" rounded @click="depositos = true"
               class="!text-lg !px-8 !py-2 !border-none !mx-auto !bg-[#6790FF] !text-white hover:!bg-[#FF4929] transition-all duration-300" />
           </div>
         </div>
@@ -62,25 +62,25 @@
     <div class="grid grid-cols-12 gap-0 max-w-6xl mx-auto mt-16">
       <div class="col-span-12 md:col-span-12 px-5 mb-20">
         <div class="bg-white rounded-[50px] relative text-center pt-10">
-
-          <img src="/imagenes/landing/advertencia.svg" alt="Imagen principal" class="h-[100px] w-full mb-2 px-14" />
           <h3 class="font-medium text-2xl mt-0 text-[#171717] leading-none"><b class="text-3xl">Advertencia</b><br>de
             riesgo
           </h3>
-          <div class="bg-[#edeae4] rounded-[50px] text-center mt-8 mx-20 p-5">
+          <div class="bg-[#edeae4] rounded-[50px] text-center mt-8 mx-20 p-5 flex justify-center">
+            <img src="/imagenes/landing/advertencia.svg" alt="Imagen principal" class="h-[50px] w-[50px]" />
             <h4 class="m-0 text-xl font-noto leading-none text-[#171717]"><span class="text-sm">Como diría la
                 abuela:</span><br> "Nunca pongas todos los huevos en una misma canasta."
             </h4>
           </div>
-          <p class="mt-8 px-10 max-w-4xl mx-auto text-[#171717] text-justify">Toda oportunidad de inversión presenta un
-            riesgo.
-            Existe la posibilidad que el retorno ofrecido por la oportunidad de inversión, no se cumpla. Inclusive, como
-            casi todas las inversiones, es posible, que pierdas el íntegro de tu capital. Por ello, recomendamos que
-            diversifiques tus inversiones.</p>
+          <p class="mt-8 px-10 max-w-4xl mx-auto text-[#171717] text-justify">
+            Toda oportunidad de inversión presenta un riesgo. Existe la posibilidad que el retorno ofrecido por la oportunidad de inversión, 
+            no se cumpla como uno espera. 
+            Por ello, recomendamos que diversifiques tus inversiones. Para mayor información, comunícate con nuestros asesores.
+          </p>
           <p class="mt-8 mb-0 px-10 max-w-4xl mx-auto text-[#171717] text-lg font-medium">Conoce qué tipo de
             inversionista eres</p>
-          <Button label="Accede al Quiz – Perfil de Riesgo" severity="warn" rounded
-            class="!text-lg !px-8 !py-2 !relative !border-none !-bottom-6 !mx-auto !bg-[#6790FF] !text-white hover:!bg-[#6790FF] transition-all duration-300" />
+          <Button label="Accede al Quiz - Perfil de Riesgo" severity="warn" rounded href="https://tally.so/r/wMoaR8"
+            class="!text-lg !px-8 !py-2 !relative !border-none !-bottom-6 !mx-auto !bg-[#6790FF] !text-white hover:!bg-[#6790FF] 
+            transition-all duration-300" />
         </div>
       </div>
     </div>
@@ -166,7 +166,7 @@
       que pase, tu capital está garantizado.
     </p>
     <div class="flex justify-end gap-2">
-      <Button label="Gloria a ti señor" severity="warn" rounded @click="registrarYRedirigir(3, '/tasas-fijas')"
+      <Button label="Quiero saber más " severity="warn" rounded @click="registrarYRedirigir(3, '/tasas-fijas')"
         class="!text-lg !px-10 !py-2 !my-6 !border-none !mx-auto !bg-[#FF4929] !text-white hover:!bg-[#6790FF] transition-all duration-300" />
     </div>
   </Dialog>

@@ -6,11 +6,11 @@
       <div class="max-w-7xl mx-auto lg:px-20 grid grid-cols-12 gap-0">
         <div class="col-span-8 bg-cover bg-center p-10 md:p-20 flex flex-col items-star justify-center text-left">
           <h3
-            class="m-0 font-normal font-noto text-black text-[1rem] sm:text-[1.2rem] md:text-[1.4rem] lg:text-[1.6rem]">
+            class="m-0 font-normal  text-black text-[1rem] sm:text-[1.2rem] md:text-[1.4rem] lg:text-[1.6rem]">
             Préstamo con garantía hipotecaria
           </h3>
           <h1
-            class="m-0 font-normal font-noto text-black text-[1.4rem] sm:text-[1.8rem] md:text-[2.4rem] lg:text-[2.7rem]">
+            class="m-0 font-normal  text-black text-[1.4rem] sm:text-[1.8rem] md:text-[2.4rem] lg:text-[2.7rem] font-noto">
             Transforma tu patrimonio
             <b>en efectivo con una </b><b class="text-[#FF4929]">súper</b>
             <b> tasa y plazos</b><b class="text-[#FF4929]"> flexibles</b>
@@ -55,7 +55,7 @@
         <div class="bg-gray-50 py-12">
           <!-- Título -->
           <div class="text-center mb-10">
-            <h2 class="text-3xl md:text-4xl font-noto font-bold text-black">
+            <h2 class="text-3xl md:text-4xl  font-bold text-black">
               Conoce los beneficios
             </h2>
           </div>
@@ -97,10 +97,10 @@
             <div class="flex items-center gap-5">
               <img src="/imagenes/landing/06.svg" alt="Dinero inmueble" class="w-20 h-20 flex-shrink-0" />
               <div class="space-y-1">
-                <h3 class="font-noto font-semibold text-lg text-black leading-snug">
+                <h3 class=" font-semibold text-lg text-black leading-snug">
                   Más dinero por tu inmueble
                 </h3>
-                <p class="font-noto text-sm text-gray-700 leading-snug">
+                <p class=" text-sm text-gray-700 leading-snug">
                   Te prestamos hasta el 50% del valor de realización del inmueble. Accede a una mayor cantidad de dinero
                   en comparación con otros tipos de préstamos.
                 </p>
@@ -110,10 +110,10 @@
             <div class="flex items-center gap-5">
               <img src="/imagenes/landing/05.svg" alt="Bono buen pagador" class="w-20 h-20 flex-shrink-0" />
               <div class="space-y-1">
-                <h3 class="font-noto font-semibold text-lg text-black leading-snug">
+                <h3 class=" font-semibold text-lg text-black leading-snug">
                   Bono de buen pagador
                 </h3>
-                <p class="font-noto text-sm text-gray-700 leading-snug">
+                <p class=" text-sm text-gray-700 leading-snug">
                   Premiamos a los buenos pagadores con una reducción de la tasa de interés cuando mantienen un historial
                   de pagos puntual con nosotros.
                 </p>
@@ -123,10 +123,10 @@
             <div class="flex items-center gap-5">
               <img src="/imagenes/landing/08.svg" alt="Dinero rápido" class="w-20 h-20 flex-shrink-0" />
               <div class="space-y-1">
-                <h3 class="font-noto font-semibold text-lg text-black leading-snug">
+                <h3 class=" font-semibold text-lg text-black leading-snug">
                   Dinero rápido
                 </h3>
-                <p class="font-noto text-sm text-gray-700 leading-snug">
+                <p class=" text-sm text-gray-700 leading-snug">
                   Obtén tu dinero más rápido que en otras instituciones financieras. Te pre aprobamos en menos de 24
                   horas y desembolsamos tu dinero en 7 días (desde la recepción de los documentos solicitados).
                 </p>
@@ -136,10 +136,10 @@
             <div class="flex items-center gap-5">
               <img src="/imagenes/landing/07.svg" alt="Precancela" class="w-20 h-20 flex-shrink-0" />
               <div class="space-y-1">
-                <h3 class="font-noto font-semibold text-lg text-black leading-snug">
+                <h3 class=" font-semibold text-lg text-black leading-snug">
                   Precancela desde el primer día
                 </h3>
-                <p class="font-noto text-sm text-gray-700 leading-snug">
+                <p class=" text-sm text-gray-700 leading-snug">
                   Liquida tu crédito desde el primer día sin penalidades ni costos adicionales, o realiza pagos
                   parciales de tu préstamo en cualquier momento.
                 </p>
@@ -149,7 +149,7 @@
         </div>
         <!-- Bloque rojo -->
         <div
-          class="bg-[#FF4929] text-black rounded-t-full py-5 px-6 mt-0 text-center max-w-2xl mx-auto font-noto flex items-center justify-center gap-6">
+          class="bg-[#FF4929] text-black rounded-t-full py-5 px-6 mt-0 text-center max-w-2xl mx-auto  flex items-center justify-center gap-6">
           <!-- Imagen SVG -->
           <div class="flex-shrink-0">
             <img src="/imagenes/landing/09.svg" alt="Icono" class="w-24 h-24" />
@@ -168,7 +168,7 @@
       <!-- PARTE III -->
       <div class="max-w-7xl mx-auto px-4 lg:px-20">
         <div class="p-8 rounded-lg font-sans text-black">
-          <h2 class="text-2xl md:text-3xl font-noto font-semibold text-black text-center mb-10">
+          <h2 class="text-2xl md:text-3xl  font-semibold text-black text-center mb-10">
             Pasos para obtener un préstamo<br>
             <span class="block">con garantía hipotecaria</span>
           </h2>
@@ -427,7 +427,7 @@
             </div>
             <div class="col-span-12 md:col-span-6 px-5 mb-10">
               <div class="py-[10rem]">
-                <h1 class="m-0 text-[#171717] font-normal text-center font-noto text-medium text-6xl">¿Requieres
+                <h1 class="m-0 text-[#171717] font-normal text-center  text-medium text-6xl">¿Requieres
                   asesoría?</h1>
                 <img src="/imagenes/landing/asesoria.svg" alt="Logo zuma" class="w-3/4 ps-4 mt-6 relative mx-auto" />
               </div>

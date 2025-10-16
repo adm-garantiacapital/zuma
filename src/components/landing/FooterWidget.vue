@@ -2,8 +2,9 @@
 
 <template>
     <footer class="bg-[#171717] text-white pt-10">
-        <div class="px-10 lg:px-20 grid grid-flow-col auto-cols-max gap-20 justify-center">
-            <div class="col-span-12 md:col-span-3 text-sm">
+        <div
+            class="px-10 lg:px-20 grid grid-cols-1 xs:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-10 justify-center">
+            <div class=" text-sm">
                 <div class="mb-6">
                     <h1>
                         <span class="relative">
@@ -35,7 +36,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-span-12 md:col-span-3 text-sm text-[#EDEAE4] py-4">
+            <div class=" text-sm text-[#EDEAE4] py-4">
                 <h4 class="font-bold text-white mb-2">Contacto</h4>
                 <div class="space-y-3 text-[#EDEAE4]">
                     <p class="flex items-center gap-3">
@@ -56,7 +57,7 @@
                     </p>
                 </div>
             </div>
-            <div class="col-span-12 md:col-span-3 text-sm text-[#EDEAE4] py-4">
+            <div class=" text-sm text-[#EDEAE4] py-4">
                 <h4 class="font-bold text-white mb-2">Invierte</h4>
                 <ul class="space-y-2 list-none">
                     <li class="cursor-pointer font-medium hover:text-[#FF4929]">Inversiones en facturas</li>
@@ -64,7 +65,7 @@
                     <li class="cursor-pointer font-medium hover:text-[#FF4929]">Inversiones en tasas fijas</li>
                 </ul>
             </div>
-            <div class="col-span-12 md:col-span-3 text-sm text-[#EDEAE4] py-4">
+            <div class=" text-sm text-[#EDEAE4] py-4">
                 <h4 class="font-bold text-white mb-2">Transparencia</h4>
                 <ul class="space-y-3 list-none">
                     <li class="cursor-pointer font-medium flex items-center space-x-2">
@@ -77,7 +78,7 @@
                     </li>
                 </ul>
                 <!-- Imagen debajo del texto, ajustada al ancho de la columna -->
-                <img src="/public/imagenes/landing/libro.svg" class="mt-4 w-full h-auto rounded">
+                <img src="/public/imagenes/landing/libro.jpg" class="mt-4 w-[50%] md:w-[50%] h-auto rounded lg:w-[30%]">
             </div>
 
         </div>

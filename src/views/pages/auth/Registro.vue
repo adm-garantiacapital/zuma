@@ -262,7 +262,7 @@ const contactarEspecialista = () => {
 
     <!-- Contenido centrado -->
     <div class="flex-1 flex flex-col items-center justify-center p-4 bg-white">
-
+    <!--
       <div class="w-full max-w-md flex justify-between items-center mb-4 py-2 px-6">
         <div class="flex items-center gap-2 hover:text-[#FF4929] transition-colors">
           <RadioButton v-model="ingredient" inputId="ingredient1" name="perfil" value="inversionista"
@@ -279,6 +279,7 @@ const contactarEspecialista = () => {
           </label>
         </div>
       </div>
+      -->
 
       <div class="w-full max-w-xl">
         <div class="border border-gray-200 p-10 rounded-3xl shadow-sm">
