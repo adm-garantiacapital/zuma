@@ -231,14 +231,12 @@ const isSubmittingN = ref(false);
 // Opciones para select
 const productOptions = ref([
   { name: 'Facturas', value: 'Facturas' },
-  { name: 'Préstamos con Garantía', value: 'Prestamos' },
-  { name: 'Depósito a plazo fijo', value: 'tasas' }
+  { name: 'Préstamos con Garantía', value: 'Prestamos' }
 ]);
 
 const productOptionsN = ref([
   { name: 'Facturas', value: 'Facturas' },
-  { name: 'Préstamos con Garantía', value: 'Prestamos' },
-  { name: 'Depósito a plazo fijo', value: 'tasas' }
+  { name: 'Préstamos con Garantía', value: 'Prestamos' }
 ]);
 
 
