@@ -3,7 +3,7 @@
 <template>
     <footer class="bg-[#171717] text-white pt-10">
         <div
-            class="px-10 lg:px-20 grid grid-cols-1 xs:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-10 justify-center">
+            class="px-10 lg:px-20 grid grid-cols-1 xs:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-2 lg:gap-10 justify-center">
             <div class=" text-sm">
                 <div class="mb-6">
                     <h1>
@@ -14,24 +14,25 @@
                     </h1>
                 </div>
                 <div class="flex space-x-3 text-xl mb-6">
-                    <div
-                        class="bg-white text-[#171717] hover:bg-[#6790FF] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
-                        <i class="pi pi-linkedin"></i>
+                    <div class="bg-white text-[#171717] hover:bg-[#6790FF] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
+                        <a href="https://www.linkedin.com/company/zuma-fintech/about/" target="_blank">
+                            <i class="pi pi-linkedin"></i>
+                        </a>                            
                     </div>
-                    <div
-                        class="bg-white text-[#171717] hover:bg-[#6790FF] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
+                    <div class="hidden bg-white text-[#171717] hover:bg-[#6790FF] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
                         <i class="pi pi-tiktok"></i>
                     </div>
-                    <div
-                        class="bg-white text-[#171717] hover:bg-[#6790FF] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
-                        <i class="pi pi-facebook"></i>
+                    <div class="bg-white text-[#171717] hover:bg-[#6790FF] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
+                        <a href="https://www.facebook.com/zuma.com.pe/" target="_blank">
+                            <i class="pi pi-facebook"></i>
+                        </a>                            
                     </div>
-                    <div
-                        class="bg-white text-[#171717] hover:bg-[#6790FF] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
-                        <i class="pi pi-instagram"></i>
+                    <div class="bg-white text-[#171717] hover:bg-[#6790FF] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
+                        <a href="https://www.instagram.com/zuma.com.pe?igsh=MWF4dHg4aG1hcW94YQ==" target="_blank">
+                            <i class="pi pi-instagram"></i>
+                        </a>                            
                     </div>
-                    <div
-                        class="bg-white text-[#171717] hover:bg-[#6790FF] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
+                    <div class="hidden bg-white text-[#171717] hover:bg-[#6790FF] hover:text-white transition rounded-full w-10 h-10 flex items-center justify-center cursor-pointer">
                         <i class="pi pi-whatsapp"></i>
                     </div>
                 </div>
@@ -41,15 +42,11 @@
                 <div class="space-y-3 text-[#EDEAE4]">
                     <p class="flex items-center gap-3">
                         <i class="pi pi-envelope text-white text-lg"></i>
-                        <strong>zuma@zuma.com.pe</strong>
-                    </p>
-                    <p class="flex items-center gap-3">
-                        <i class="pi pi-phone text-white text-lg"></i>
-                        <strong>+51 616 6610</strong>
-                    </p>
+                        <strong>info@zuma.com.pe</strong>
+                    </p>                    
                     <p class="flex items-center gap-3">
                         <i class="pi pi-whatsapp text-white text-lg"></i>
-                        <strong>+51 616 6610</strong>
+                        <strong>+51 986 351 267</strong>
                     </p>
                     <p class="flex items-start gap-3">
                         <i class="pi pi-map-marker text-white text-lg mt-1"></i>
@@ -66,19 +63,30 @@
                 </ul>
             </div>
             <div class=" text-sm text-[#EDEAE4] py-4">
+                <h4 class="font-bold text-white mb-2">Productos</h4>
+                <ul class="space-y-2 list-none">
+                    <li class="cursor-pointer font-medium hover:text-[#FF4929]">Préstamo con Garantia</li>
+                </ul>
+            </div>
+            <div class=" text-sm text-[#EDEAE4] py-4">
                 <h4 class="font-bold text-white mb-2">Transparencia</h4>
                 <ul class="space-y-3 list-none">
                     <li class="cursor-pointer font-medium flex items-center space-x-2">
-                        <i class="pi pi-exclamation-circle" style="font-size: 1.3rem; color: white;"></i>
+                        <i class="pi pi-exclamation-circle" style="font-size: 1.3rem; color: white;"></i>                        
                         <span>Canal de denuncias</span>
                     </li>
                     <li class="cursor-pointer font-medium flex items-center space-x-2">
                         <i class="pi pi-file" style="font-size: 1.3rem; color: white;"></i>
                         <span>Términos y condiciones</span>
                     </li>
+                    <li class="cursor-pointer font-medium flex items-center space-x-2">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLScWuuU-MkWD9j9Bcs0wshfJoE1JACfFDVNZJeAcOWPqwg13ng/viewform">
+                            <img src="/public/imagenes/landing/libro.jpg" class=" w-[15%] md:w-[15%] h-auto rounded lg:w-[15%]"></img>
+                            Libro de reclamaciones
+                        </a>
+                    </li>
                 </ul>
-                <!-- Imagen debajo del texto, ajustada al ancho de la columna -->
-                <img src="/public/imagenes/landing/libro.jpg" class="mt-4 w-[50%] md:w-[50%] h-auto rounded lg:w-[30%]">
+                <!-- Imagen debajo del texto, ajustada al ancho de la columna -->                
             </div>
 
         </div>

@@ -101,68 +101,92 @@
 
         <!-- Lado derecho: sección extra + newsletter -->
         <div class="col-span-12 md:col-span-6 px-5 mb-10 relative">
-          <div class="bg-white rounded-xl p-10">
+          <div class="bg-white rounded-xl p-5">
             <h3 class="font-medium text-xl text-center max-w-xl mx-auto m-0">Recibe atención personalizada</h3>
             <div class="bg-[#23c347] rounded-xl py-3 px-5 text-center mt-6 relative">
               <h4 class="m-0 text-white font-normal text-center text-medium text-2xl leading-none ps-16">
-                <i class="pi pi-whatsapp !text-5xl absolute left-16 top-3"></i>
-                Chatea con<br />nosotros
+                <a href="https://wa.me/51986351267">
+                  <i class="pi pi-whatsapp !text-5xl absolute left-16 top-3"></i>
+                  Chatea con<br />nosotros
+                </a>                
               </h4>
             </div>
           </div>
 
           <div class="p-2 text-center">
-            <img src="/imagenes/landing/ayuda.svg" alt="Ayuda" class="h-[100px] ps-4 mt-6 mx-auto" />
+            <img src="/imagenes/landing/ayuda.svg" alt="Ayuda" class="h-[85px] ps-4 mt-0 mx-auto" />
             <div class="relative inline-block">
-              <h4 class="m-0 ps-5 text-[#171717] font-normal text-center text-medium text-3xl relative top-8">
+              <h4 class="m-0 ps-5 text-[#171717] font-normal text-center text-medium text-3xl top-8">
                 Estamos aquí<br />para <b class="text-[#6790FF]">ayudarte.</b>
               </h4>
             </div>
           </div>
 
           <!-- Newsletter con Dropdown -->
-          <div class="bg-white rounded-xl p-10 mt-8">
-            <h3 class="font-medium text-xl text-center max-w-xl mx-auto m-0 leading-none">
-              ¡Sé el primero en enterarte de las subastas!
-            </h3>
-            <p class="font-normal text-sm text-center max-w-xl mx-auto m-0 leading-none pt-3">
-              Déjanos tu correo electrónico y recibe notificaciones sobre
-              <b>nuevas oportunidades de inversión</b>
-            </p>
+          <div class="bg-white rounded-xl p-5 mt-1">
+            <form @submit.prevent="submitFormN" class="bg-white rounded-xl p-1">
+                <h3 class="font-medium text-xl text-center max-w-xl mx-auto m-0 leading-none">
+                ¡Sé el primero en enterarte de las subastas!
+              </h3>
+              <p class="font-normal text-sm text-center max-w-xl mx-auto m-0 leading-none pt-3">
+                Déjanos tu correo electrónico y recibe notificaciones sobre
+                <b>nuevas oportunidades de inversión</b>
+              </p>
 
-            <div class="rounded-xl mb-5 mt-[15px]">
-              <Dropdown
-                v-model="newsletterProduct"
-                :options="productOptions"
-                optionLabel="name"
-                optionValue="value"
-                placeholder="Selecciona un producto"
-                class="w-full"
-                panelClass="!rounded-xl"
-                :pt="{
-                  root: {
-                    class: 'w-full h-full rounded-xl text-[#171717] bg-gray-100 border border-gray-300 focus:border-[#6790FF] focus:ring-2 focus:ring-[#6790FF]'
-                  },
-                  input: {
-                    class: 'py-3 px-5 rounded-xl text-[#171717] bg-transparent'
-                  },
-                  trigger: {
-                    class: 'px-5'
-                  }
-                }"
-              />
-            </div>
+              <div class="rounded-xl mb-5 mt-[15px]">
+                <Dropdown
+                  v-model="formNewsletter.interested_product"
+                  :options="productOptionsN"
+                  optionLabel="name"
+                  optionValue="value"
+                  placeholder="Selecciona un producto"
+                  class="w-full"
+                  panelClass="!rounded-xl"
+                  :pt="{
+                    root: {
+                      class: 'w-full h-full rounded-xl text-[#171717] bg-gray-100 border border-gray-300 focus:border-[#6790FF] focus:ring-2 focus:ring-[#6790FF]'
+                    },
+                    input: {
+                      class: 'py-3 px-5 rounded-xl text-[#171717] bg-transparent'
+                    },
+                    trigger: {
+                      class: 'px-5'
+                    }
+                  }"
+                />
+              </div>
+              <div class="rounded-xl mb-5 mt-[15px]">
+                <input v-model="formNewsletter.email" type="email" placeholder="tu@email.com"
+                  class="w-full h-full py-3 px-5 rounded-xl text-[#171717] bg-gray-100 border border-gray-300"
+                  :class="{ 'border-red-500': errors.email }" required />
+              </div>
 
-            <label class="inline-flex items-center space-x-2 cursor-pointer">
-              <input
-                type="checkbox"
-                class="accent-[#6790FF] w-5 h-5 rounded border-gray-300 focus:ring-2 focus:ring-[#6790FF]"
-              />
-              <span class="text-[#171717] text-base text-xs leading-none">
-                Autorizo el uso de mis datos personales para fines comerciales y de marketing,
-                de acuerdo con la política de privacidad de Zuma
-              </span>
-            </label>
+              <label class="inline-flex items-center space-x-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  class="accent-[#6790FF] w-5 h-5 rounded border-gray-300 focus:ring-2 focus:ring-[#6790FF]"
+                  v-model="formNewsletter.accepted_policy"
+                />
+                <span class="text-[#171717] text-base text-xs leading-none">
+                  Autorizo el uso de mis datos personales para fines comerciales y de marketing,
+                  de acuerdo con la política de privacidad de Zuma
+                </span>
+              </label>
+              <Button type="submit" :disabled="!isFormValidN || isSubmittingN" severity="warn" rounded
+                class="!border-none w-full !px-5 !py-2 !mt-7 !rounded-xl !bg-[#171717] !text-white hover:!bg-[#6790FF] transition-all duration-300 disabled:!bg-gray-400 disabled:!cursor-not-allowed">
+                <span v-if="!isSubmittingN">Enviar Mensaje</span>
+                <div v-else class="flex items-center justify-center">
+                  <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                  </svg>
+                  Enviando...
+                </div>
+              </Button>
+            </form>            
           </div>
         </div>
       </div>
@@ -193,8 +217,16 @@ const form = reactive({
   accepted_policy: false
 });
 
+const formNewsletter = reactive({
+  email: '',
+  interested_product: '',
+  accepted_policy: false
+});
+
 const errors = ref({});
+const errorsN = ref({});
 const isSubmitting = ref(false);
+const isSubmittingN = ref(false);
 
 // Opciones para select
 const productOptions = ref([
@@ -203,7 +235,13 @@ const productOptions = ref([
   { name: 'Depósito a plazo fijo', value: 'tasas' }
 ]);
 
-const newsletterProduct = ref(null);
+const productOptionsN = ref([
+  { name: 'Facturas', value: 'Facturas' },
+  { name: 'Préstamos con Garantía', value: 'Prestamos' },
+  { name: 'Depósito a plazo fijo', value: 'tasas' }
+]);
+
+
 
 const isFormValid = computed(() => {
   return (
@@ -215,6 +253,15 @@ const isFormValid = computed(() => {
   );
 });
 
+const isFormValidN = computed(() => {
+  return (
+    formNewsletter.email.trim() &&
+    formNewsletter.interested_product &&
+    formNewsletter.accepted_policy
+  );
+});
+
+
 const resetForm = () => {
   form.full_name = '';
   form.phone = '';
@@ -222,6 +269,12 @@ const resetForm = () => {
   form.interested_product = '';
   form.message = '';
   form.accepted_policy = false;
+};
+
+const resetFormN = () => {
+  formNewsletter.email = '';
+  formNewsletter.interested_product = '';
+  formNewsletter.accepted_policy = false;
 };
 
 const submitForm = async () => {
@@ -271,4 +324,50 @@ const submitForm = async () => {
     isSubmitting.value = false;
   }
 };
+
+const submitFormN = async () => {
+  if (!isFormValidN.value) return;
+
+  isSubmittingN.value = true;
+  errorsN.value = {};
+
+  try {
+    const payload = {      
+      email: formNewsletter.email,
+      interested_product: formNewsletter.interested_product,
+      accepted_policy: formNewsletter.accepted_policy ? 1 : 0
+    };
+
+    await contactRequestService.submitContactNewsLetter(payload);
+
+    toast.add({
+      severity: 'success',
+      summary: 'Mensaje enviado',
+      detail: 'Tu solicitud ha sido enviada correctamente. Te contactaremos pronto.',
+      life: 5000
+    });
+
+    resetFormN();
+  } catch (error) {
+    if (error.response?.status === 422) {
+      errors.value = error.response.data.errors || {};
+      toast.add({
+        severity: 'error',
+        summary: 'Error de validación',
+        detail: 'Por favor corrige los campos con error.',
+        life: 5000
+      });
+    } else {
+      toast.add({
+        severity: 'error',
+        summary: 'Error al enviar',
+        detail: 'Ocurrió un problema. Intenta de nuevo más tarde.',
+        life: 5000
+      });
+    }
+  } finally {
+    isSubmittingN.value = false;
+  }
+};
+
 </script>

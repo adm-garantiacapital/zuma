@@ -53,7 +53,7 @@
 
       <div class="col-span-12 text-center">
         <h4 class="text-lg font-medium">Descubre tu perfil de inversionista</h4>
-        <Button label="Accede al quiz" severity="warn" rounded
+        <Button label="Accede al quiz" severity="warn" rounded @click="redireccionQuiz('https://tally.so/r/wMoaR8')"
           class="!border-none !text-2xl !px-20 !py-5 !relative !mx-auto !bg-[#171717] !text-white hover:!bg-[#6790FF] transition-all duration-300" />
 
       </div>
@@ -63,3 +63,10 @@
 
   </div>
 </template>
+<script setup>
+import { visitaService } from '@/services/visitaService'
+
+const redireccionQuiz = async (url) => {
+  window.open(url, '_blank') 
+}
+</script>

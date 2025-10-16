@@ -8,16 +8,14 @@
         class="text-[#FF4929] font-bold text-2xl">alternativas de
         inversión</b> diseñadas para diferentes perfiles y horizonte de inversión</h3>
 
-    <div class="grid grid-cols-12 gap-1 max-w-6xl mx-auto mt-12">
-      <div class="col-span-12 md:col-span-4 px-5 mb-10">
-
+    <div class="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto mt-12">
+      <div class="w-full md:w-1/3 px-5 mb-10">
         <div class="relative h-[340px]">
           <div class="bg-white rounded-[50px] h-[340px] text-center shadow-md absolute w-full z-0">
-            <h3 class="font-medium text-2xl text-[#171717] pt-14 leading-none"><b>Facturas</b></h3>
+            <h3 class="font-medium text-2xl text-[#171717] pt-14 leading-none"><b>Inversiones en Facturas</b></h3>
             <img src="/imagenes/landing/facturas.svg" alt="Imagen principal"
               class="h-[170px] w-full mt-10 mb-6 px-14" />
           </div>
-
           <div class="absolute -bottom-4 left-0 right-0 z-50 flex justify-center">
             <Button label="Quiero saber más" severity="warn" rounded @click="facturas = true"
               class="!text-lg !px-8 !py-2 !border-none !mx-auto !bg-[#6790FF] !text-white hover:!bg-[#FF4929] transition-all duration-300" />
@@ -25,11 +23,10 @@
         </div>
 
       </div>
-      <div class="col-span-12 md:col-span-4 px-5 mb-10">
-
+      <div class="w-full md:w-1/3 px-5 mb-10">
         <div class="relative h-[340px]">
           <div class="bg-white rounded-[50px] h-[340px] text-center shadow-md absolute w-full z-0">
-            <h3 class="font-medium text-2xl text-[#171717] pt-10 leading-none">Préstamos con <br><b>Garantía</b></h3>
+            <h3 class="font-medium text-2xl text-[#171717] pt-10 leading-none">Inversiones en <br>Préstamos con <b>Garantía</b></h3>
             <img src="/imagenes/landing/garantia-hipotecaria.svg" alt="Imagen principal"
               class="h-[170px] w-full mt-8 mb-4 px-14" />
           </div>
@@ -41,31 +38,14 @@
         </div>
 
       </div>
-      <div class="col-span-12 md:col-span-4 px-5 mb-10">
-
-        <div class="relative h-[340px]">
-          <div class="bg-white rounded-[50px] h-[340px] text-center shadow-md absolute w-full z-0">
-            <h3 class="font-medium text-2xl text-[#171717] pt-10 leading-none">Depósito<br> a<b> plazo fijo</b></h3>
-            <img src="/imagenes/landing/depositos-plazo.svg" alt="Imagen principal"
-              class="h-[170px] w-full mt-8 mb-4 px-14" />
-          </div>
-
-          <div class="absolute -bottom-4 left-0 right-0 z-50 flex justify-center">
-            <Button label="Quiero saber más" severity="warn" rounded @click="depositos = true"
-              class="!text-lg !px-8 !py-2 !border-none !mx-auto !bg-[#6790FF] !text-white hover:!bg-[#FF4929] transition-all duration-300" />
-          </div>
-        </div>
-      </div>
+      
 
     </div>
 
     <div class="grid grid-cols-12 gap-0 max-w-6xl mx-auto mt-16">
       <div class="col-span-12 md:col-span-12 px-5 mb-20">
-        <div class="bg-white rounded-[50px] relative text-center pt-10">
-          <h3 class="font-medium text-2xl mt-0 text-[#171717] leading-none"><b class="text-3xl">Advertencia</b><br>de
-            riesgo
-          </h3>
-          <div class="bg-[#edeae4] rounded-[50px] text-center mt-8 mx-20 p-5 flex justify-center">
+        <div class="bg-white rounded-[50px] relative text-center pt-10">          
+          <div class="bg-[#edeae4] rounded-[50px] text-center mt-4 mx-20 p-5 flex justify-center">
             <img src="/imagenes/landing/advertencia.svg" alt="Imagen principal" class="h-[50px] w-[50px]" />
             <h4 class="m-0 text-xl font-noto leading-none text-[#171717]"><span class="text-sm">Como diría la
                 abuela:</span><br> "Nunca pongas todos los huevos en una misma canasta."
@@ -78,7 +58,7 @@
           </p>
           <p class="mt-8 mb-0 px-10 max-w-4xl mx-auto text-[#171717] text-lg font-medium">Conoce qué tipo de
             inversionista eres</p>
-          <Button label="Accede al Quiz - Perfil de Riesgo" severity="warn" rounded href="https://tally.so/r/wMoaR8"
+          <Button label="Accede al Quiz - Perfil de Riesgo" severity="warn" rounded @click="redireccionQuiz('https://tally.so/r/wMoaR8')"
             class="!text-lg !px-8 !py-2 !relative !border-none !-bottom-6 !mx-auto !bg-[#6790FF] !text-white hover:!bg-[#6790FF] 
             transition-all duration-300" />
         </div>
@@ -184,7 +164,6 @@ const facturas = ref(false);
 const prestamos = ref(false);
 const depositos = ref(false);
 
-const router = useRouter()
 
 const registrarYRedirigir = async (productoId, urlDestino) => {
   try {
@@ -193,5 +172,8 @@ const registrarYRedirigir = async (productoId, urlDestino) => {
   } catch (error) {
     console.error('Error registrando visita:', error)
   }
+}
+const redireccionQuiz = async (url) => {
+  window.open(url, '_blank') 
 }
 </script>

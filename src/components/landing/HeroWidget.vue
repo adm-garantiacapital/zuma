@@ -12,7 +12,7 @@
           </h1>
           <ul class="mt-10 space-y-3 text-xl text-[#171717]">
             <li class="flex items-center gap-3 font-medium pe-20">
-              <span>La única plataforma de <b>crowdfactoring</b> que invierte junto a ti en todas las operaciones</span>
+              <span>La única plataforma que invierte <b> junto a ti</b> en todas las operaciones de factoring</span>
             </li>
           </ul>
         </div>

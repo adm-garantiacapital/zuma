@@ -39,7 +39,7 @@ import { RouterLink } from 'vue-router';
           <li>
             <RouterLink to="/productos"
               class="text-[#171717] font-semibold text-lg hover:text-[#ffffff] transition duration-300">
-              Productos
+              Inversiones
             </RouterLink>
           </li>
           <!--
