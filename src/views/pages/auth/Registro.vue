@@ -27,7 +27,7 @@ const documentType = ref(null);
 const aceptaTerminos = ref(false);
 const documentTypes = ref([
   { id_tipo_documento: 1, nombre_tipo_documento: 'DNI' },
-  { id_tipo_documento: 3, nombre_tipo_documento: 'Carnet de extranjería' },
+  { id_tipo_documento: 2, nombre_tipo_documento: 'CARNET DE EXTRANJERIA' },
 ]);
 
 const scrolledToBottom = ref(false);
@@ -567,8 +567,8 @@ const contactarEspecialista = () => {
     modal
     :closable="true"
     :draggable="false"
-    class="mx-4"
-    style="width: 80vw; max-width: 900px;"
+    class="mx-4 mx-4 w-[95vw] md:w-[80vw] max-w-[95vh]"
+    style=""
   >
     <Button label="Ir al final" class="!absolute top-4 right-20 animate-float" severity="secondary" @click="scrollToBottom" >
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none"><path fill="currentColor" d="M12.75 4a.75.75 0 0 0-1.5 0zm-1.5 0v16h1.5V4z" opacity="0.5"/><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m18 14l-6 6l-6-6"/></g></svg>
@@ -581,7 +581,7 @@ const contactarEspecialista = () => {
     <div
       ref="scrollContainer"
       @scroll="checkScroll"
-      style="max-height: 600px; overflow-y: auto; padding-right: 1rem;"
+      style="max-height: 60vh; overflow-y: auto; padding-right: 1rem;"
     >
       <div class="mb-20"> <!-- margen inferior para que no tape el footer -->
         <div class="mb-20">
@@ -790,8 +790,8 @@ const contactarEspecialista = () => {
     modal
     :closable="true"
     :draggable="false"
-    class="mx-4"
-    style="width: 80vw; max-width: 900px;"
+    class="mx-4 w-[95vw] md:w-[80vw] max-w-[95vh]"
+    style=""
   >
     <Button label="Ir al final" class="!absolute top-4 right-20 animate-float" severity="secondary" @click="scrollToBottomP" >
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none"><path fill="currentColor" d="M12.75 4a.75.75 0 0 0-1.5 0zm-1.5 0v16h1.5V4z" opacity="0.5"/><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m18 14l-6 6l-6-6"/></g></svg>
@@ -804,7 +804,7 @@ const contactarEspecialista = () => {
     <div
       ref="scrollContainerP"
       @scroll="checkScrollP"
-      style="max-height: 600px; overflow-y: auto; padding-right: 1rem;"
+      style="max-height: 60vh; overflow-y: auto; padding-right: 1rem;"
     >
       <div class="mb-20"> <!-- margen inferior para que no tape el footer -->
         <div class="mb-20">
