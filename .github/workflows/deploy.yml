@@ -37,6 +37,7 @@ jobs:
             git checkout dev
             
             echo "⬇️ Pulling latest changes..."
+            git reset --hard origin/dev
             git pull origin dev
             
             echo "🐳 Stopping containers..."
