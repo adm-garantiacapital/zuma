@@ -1,0 +1,52 @@
+name: 🚀 Deploy automático a ZUMADEV
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧩 Checkout del código
+        uses: actions/checkout@v4
+
+      - name: 🔐 Configurar acceso SSH al servidor
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.ZUMA_SERVER_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.ZUMA_SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: 🚀 Desplegar en servidor remoto
+        run: |
+          ssh -i ~/.ssh/id_ed25519 root@${{ secrets.ZUMA_SERVER_HOST }} << 'EOF'
+            set -e
+            echo "📦 Actualizando repositorio en /var/www..."
+            cd /var/www
+            if [ ! -d "admin" ]; then
+              echo "🌀 Clonando repositorio Administrado-Zuma por primera vez..."
+              git clone git@github.com:adm-garantiacapital/Administrado-Zuma.git admin
+            fi
+            if [ ! -d "frontend" ]; then
+              echo "🌀 Clonando repositorio zuma (frontend) por primera vez..."
+              git clone git@github.com:adm-garantiacapital/zuma.git frontend
+            fi
+
+            echo "🔄 Actualizando rama dev..."
+            cd /var/www/admin && git fetch origin dev && git reset --hard origin/dev
+            cd /var/www/frontend && git fetch origin dev && git reset --hard origin/dev
+
+            echo "🐳 Reconstruyendo e iniciando contenedores..."
+            cd /var/www
+            docker compose pull || true
+            docker compose build --no-cache
+            docker compose up -d
+
+            echo "🧹 Limpiando caché de Laravel..."
+            docker compose exec -T backend php artisan optimize:clear || true
+
+            echo "✅ Despliegue completado correctamente en ZUMADEV."
+          EOF
