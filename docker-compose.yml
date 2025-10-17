@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   cliente:
     build:
@@ -7,15 +5,18 @@ services:
       dockerfile: Dockerfile
     container_name: zuma_frontend
     ports:
-      - "5173:5173"
+      - "5174:5173"  # Cambio de puerto para evitar conflicto
     volumes:
       - .:/app
       - /app/node_modules
     environment:
       - NODE_ENV=development
+      - VITE_API_URL=http://laravel_nginx  # URL del backend Laravel
     restart: unless-stopped
     command: npm run dev -- --host 0.0.0.0
+    networks:
+      - laravel_red_2025
 
 networks:
-  default:
-    name: zuma_network
+  laravel_red_2025:
+    external: true
