@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: zuma_frontend
     ports:
-      - "5174:5173"  # Cambio de puerto para evitar conflicto
+      - "4000"  # Cambio de puerto para evitar conflicto
     volumes:
       - .:/app
       - /app/node_modules
