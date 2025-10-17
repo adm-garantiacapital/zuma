@@ -1,21 +1,18 @@
-# Dockerfile
-FROM node:22
+FROM node:22-alpine
 
 WORKDIR /app
 
+# Copiar package files
+COPY package*.json ./
+
+# Instalar dependencias
+RUN npm ci
+
+# Copiar el resto del código
 COPY . .
 
-# Paso 1: definir build ARG
-ARG VITE_API_URL
+# Exponer puerto de Vite
+EXPOSE 5173
 
-# Paso 2: exponerlo como env var
-ENV VITE_API_URL=${VITE_API_URL}
-
-RUN npm install
-RUN npm run build
-
-RUN npm install -g serve
-
-EXPOSE 5174
-
-CMD ["serve", "-s", "dist", "-l", "5174"]
+# Comando por defecto
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

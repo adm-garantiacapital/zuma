@@ -1,11 +1,21 @@
+version: '3.8'
+
 services:
   cliente:
     build:
       context: .
-      args:
-        VITE_API_URL: https://administrado-zuma-main-afg1p6.laravel.cloud/api
-    container_name: cliente_sakai
+      dockerfile: Dockerfile
+    container_name: zuma_frontend
     ports:
-      - "5174:5174"
-    networks:
-      - laravel_red_2025
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped
+    command: npm run dev -- --host 0.0.0.0
+
+networks:
+  default:
+    name: zuma_network
