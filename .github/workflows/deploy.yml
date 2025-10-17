@@ -28,7 +28,7 @@ jobs:
             echo "🚀 Starting deployment..."
             
             # Navegar al directorio del proyecto
-            cd /var/www/zuma
+            cd /var/www/frontend/zuma
             
             echo "📥 Fetching latest changes..."
             git fetch origin dev
@@ -57,7 +57,7 @@ jobs:
       - name: Verify deployment
         run: |
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.ZUMA_SERVER_USER }}@${{ secrets.ZUMA_SERVER_HOST }} << 'EOF'
-            cd /var/www/zuma
+            cd /var/www/frontend/zuma
             echo "🔍 Verifying deployment..."
             docker compose ps
             echo "📝 Recent commits:"
