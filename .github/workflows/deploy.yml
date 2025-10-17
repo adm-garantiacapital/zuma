@@ -1,4 +1,4 @@
-name: 🚀 Deploy Zuma Frontend (Dev)
+name: 🚀 Deploy to DigitalOcean
 
 on:
   push:
@@ -10,35 +10,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout código
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Configurar acceso SSH al servidor
+      - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.ZUMA_SERVER_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H 68.183.51.202 >> ~/.ssh/known_hosts
+          echo -e "Host ${{ secrets.ZUMA_SERVER_HOST }}\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 
-      - name: Desplegar en el servidor
+      - name: Deploy to server
         run: |
-          ssh -i ~/.ssh/id_ed25519 root@68.183.51.202 << 'EOF'
-            set -e
-            echo "📦 Desplegando Zuma frontend..."
-            cd /var/www
-
-            if [ ! -d "frontend" ]; then
-              echo "🌀 Clonando repositorio zuma (frontend)..."
-              git clone git@github.com:adm-garantiacapital/zuma.git frontend
-            fi
-
-            cd frontend
-            git fetch origin dev
-            git reset --hard origin/dev
-
-            echo "🚧 Construyendo contenedor Docker..."
-            docker compose build --no-cache
-            docker compose up -d
-
-            echo "✅ Despliegue completado correctamente (frontend)"
+          ssh -i ~/.ssh/id_ed25519 ${{ secrets.ZUMA_SERVER_USER }}@${{ secrets.ZUMA_SERVER_HOST }} << 'EOF'
+            cd /var/www/zuma
+            git pull origin dev
+            docker compose down
+            docker compose up -d --build
           EOF
