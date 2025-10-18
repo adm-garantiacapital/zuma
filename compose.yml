@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  zuma-frontend:
+    image: ghcr.io/adm-garantiacapital/zuma-frontend:latest
+    container_name: zuma-frontend
+    restart: unless-stopped
+    networks:
+      - shared_network
+    ports:
+      - "3000:80"
+
+networks:
+  shared_network:
+    external: true

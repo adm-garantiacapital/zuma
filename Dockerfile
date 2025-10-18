@@ -1,18 +1,11 @@
-FROM node:22-alpine
+FROM nginx:alpine
 
-WORKDIR /app
+# Copiar los archivos compilados de dist/ a nginx
+COPY dist/ /usr/share/nginx/html/
 
-# Copiar package files
-COPY package*.json ./
+# Copiar configuración personalizada de nginx
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Instalar dependencias
-RUN npm ci
+EXPOSE 80
 
-# Copiar el resto del código
-COPY . .
-
-# Exponer puerto de Vite
-EXPOSE 5173
-
-# Comando por defecto
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+CMD ["nginx", "-g", "daemon off;"]

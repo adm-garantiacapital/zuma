@@ -1,4 +1,4 @@
-name: Deploy to Dev Server
+name: Deploy Frontend Zuma to Dev Server
 
 on:
   push:
@@ -6,61 +6,61 @@ on:
       - dev
 
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.ZUMA_SERVER_SSH_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H ${{ secrets.ZUMA_SERVER_HOST }} >> ~/.ssh/known_hosts
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-      - name: Deploy to server
-        run: |
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.ZUMA_SERVER_USER }}@${{ secrets.ZUMA_SERVER_HOST }} << 'EOF'
-            set -e
-            
-            echo "🚀 Starting deployment..."
-            
-            # Navegar al directorio del proyecto
-            cd /var/www/frontend/zuma
-            
-            echo "📥 Fetching latest changes..."
-            git fetch origin dev
-            
-            echo "🔄 Checking out dev branch..."
-            git checkout dev
-            
-            echo "⬇️ Pulling latest changes..."
-            git reset --hard origin/dev
-            git pull origin dev
-            
-            echo "🐳 Stopping containers..."
-            docker compose down || true
-            
-            echo "🏗️ Building and starting containers..."
-            docker compose up -d --build
-            
-            echo "🧹 Cleaning up old images..."
-            docker image prune -f
-            
-            echo "✅ Deployment completed successfully!"
-            
-            echo "📊 Container status:"
-            docker compose ps
-          EOF
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Verify deployment
+      - name: Build project
+        env:
+          VITE_API_ADMIN1: ${{ secrets.VITE_API_ADMIN1 }}
+          VITE_API_ADMIN2: ${{ secrets.VITE_API_ADMIN2 }}
+        run: npm run build
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
         run: |
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.ZUMA_SERVER_USER }}@${{ secrets.ZUMA_SERVER_HOST }} << 'EOF'
+          IMAGE_NAME=ghcr.io/adm-garantiacapital/zuma-frontend:latest
+          docker build --tag $IMAGE_NAME --file Dockerfile .
+          docker push $IMAGE_NAME
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.ZUMA_SERVER_HOST }}
+          username: ${{ secrets.ZUMA_SERVER_USER }}
+          key: ${{ secrets.ZUMA_SERVER_SSH_KEY }}
+          script: |
             cd /var/www/frontend/zuma
-            echo "🔍 Verifying deployment..."
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            docker compose pull
+            docker compose down
+            docker compose up -d --force-recreate
+            bash setup.sh
+            echo "✅ Deployment complete!"
             docker compose ps
-            echo "📝 Recent commits:"
-            git log --oneline -n 5
-          EOF
