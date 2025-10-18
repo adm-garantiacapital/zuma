@@ -64,3 +64,4 @@ jobs:
             bash setup.sh
             echo "✅ Deployment complete!"
             docker compose ps
+            
