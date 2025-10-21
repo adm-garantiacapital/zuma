@@ -105,18 +105,18 @@ const login = async () => {
     <TopbarWidget />
 
     <div class="flex-1 flex flex-col items-center justify-center p-4 bg-white">
-      <div class="w-full max-w-md flex justify-between items-center mb-4 py-2 px-4">
-      <div class="flex items-center gap-1 hover:text-[#FF4929] transition-colors">
-        <RadioButton v-model="ingredient" inputId="ingredient1" name="perfil" value="inversionista" @change="handlePerfilChange('inversionista')" />
-        <label for="ingredient1" class="text-xs cursor-pointer hover:text-[#FF4929]">Perfil inversionista</label>
+      <div class="hidden w-full max-w-md flex justify-between items-center mb-4 py-2 px-4">
+        <div class="flex items-center gap-1 hover:text-[#FF4929] transition-colors">
+          <RadioButton v-model="ingredient" inputId="ingredient1" name="perfil" value="inversionista" @change="handlePerfilChange('inversionista')" />
+          <label for="ingredient1" class="text-xs cursor-pointer hover:text-[#FF4929]">Perfil inversionista</label>
+        </div>
+        <div class="flex items-center gap-1 hover:text-[#FF4929] transition-colors">
+          <RadioButton v-model="ingredient" inputId="ingredient2" name="perfil" value="empresa" @change="handlePerfilChange('empresa')" />
+          <label for="ingredient2" class="text-xs cursor-pointer hover:text-[#FF4929]">Perfil empresa</label>
+        </div>
       </div>
-      <div class="flex items-center gap-1 hover:text-[#FF4929] transition-colors">
-        <RadioButton v-model="ingredient" inputId="ingredient2" name="perfil" value="empresa" @change="handlePerfilChange('empresa')" />
-        <label for="ingredient2" class="text-xs cursor-pointer hover:text-[#FF4929]">Perfil empresa</label>
-      </div>
-    </div>
 
-      <div class="w-full max-w-xl">
+      <div class="w-full max-w-xl mt-3">
         <div class="border border-gray-200 p-10 rounded-3xl shadow-sm">
           <div class="mb-6">
             <h4 class="text-[#171717] text-xl font-semibold">Bienvenido</h4>

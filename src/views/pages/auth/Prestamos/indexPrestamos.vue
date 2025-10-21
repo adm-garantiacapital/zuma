@@ -454,7 +454,6 @@ const toast = useToast();
 const productOptions = ref([
   { name: 'Facturas', value: 'Facturas' },
   { name: 'Préstamos con Garantía', value: 'Prestamos' },
-  { name: 'Depósito a plazo fijo', value: 'tasas' }
 ]);
 
 // Estado reactivo del formulario

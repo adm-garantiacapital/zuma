@@ -45,8 +45,10 @@
                         <strong>info@zuma.com.pe</strong>
                     </p>                    
                     <p class="flex items-center gap-3">
-                        <i class="pi pi-whatsapp text-white text-lg"></i>
-                        <strong>+51 986 351 267</strong>
+                        <a href="https://wa.me/51986351267" class="flex items-center gap-3">
+                            <i class="pi pi-whatsapp text-white text-lg"></i>
+                            <strong>+51 986 351 267</strong>
+                        </a>
                     </p>
                     <p class="flex items-start gap-3">
                         <i class="pi pi-map-marker text-white text-lg mt-1"></i>
@@ -59,7 +61,6 @@
                 <ul class="space-y-2 list-none">
                     <li class="cursor-pointer font-medium hover:text-[#FF4929]">Inversiones en facturas</li>
                     <li class="cursor-pointer font-medium hover:text-[#FF4929]">Inversiones en hipotecas</li>
-                    <li class="cursor-pointer font-medium hover:text-[#FF4929]">Inversiones en tasas fijas</li>
                 </ul>
             </div>
             <div class=" text-sm text-[#EDEAE4] py-4">
@@ -71,20 +72,21 @@
             <div class=" text-sm text-[#EDEAE4] py-4">
                 <h4 class="font-bold text-white mb-2">Transparencia</h4>
                 <ul class="space-y-3 list-none">
-                    <li class="cursor-pointer font-medium flex items-center space-x-2">
+                    <li class="hidden cursor-pointer font-medium flex items-center space-x-2">
                         <i class="pi pi-exclamation-circle" style="font-size: 1.3rem; color: white;"></i>                        
                         <span>Canal de denuncias</span>
+                    </li>
+                    <li class="cursor-pointer font-medium flex items-center space-x-2">
+                        <a class="flex gap-2" href="https://docs.google.com/forms/d/e/1FAIpQLScWuuU-MkWD9j9Bcs0wshfJoE1JACfFDVNZJeAcOWPqwg13ng/viewform">
+                            <img src="/public/imagenes/landing/libro.jpg" class=" w-[15%] md:w-[15%] h-auto rounded lg:w-[15%]"></img>
+                            <span>Libro de reclamaciones</span> 
+                        </a>
                     </li>
                     <li class="cursor-pointer font-medium flex items-center space-x-2">
                         <i class="pi pi-file" style="font-size: 1.3rem; color: white;"></i>
                         <span>Términos y condiciones</span>
                     </li>
-                    <li class="cursor-pointer font-medium flex items-center space-x-2">
-                        <a href="https://docs.google.com/forms/d/e/1FAIpQLScWuuU-MkWD9j9Bcs0wshfJoE1JACfFDVNZJeAcOWPqwg13ng/viewform">
-                            <img src="/public/imagenes/landing/libro.jpg" class=" w-[15%] md:w-[15%] h-auto rounded lg:w-[15%]"></img>
-                            Libro de reclamaciones
-                        </a>
-                    </li>
+                    
                 </ul>
                 <!-- Imagen debajo del texto, ajustada al ancho de la columna -->                
             </div>
