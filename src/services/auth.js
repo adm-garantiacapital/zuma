@@ -67,66 +67,60 @@ export const authService = {
         console.log(' - Resultado:', result);
         return result;
     },
-
     async login(source = 'admin2', credentials) {
-        try {
-            // ✅ Validar credenciales antes de enviar
-            if (!credentials?.email || !credentials?.password) {
-                throw new Error('Documento y contraseña son requeridos');
-            }
+    try {
+        const cleanCredentials = {
+            email: String(credentials.email).trim(),
+            password: String(credentials.password)
+        };
 
-            // ✅ Sanitizar entrada básica
-            const cleanCredentials = {
-                email: String(credentials.email).trim(),
-                password: String(credentials.password)
-            };
+        const api = source === 'admin2' ? apiAdmin2 : apiAdmin1;
+        const response = await api.post('/login', cleanCredentials);
 
-            const api = source === 'admin2' ? apiAdmin2 : apiAdmin1;
-            const response = await api.post('/login', cleanCredentials);
+        console.log('📥 Respuesta completa del servidor:', response.data);
 
-            console.log('📥 Respuesta completa del servidor:', response.data);
+        const { api_token, data: userData, success, cross_domain_redirect } = response.data;
 
-            // ✅ CORRECCIÓN: Cambiar 'customer' por 'data' para coincidir con la API
-            const { api_token, data: userData, success } = response.data;
-
-            // ✅ Validar respuesta del servidor
-            if (!success) {
-                throw new Error('Login no exitoso según el servidor');
-            }
-
-            if (!api_token) {
-                throw new Error('Token no encontrado en la respuesta');
-            }
-
-            if (!userData) {
-                throw new Error('Datos de usuario no encontrados en la respuesta');
-            }
-
-            console.log('✅ Token recibido:', api_token);
-            console.log('✅ Datos de usuario recibidos:', userData);
-            console.log('✅ Tipo de usuario:', userData.type); // ✅ Log del tipo
-
-            this.setToken(api_token);
-            this.setCustomer(userData);
-
-            return {
-                success: true,
-                user: userData,
-                token: api_token,
-                message: response.data.message
-            };
-
-        } catch (error) {
-            console.error('Error en login:', error.message);            
-            if (error.response) {
-                console.error('Status:', error.response.status);
-                console.error('Data:', error.response.data);
-            }
-            
-            throw error;
+        if (!success || !api_token || !userData) {
+            throw new Error('Login no exitoso según el servidor');
         }
-    },
 
+        console.log('✅ Token recibido:', api_token);
+        console.log('✅ Redirección cross-domain:', cross_domain_redirect);
+
+        // ✅ VERIFICACIÓN CRÍTICA: Asegurarnos que cross_domain_redirect existe
+        if (!cross_domain_redirect) {
+            console.error('❌ ERROR: cross_domain_redirect es null o undefined');
+            throw new Error('No se recibió URL de redirección del servidor');
+        }
+
+        // Guardar token para Vue (por si acaso)
+        this.setToken(api_token);
+        this.setCustomer(userData);
+
+        // ✅ CORRECCIÓN DEFINITIVA: Redirigir DIRECTAMENTE sin intermediarios
+        console.log('🔄 REDIRIGIENDO DIRECTAMENTE a:', cross_domain_redirect);
+        
+        // Usar location.replace para evitar que el usuario pueda volver atrás
+        window.location.replace(cross_domain_redirect);
+        
+        return {
+            success: true,
+            redirecting: true,
+            redirectUrl: cross_domain_redirect
+        };
+
+    } catch (error) {
+        console.error('❌ Error en login:', error.message);
+        
+        if (error.response) {
+            console.error('Status:', error.response.status);
+            console.error('Data:', error.response.data);
+        }
+        
+        throw error;
+    }
+},
     async logout(source = 'admin2') {
         try {
             const api = source === 'admin2' ? apiAdmin2 : apiAdmin1;
