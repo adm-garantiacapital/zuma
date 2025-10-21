@@ -204,7 +204,7 @@ const handleRegister = async () => {
     // Si la API respondió éxito (status 201 o success)
     if (response.status === 201 || response.data?.success) {
       const userId = response.data.data?.userId || response.data.data?.id;
-      
+
       toast.add({
         severity: 'success',
         summary: 'Registro exitoso',
@@ -327,7 +327,7 @@ const contactarEspecialista = () => {
 
     <!-- Contenido centrado -->
     <div class="flex-1 flex flex-col items-center justify-center p-4 bg-white">
-    <!--
+      <!--
       <div class="w-full max-w-md flex justify-between items-center mb-4 py-2 px-6">
         <div class="flex items-center gap-2 hover:text-[#FF4929] transition-colors">
           <RadioButton v-model="ingredient" inputId="ingredient1" name="perfil" value="inversionista"
