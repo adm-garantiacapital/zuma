@@ -56,13 +56,28 @@
                     </p>
                 </div>
             </div>
-            <div class=" text-sm text-[#EDEAE4] py-4">
+            <div class="text-sm text-[#EDEAE4] py-4">
                 <h4 class="font-bold text-white mb-2">Invierte</h4>
                 <ul class="space-y-2 list-none">
-                    <li class="cursor-pointer font-medium hover:text-[#FF4929]">Inversiones en facturas</li>
-                    <li class="cursor-pointer font-medium hover:text-[#FF4929]">Inversiones en hipotecas</li>
+                    <li>
+                    <a
+                        href="https://zuma.com.pe/factoring/"
+                        class="cursor-pointer font-medium hover:text-[#FF4929]"
+                    >
+                        Inversiones en facturas
+                    </a>
+                    </li>
+                    <li>
+                    <a
+                        href="https://zuma.com.pe/hipotecas"
+                        class="cursor-pointer font-medium hover:text-[#FF4929]"
+                    >
+                        Inversiones en hipotecas
+                    </a>
+                    </li>
                 </ul>
-            </div>
+                </div>
+
             <div class=" text-sm text-[#EDEAE4] py-4">
                 <h4 class="font-bold text-white mb-2">Productos</h4>
                 <ul class="space-y-2 list-none">
