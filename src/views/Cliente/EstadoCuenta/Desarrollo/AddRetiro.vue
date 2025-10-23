@@ -1,36 +1,25 @@
 <template>
-  <Dialog 
-    :visible="visible" 
-    @update:visible="updateVisible" 
-    modal 
-    :style="{ width: '450px' }"
-    :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-  >
+  <Dialog :visible="visible" @update:visible="updateVisible" modal :style="{ width: '450px' }"
+    :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
     <!-- Título centrado -->
     <template #header>
       <div class="w-full text-center text-xl font-bold" style="color: #FF4929;">
         Solicitar retiro
       </div>
     </template>
-    
+
     <div class="flex flex-col gap-6">
       <!-- Cuenta bancaria destino -->
       <div>
         <label class="block text-sm font-medium mb-2">
           ¿A qué cuenta bancaria te enviamos el dinero?
         </label>
-        <Dropdown 
-          v-model="selectedBank" 
-          :options="bankOptions" 
-          optionLabel="name" 
-          optionValue="value"
-          placeholder="Seleccionar cuenta" 
-          class="w-full"
-          :optionDisabled="isOptionDisabled"
-        >
+        <Dropdown v-model="selectedBank" :options="bankOptions" optionLabel="name" optionValue="value"
+          placeholder="Seleccionar cuenta" class="w-full" :optionDisabled="isOptionDisabled">
           <!-- Renderizado de cada opción -->
           <template #option="slotProps">
-            <div class="flex justify-between items-center" :class="{ 'opacity-50 cursor-not-allowed': slotProps.option.status === 'invalid' }">
+            <div class="flex justify-between items-center"
+              :class="{ 'opacity-50 cursor-not-allowed': slotProps.option.status === 'invalid' }">
               <div>
                 <div class="font-medium">
                   {{ slotProps.option.bank }}
@@ -42,10 +31,8 @@
                 </div>
               </div>
               <div class="flex flex-col items-end space-y-1">
-                <Tag 
-                  :value="getStatusLabel(slotProps.option.status)"
-                  :severity="slotProps.option.status === 'valid' ? 'success' : 'danger'"
-                />
+                <Tag :value="getStatusLabel(slotProps.option.status)"
+                  :severity="slotProps.option.status === 'valid' ? 'success' : 'danger'" />
                 <span v-if="slotProps.option.status === 'invalid'" class="text-xs text-red-500">
                   No seleccionable
                 </span>
@@ -68,21 +55,16 @@
         <label class="block text-sm font-medium mb-2">
           Mi billetera
         </label>
-        <Dropdown 
-          v-model="selectedWallet" 
-          :options="walletOptions" 
-          optionLabel="name" 
-          optionValue="value"
-          placeholder="Selecciona tu billetera" 
-          class="w-full"
-        >
+        <Dropdown v-model="selectedWallet" :options="walletOptions" optionLabel="name" optionValue="value"
+          placeholder="Selecciona tu billetera" class="w-full">
           <!-- Renderizado de cada opción de billetera -->
           <template #option="slotProps">
             <div class="flex justify-between items-center">
               <div class="font-medium">
                 {{ slotProps.option.name }}
               </div>
-              <div class="text-sm font-semibold" :class="slotProps.option.currency === 'USD' ? 'text-green-600' : 'text-blue-600'">
+              <div class="text-sm font-semibold"
+                :class="slotProps.option.currency === 'USD' ? 'text-green-600' : 'text-blue-600'">
                 {{ slotProps.option.currency }}
               </div>
             </div>
@@ -104,15 +86,8 @@
           Monto (Selecciona tu cuenta)
         </label>
         <div class="relative">
-          <InputNumber 
-            v-model="amount" 
-            mode="decimal" 
-            :minFractionDigits="2"
-            :maxFractionDigits="2"
-            placeholder="0.00"
-            class="w-full"
-            :disabled="!selectedWallet"
-          />
+          <InputNumber v-model="amount" mode="decimal" :minFractionDigits="2" :maxFractionDigits="2" placeholder="0.00"
+            class="w-full" :disabled="!selectedWallet" />
           <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">
             {{ selectedWallet ? getCurrencySymbol(selectedWallet) : 'S/.' }}
           </div>
@@ -124,21 +99,15 @@
         <label class="block text-sm font-medium mb-2">
           Motivo de retiro
         </label>
-        <Dropdown 
-          v-model="withdrawalReason" 
-          :options="reasonOptions" 
-          optionLabel="name" 
-          optionValue="value"
-          placeholder="Seleccionar Motivo de retiro" 
-          class="w-full"
-        />
+        <Dropdown v-model="withdrawalReason" :options="reasonOptions" optionLabel="name" optionValue="value"
+          placeholder="Seleccionar Motivo de retiro" class="w-full" />
       </div>
 
       <!-- Términos y condiciones -->
       <div class="flex items-start space-x-2">
         <Checkbox v-model="agreeTerms" inputId="terms" binary />
         <label for="terms" class="text-sm">
-          Acepto Términos y Condiciones y la 
+          Acepto Términos y Condiciones y la
           <span class="text-red-500 cursor-pointer hover:underline" @click="openPrivacyPolicy">
             Política de Privacidad
           </span>
@@ -148,15 +117,15 @@
       <!-- Términos y condiciones texto -->
       <div class="text-xs text-gray-600 space-y-2">
         <p>
-          Lorem ipsum dolor sit amet consectetur. Faucibus tempor porttitor 
-          suspendisse suspendisse sed. Ultricies nunc dictum cursus vel tellus 
-          congue sem. Amet eu at hendrerit in congue consequat lectus diam. 
+          Lorem ipsum dolor sit amet consectetur. Faucibus tempor porttitor
+          suspendisse suspendisse sed. Ultricies nunc dictum cursus vel tellus
+          congue sem. Amet eu at hendrerit in congue consequat lectus diam.
           Enim nisl mattis ultrices sed.
         </p>
         <p>
-          Lorem ipsum dolor sit amet consectetur. Faucibus tempor porttitor 
-          suspendisse suspendisse sed. Ultricies nunc dictum cursus vel tellus 
-          congue sem. Amet eu at hendrerit in congue consequat lectus diam. 
+          Lorem ipsum dolor sit amet consectetur. Faucibus tempor porttitor
+          suspendisse suspendisse sed. Ultricies nunc dictum cursus vel tellus
+          congue sem. Amet eu at hendrerit in congue consequat lectus diam.
           Enim nisl mattis ultrices sed.
         </p>
       </div>
@@ -165,23 +134,13 @@
     <!-- Footer del modal -->
     <template #footer>
       <div class="flex justify-center w-full">
-        <Button 
-          label="Solicitar retiro" 
-          class="w-full max-w-md"
-          style="background: #4A90E2; border-color: #4A90E2;"
-          @click="handleSubmit"
-          :disabled="!isFormValid"
-        />
+        <Button label="Solicitar retiro" class="w-full max-w-md" style="background: #4A90E2; border-color: #4A90E2;"
+          @click="handleSubmit" :disabled="!isFormValid" />
       </div>
     </template>
 
     <!-- Modal de confirmación -->
-    <Dialog 
-      v-model:visible="showConfirmation" 
-      modal 
-      :style="{ width: '400px' }"
-      header="Confirmar Retiro"
-    >
+    <Dialog v-model:visible="showConfirmation" modal :style="{ width: '400px' }" header="Confirmar Retiro">
       <div class="flex flex-col gap-4">
         <div class="text-center">
           <i class="pi pi-info-circle text-blue-500 text-4xl mb-3"></i>
@@ -194,19 +153,11 @@
           </div>
         </div>
       </div>
-      
+
       <template #footer>
         <div class="flex justify-end gap-2">
-          <Button 
-            label="Cancelar" 
-            severity="secondary" 
-            @click="showConfirmation = false"
-          />
-          <Button 
-            label="Confirmar" 
-            severity="success" 
-            @click="confirmWithdrawal"
-          />
+          <Button label="Cancelar" severity="secondary" @click="showConfirmation = false" />
+          <Button label="Confirmar" severity="success" @click="confirmWithdrawal" />
         </div>
       </template>
     </Dialog>
@@ -214,9 +165,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
 import { bankAccountService } from '@/services/bankAccountService'
 import { createWithdraw } from '@/services/movementsservice'
+import { computed, onMounted, ref } from 'vue'
 
 const props = defineProps({
   visible: Boolean

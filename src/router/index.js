@@ -42,16 +42,19 @@ const router = createRouter({
         {
             path: '/nosotros',
             name: 'nosotros',
+            meta: { title: 'Nosotros' },
             component: () => import('@/views/pages/auth/Nosotros/indexNosotros.vue')
         },
         {
             path: '/productos',
             name: 'productos',
+            meta: { title: 'Inversiones' },
             component: () => import('@/views/pages/auth/Producto/indexProducto.vue')
         },
         {
             path: '/prestamos',
             name: 'prestamos',
+            meta: { title: 'Préstamos' },
             component: () => import('@/views/pages/auth/Prestamos/indexPrestamos.vue')
         },
         {
@@ -62,11 +65,13 @@ const router = createRouter({
         {
             path: '/contactanos',
             name: 'contactanos',
+            meta: { title: 'Contáctanos' },
             component: () => import('@/views/pages/auth/Contactanos/indexContactanos.vue')
         },
         {
             path: '/blog',
             name: 'blog',
+            meta: { title: 'Blog' },
             component: () => import('@/views/pages/auth/blog/indexblog.vue')
         },
         {
@@ -409,5 +414,17 @@ router.beforeEach((to, from, next) => {
     console.log('✅ Navegación permitida');
     next();
 });
+
+
+// 🔹 Cambiar el título de la página según el meta.title de la ruta
+router.afterEach((to) => {
+    const appName = 'ZUMA' // Cambia esto por el nombre de tu app
+    if (to.meta && to.meta.title) {
+        document.title = `${to.meta.title} | ${appName}`
+    } else {
+        document.title = appName
+    }
+})
+
 
 export default router;

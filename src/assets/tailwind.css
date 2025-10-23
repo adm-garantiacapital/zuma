@@ -1,56 +1,46 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Serif+Display:ital,wght@0,100..900;1,100..900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Serif+Display:ital,wght@0,100..900;1,100..900&display=swap');
+  body {
+      font-family: 'Montserrat', sans-serif !important;
+  }
 
+  .font-monserrat {
+      font-family: 'Montserrat', sans-serif;
+  }
 
-
-@font-face {
-  font-family: 'Gilroy' !important;
-  src: url('./fonts/Gilroy-Regular.woff2') format('woff2');
-  font-weight: 400 !important;
-  font-style: normal !important;
-  font-display: swap;
-  color: black;
-}
-
-@font-face {
-  font-family: 'Gilroy';
-  src: url('./fonts/Gilroy-Regular.woff2') format('woff2');
-  font-weight: 400 !important;
-  font-style: italic;
-  font-display: swap;
-  color: black;
-}
+  .font-noto {
+      font-family: 'Noto Serif Display', serif;
+  }
 
 
 
-
-
-body {
-    font-family: 'Gilroy' !important;
-  src: url('./fonts/Gilroy-RegularItalic.woff2') format('woff2');
-  font-weight: 200 !important;
-  font-style: normal;
-  font-display: swap;
-    color: black;
-}
-
-.font-monserrat {
-    font-family: "Gilroy", sans-serif !important;
+  @font-face {
+    font-family: 'Gilroy' ;
     src: url('./fonts/Gilroy-Regular.woff2') format('woff2');
-  font-weight: 100 !important;
-  font-style: normal;
-  font-display: swap;
+    font-weight: 400 ;
+    font-style: normal ;
+    font-display: swap;
     color: black;
-}
+  }
 
-.font-noto {
-    font-family: "Gilroy", serif !important;
-    src: url('./fonts/Gilroy-RegularItalic.woff2') format('woff2');
-  font-weight: 000 !important;
-  font-style: normal;
-  font-display: swap;
+  @font-face {
+    font-family: 'Gilroy';
+    src: url('./fonts/Gilroy-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
     color: black;
-}
+  }
+
+
+  .font-gilroy{
+    font-family: 'Gilroy' ;
+    src: url('./fonts/Gilroy-Regular.woff2') format('woff2');
+    font-weight: 400 ;
+    font-style: italic ;
+    font-display: swap;
+    color: black;
+  }

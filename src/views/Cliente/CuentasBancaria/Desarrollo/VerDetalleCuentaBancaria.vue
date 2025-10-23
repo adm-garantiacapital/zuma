@@ -20,8 +20,9 @@
 
                 <div>
                     <label class="block font-bold mb-1">Tipo de Cuenta <span class="text-red-500">*</span></label>
-                    <Select id="tipoCuenta" v-model="form.tipoCuenta" :options="tiposCuenta" optionLabel="name" :disabled="true"
-                        placeholder="Selecciona tipo de cuenta" class="w-full" :class="{ 'p-invalid': errors.tipoCuenta }" />
+                    <Select id="tipoCuenta" v-model="form.tipoCuenta" :options="tiposCuenta" optionLabel="name"
+                        :disabled="true" placeholder="Selecciona tipo de cuenta" class="w-full"
+                        :class="{ 'p-invalid': errors.tipoCuenta }" />
                     <small v-if="errors.tipoCuenta" class="p-error">{{ errors.tipoCuenta }}</small>
                 </div>
 
@@ -34,21 +35,23 @@
 
                 <div>
                     <label class="block font-bold mb-1">CC <span class="text-red-500">*</span></label>
-                    <InputNumber id="cc" v-model="form.cc" placeholder="Número de cuenta (CC)" class="w-full" :disabled="true"
-                        :useGrouping="false" :minFractionDigits="0" :class="{ 'p-invalid': errors.cc }" />
+                    <InputNumber id="cc" v-model="form.cc" placeholder="Número de cuenta (CC)" class="w-full"
+                        :disabled="true" :useGrouping="false" :minFractionDigits="0"
+                        :class="{ 'p-invalid': errors.cc }" />
                     <small v-if="errors.cc" class="p-error">{{ errors.cc }}</small>
                 </div>
 
                 <div>
                     <label class="block font-bold mb-1">CCI <span class="text-red-500">*</span></label>
-                    <InputNumber id="cci" v-model="form.cci" placeholder="Código interbancario (CCI)" class="w-full" :disabled="true"
-                        :useGrouping="false" :minFractionDigits="0" :class="{ 'p-invalid': errors.cci }" />
+                    <InputNumber id="cci" v-model="form.cci" placeholder="Código interbancario (CCI)" class="w-full"
+                        :disabled="true" :useGrouping="false" :minFractionDigits="0"
+                        :class="{ 'p-invalid': errors.cci }" />
                     <small v-if="errors.cci" class="p-error">{{ errors.cci }}</small>
                 </div>
 
                 <div>
                     <label class="block font-bold mb-1">Alias <span class="text-red-500">*</span></label>
-                    <InputText id="alias" v-model="form.alias" placeholder="Nombre o alias de la cuenta" class="w-full" 
+                    <InputText id="alias" v-model="form.alias" placeholder="Nombre o alias de la cuenta" class="w-full"
                         :class="{ 'p-invalid': errors.alias }" />
                     <small v-if="errors.alias" class="p-error">{{ errors.alias }}</small>
                 </div>
@@ -56,18 +59,17 @@
 
             <!-- Footer -->
             <template #footer>
-                        <Button label="Cancelar" icon="pi pi-times" @click="closeDialog" 
-                            text severity="secondary" rounded />
-                    <Button label="Eliminar" icon="pi pi-trash" @click="showDeleteConfirm" 
-                        severity="danger" outlined rounded />
-                        <Button label="Actualizar" icon="pi pi-check" @click="actualizarCuenta" 
-                            :loading="loading" severity="contrast" rounded />
+                <Button label="Cancelar" icon="pi pi-times" @click="closeDialog" text severity="secondary" rounded />
+                <Button label="Eliminar" icon="pi pi-trash" @click="showDeleteConfirm" severity="danger" outlined
+                    rounded />
+                <Button label="Actualizar" icon="pi pi-check" @click="actualizarCuenta" :loading="loading"
+                    severity="contrast" rounded />
             </template>
         </Dialog>
 
         <!-- Dialog de confirmación de actualización -->
-        <Dialog :visible="showUpdateConfirmDialog" @update:visible="updateUpdateConfirmDialog" modal :style="{ width: '500px' }" 
-            :closable="false" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <Dialog :visible="showUpdateConfirmDialog" @update:visible="updateUpdateConfirmDialog" modal
+            :style="{ width: '500px' }" :closable="false" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <template #header>
                 <div class="w-full text-center">
                     <i class="pi pi-check-circle text-4xl text-green-500 mb-3"></i>
@@ -85,15 +87,15 @@
 
             <template #footer>
                 <div class="flex justify-center">
-                    <Button label="Aceptar" icon="pi pi-check" @click="closeUpdateConfirmDialog" 
-                        class="px-6 py-2" severity="success" />
+                    <Button label="Aceptar" icon="pi pi-check" @click="closeUpdateConfirmDialog" class="px-6 py-2"
+                        severity="success" />
                 </div>
             </template>
         </Dialog>
 
         <!-- Dialog de confirmación de eliminación -->
-        <Dialog :visible="showDeleteConfirmDialog" @update:visible="updateDeleteConfirmDialog" modal :style="{ width: '500px' }" 
-            :closable="false" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <Dialog :visible="showDeleteConfirmDialog" @update:visible="updateDeleteConfirmDialog" modal
+            :style="{ width: '500px' }" :closable="false" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <template #header>
                 <div class="w-full text-center">
                     <i class="pi pi-exclamation-triangle text-4xl text-red-500 mb-3"></i>
@@ -105,24 +107,24 @@
 
             <div class="text-center py-4">
                 <p class="text-gray-700 leading-relaxed">
-                    ¿Estás seguro de que deseas eliminar esta cuenta bancaria? 
+                    ¿Estás seguro de que deseas eliminar esta cuenta bancaria?
                     <strong>Esta acción no se puede deshacer.</strong>
                 </p>
             </div>
 
             <template #footer>
                 <div class="flex justify-center gap-3">
-                    <Button label="Cancelar" icon="pi pi-times" @click="closeDeleteConfirmDialog" 
-                        text severity="secondary" />
-                    <Button label="Eliminar" icon="pi pi-trash" @click="eliminarCuenta" 
-                        :loading="deleteLoading" severity="danger" />
+                    <Button label="Cancelar" icon="pi pi-times" @click="closeDeleteConfirmDialog" text
+                        severity="secondary" />
+                    <Button label="Eliminar" icon="pi pi-trash" @click="eliminarCuenta" :loading="deleteLoading"
+                        severity="danger" />
                 </div>
             </template>
         </Dialog>
 
         <!-- Dialog de confirmación de eliminación exitosa -->
-        <Dialog :visible="showDeleteSuccessDialog" @update:visible="updateDeleteSuccessDialog" modal :style="{ width: '500px' }" 
-            :closable="false" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <Dialog :visible="showDeleteSuccessDialog" @update:visible="updateDeleteSuccessDialog" modal
+            :style="{ width: '500px' }" :closable="false" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <template #header>
                 <div class="w-full text-center">
                     <i class="pi pi-check-circle text-4xl text-green-500 mb-3"></i>
@@ -140,8 +142,8 @@
 
             <template #footer>
                 <div class="flex justify-center">
-                    <Button label="Aceptar" icon="pi pi-check" @click="closeDeleteSuccessDialog" 
-                        class="px-6 py-2" severity="success" />
+                    <Button label="Aceptar" icon="pi pi-check" @click="closeDeleteSuccessDialog" class="px-6 py-2"
+                        severity="success" />
                 </div>
             </template>
         </Dialog>
@@ -149,15 +151,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch } from 'vue';
-import { useToast } from 'primevue/usetoast';
-import Dialog from 'primevue/dialog';
-import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
-import InputNumber from 'primevue/inputnumber';
-import Select from 'primevue/select';
-import Tag from 'primevue/tag';
 import { bankAccountService } from '@/services/bankAccountService.js';
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+import InputNumber from 'primevue/inputnumber';
+import InputText from 'primevue/inputtext';
+import Select from 'primevue/select';
+import { useToast } from 'primevue/usetoast';
+import { reactive, ref, watch } from 'vue';
 
 // Toast service
 const toast = useToast();
@@ -281,13 +282,13 @@ const loadAccountData = (accountData) => {
     if (!accountData) return;
 
     // Buscar el banco correspondiente
-    const banco = bancos.value.find(b => b.code === accountData.bank) || 
-                  bancos.value.find(b => b.name.toLowerCase().includes(accountData.bank.toLowerCase()));
-    
+    const banco = bancos.value.find(b => b.code === accountData.bank) ||
+        bancos.value.find(b => b.name.toLowerCase().includes(accountData.bank.toLowerCase()));
+
     // Buscar el tipo de cuenta correspondiente
     const tipoCuenta = tiposCuenta.value.find(t => t.code.toLowerCase() === accountData.type.toLowerCase()) ||
-                       tiposCuenta.value.find(t => t.name.toLowerCase().includes(accountData.type.toLowerCase()));
-    
+        tiposCuenta.value.find(t => t.name.toLowerCase().includes(accountData.type.toLowerCase()));
+
     // Buscar la moneda correspondiente
     const moneda = monedas.value.find(m => m.code === accountData.currency);
 
@@ -384,7 +385,7 @@ const actualizarCuenta = async () => {
         // Enviar solicitud de actualización a la API
         const response = await bankAccountService.updateBankAccount(props.accountData.id, payload);
         console.log('Respuesta actualización:', response.data);
-        
+
         // Mostrar dialog de confirmación
         showUpdateConfirmDialog.value = true;
 
@@ -408,7 +409,7 @@ const eliminarCuenta = async () => {
         // Enviar solicitud de eliminación a la API
         const response = await bankAccountService.deleteBankAccount(props.accountData.id);
         console.log('Respuesta eliminación:', response.data);
-        
+
         // Cerrar dialog de confirmación y mostrar success
         showDeleteConfirmDialog.value = false;
         showDeleteSuccessDialog.value = true;

@@ -18,12 +18,16 @@
             <!-- Título centrado con color personalizado -->
             <template #header>
                 <div class="w-full text-center text-2xl font-bold" style="color: #000;">
-                    <p> Detalle de cuenta bancaria</p>
-                    <p class="w-full text-center text-base font-light text-gray-500" style="margin-top: -10px;">Titular de la cuenta</p>
-                    <p class="w-full text-center text-base font-light text-gray-500" style="margin-top: -10px;">{{ investorName }}</p>
-                   
+                    <p class="font-gilroy font-semibold"> Detalle de cuenta bancaria</p>
+                    <p class="w-full font-gilroy text-center text-base !font-light !text-gray-500"
+                        style="margin-top: -10px;">Titular
+                        de la cuenta</p>
+                    <p class="w-full font-gilroy text-center text-base !font-light !text-gray-500"
+                        style="margin-top: -10px;">{{
+                            investorName }}</p>
+
                 </div>
-               
+
             </template>
 
             <div class="flex flex-col gap-6">
@@ -31,47 +35,50 @@
                 <!-- Formulario -->
 
 
-            
+
                 <div>
-                    <label class="block font-bold mb-1">Banco <span class="text-red-500">*</span></label>
+                    <label class="block  font-gilroy mb-1">Banco <span class="text-red-500">*</span></label>
                     <Select id="banco" v-model="form.banco" :options="bancos" optionLabel="name"
                         placeholder="Selecciona un banco" fluid :class="{ 'p-invalid': errors.banco }" />
                     <small v-if="errors.banco" class="p-error text-red-500">{{ errors.banco }}</small>
                 </div>
 
                 <div>
-                    <label class="block font-bold mb-1">Tipo de Cuenta <span class="text-red-500">*</span></label>
+                    <label class="block font-gilroy  mb-1">Tipo de Cuenta <span class="text-red-500">*</span></label>
                     <Select id="tipoCuenta" v-model="form.tipoCuenta" :options="tiposCuenta" optionLabel="name"
-                        placeholder="Selecciona tipo de cuenta" class="w-full"
+                        placeholder="Selecciona tipo de cuenta" class="w-full font-gilroy"
                         :class="{ 'p-invalid': errors.tipoCuenta }" />
                     <small v-if="errors.tipoCuenta" class="p-error">{{ errors.tipoCuenta }}</small>
                 </div>
 
                 <div>
-                    <label class="block font-bold mb-1">Moneda <span class="text-red-500">*</span></label>
+                    <label class="block font-gilroy mb-1">Moneda <span class="text-red-500">*</span></label>
                     <Select id="moneda" v-model="form.moneda" :options="monedas" optionLabel="name"
-                        placeholder="Selecciona una moneda" class="w-full" :class="{ 'p-invalid': errors.moneda }" />
+                        placeholder="Selecciona una moneda" class="w-full font-gilroy"
+                        :class="{ 'p-invalid': errors.moneda }" />
                     <small v-if="errors.moneda" class="p-error text-red-500">{{ errors.moneda }}</small>
                 </div>
 
                 <div>
-                    <label class="block font-bold mb-1">CC <span class="text-red-500">*</span></label>
-                    <InputText id="cc" v-model="form.cc" placeholder="Número de cuenta (10 dígitos)" class="w-full"
-                        maxlength="10" @input="onCCInput" :class="{ 'p-invalid': errors.cc }" />
+                    <label class="block font-gilroy  mb-1">CC <span class="text-red-500">*</span></label>
+                    <InputText id="cc" v-model="form.cc" placeholder="Número de cuenta (10 dígitos)"
+                        class="w-full font-gilroy !font-normal" maxlength="10" @input="onCCInput"
+                        :class="{ 'p-invalid': errors.cc }" />
                     <small v-if="errors.cc" class="p-error text-red-500">{{ errors.cc }}</small>
                 </div>
 
                 <div>
-                    <label class="block font-bold mb-1">CCI <span class="text-red-500">*</span></label>
+                    <label class="block font-gilroy mb-1">CCI <span class="text-red-500">*</span></label>
                     <InputText id="cci" v-model="form.cci" placeholder="Código interbancario (20 dígitos)"
-                        class="w-full" maxlength="20" @input="onCCIInput" :class="{ 'p-invalid': errors.cci }" />
+                        class="w-full font-gilroy" maxlength="20" @input="onCCIInput"
+                        :class="{ 'p-invalid': errors.cci }" />
                     <small v-if="errors.cci" class="p-error text-red-500">{{ errors.cci }}</small>
                 </div>
 
                 <div>
-                    <label class="block font-bold mb-1">Alias <span class="text-red-500">*</span></label>
-                    <InputText id="alias" v-model="form.alias" placeholder="Nombre o alias de la cuenta" class="w-full"
-                        :class="{ 'p-invalid': errors.alias }" />
+                    <label class="block font-gilroy mb-1">Alias <span class="text-red-500">*</span></label>
+                    <InputText id="alias" v-model="form.alias" placeholder="Nombre o alias de la cuenta"
+                        class="font-gilroy w-full" :class="{ 'p-invalid': errors.alias }" />
                     <small v-if="errors.alias" class="p-error text-red-500">{{ errors.alias }}</small>
                 </div>
             </div>
@@ -79,7 +86,7 @@
             <!-- Footer -->
             <template #footer>
                 <div class="flex w-full gap-3">
-                    
+
                     <Button label="Guardar" icon="pi pi-save" @click="enviarNotificacion" :loading="loading"
                         severity="contrast" rounded
                         class="flex-1 !bg-transparent !text-black hover:!bg-slate-100 !border-2" color="#000" />
@@ -120,13 +127,13 @@
 <script setup>
 import { bankAccountService } from '@/services/bankAccountService.js';
 import { bankService } from '@/services/bankService.js';
+import profileService from '@/services/profileService.js';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, reactive, ref } from 'vue';
-import profileService from '@/services/profileService.js'
 
 const toast = useToast();
 const investorName = ref('')
