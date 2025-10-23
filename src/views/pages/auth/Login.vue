@@ -1,10 +1,10 @@
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useToast } from 'primevue/usetoast';
-import { authService } from '@/services/auth.js';
 import FooterWidget from '@/components/landing/FooterWidget.vue';
 import TopbarWidget from '@/components/landing/TopbarWidget.vue';
+import { authService } from '@/services/auth.js';
+import { useToast } from 'primevue/usetoast';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const toast = useToast();
@@ -16,6 +16,10 @@ const loading = ref(false);
 
 const ingredient = ref('inversionista');
 const showEmpresaDialog = ref(false);
+const errorMessage = ref('');
+const errorMessages = ref([]);
+
+
 
 const handlePerfilChange = (value) => {
   if (value === 'empresa') {
@@ -59,7 +63,7 @@ const login = async () => {
       // Opción 2: Lógica de redirección en el frontend usando la columna 'type'
       // CORRECCIÓN: El authService retorna { user: userData }, entonces accedemos a response.user.type
       const userType = response.user?.type;
-      
+
       if (userType === 'cliente') {
         await router.push('/cliente');
       } else if (userType === 'inversionista' || userType === 'mixto') {
@@ -68,30 +72,26 @@ const login = async () => {
         await router.push('/hipotecas'); // Ruta por defecto
       }
     }
-    
-  } catch (error) {
-    if (error.response?.data?.error_type === 'email_not_verified') {
-      toast.add({
-        severity: 'warn',
-        summary: 'Cuenta no verificada',
-        detail: error.response.data.message,
-        life: 4000,
-      });
 
-      await router.push({
-        path: '/verificar-cuenta',
-        query: {
-          email: error.response.data.user_email,
-          userId: error.response.data.user_id
-        }
+  } catch (error) {
+    const data = error.response?.data || {};
+    errorMessages.value = []; // reset
+
+    // mensaje principal
+    if (data.message) {
+      errorMessages.value.push(data.message);
+    }
+
+    // agregar mensajes de issues si existen
+    if (Array.isArray(data.issues)) {
+      data.issues.forEach((issue) => {
+        errorMessages.value.push(issue.message);
       });
-    } else {
-      toast.add({
-        severity: 'error',
-        summary: 'Error de autenticación',
-        detail: error.response?.data?.message || 'Credenciales inválidas',
-        life: 4000,
-      });
+    }
+
+    // fallback genérico
+    if (errorMessages.value.length === 0) {
+      errorMessages.value.push('Ocurrió un error al iniciar sesión. Inténtalo más tarde.');
     }
   } finally {
     loading.value = false;
@@ -107,11 +107,13 @@ const login = async () => {
     <div class="flex-1 flex flex-col items-center justify-center p-4 bg-white">
       <div class="hidden w-full max-w-md flex justify-between items-center mb-4 py-2 px-4">
         <div class="flex items-center gap-1 hover:text-[#FF4929] transition-colors">
-          <RadioButton v-model="ingredient" inputId="ingredient1" name="perfil" value="inversionista" @change="handlePerfilChange('inversionista')" />
+          <RadioButton v-model="ingredient" inputId="ingredient1" name="perfil" value="inversionista"
+            @change="handlePerfilChange('inversionista')" />
           <label for="ingredient1" class="text-xs cursor-pointer hover:text-[#FF4929]">Perfil inversionista</label>
         </div>
         <div class="flex items-center gap-1 hover:text-[#FF4929] transition-colors">
-          <RadioButton v-model="ingredient" inputId="ingredient2" name="perfil" value="empresa" @change="handlePerfilChange('empresa')" />
+          <RadioButton v-model="ingredient" inputId="ingredient2" name="perfil" value="empresa"
+            @change="handlePerfilChange('empresa')" />
           <label for="ingredient2" class="text-xs cursor-pointer hover:text-[#FF4929]">Perfil empresa</label>
         </div>
       </div>
@@ -131,7 +133,8 @@ const login = async () => {
 
             <div>
               <label for="password1" class="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
-              <Password id="password1" v-model="password" placeholder="Contraseña" :toggleMask="true" fluid :feedback="false" />
+              <Password id="password1" v-model="password" placeholder="Contraseña" :toggleMask="true" fluid
+                :feedback="false" />
             </div>
 
             <div class="flex items-center justify-between">
@@ -139,16 +142,28 @@ const login = async () => {
                 <Checkbox v-model="checked" id="rememberme1" binary class="mr-2" />
                 <label for="rememberme1" class="text-sm text-gray-700">Recuérdame</label>
               </div>
-              <button type="button" class="text-sm text-[#FF4929] hover:text-blue-800 transition-colors" @click="router.push('/recuperacion')">Recuperar contraseña</button>
+              <button type="button" class="text-sm text-[#FF4929] hover:text-blue-800 transition-colors"
+                @click="router.push('/recuperacion')">Recuperar contraseña</button>
             </div>
 
-            <Button type="submit" label="Iniciar sesión" class="w-full" severity="contrast" rounded :loading="loading" />
+            <Button type="submit" label="Iniciar sesión" class="w-full" severity="contrast" rounded
+              :loading="loading" />
           </form>
+
+
+          <div v-if="errorMessages.length" class="mt-2 space-y-1">
+            <p v-for="(msg, index) in errorMessages" :key="index" class="text-red-600 text-sm">
+              {{ msg }}
+            </p>
+          </div>
+
+
 
           <div class="mt-8 text-center">
             <p class="text-sm text-gray-600">
               ¿No tienes cuenta?
-              <button type="button" class="text-[#FF4929] hover:text-blue-800 font-medium transition-colors" @click="router.push('/registrarte')">
+              <button type="button" class="text-[#FF4929] hover:text-blue-800 font-medium transition-colors"
+                @click="router.push('/registrarte')">
                 Regístrate
               </button>
             </p>
@@ -159,7 +174,8 @@ const login = async () => {
     <br />
     <FooterWidget />
 
-    <Dialog v-model:visible="showEmpresaDialog" modal :closable="true" :draggable="false" class="mx-4" style="width: 90%; max-width: 500px;">
+    <Dialog v-model:visible="showEmpresaDialog" modal :closable="true" :draggable="false" class="mx-4"
+      style="width: 90%; max-width: 500px;">
       <template #header>
         <h3 class="text-xl font-bold text-gray-800">¿Eres empresa?</h3>
       </template>
@@ -169,7 +185,8 @@ const login = async () => {
 
         <div class="flex justify-end gap-3">
           <Button label="Cancelar" severity="secondary" @click="showEmpresaDialog = false" class="px-6" />
-          <Button label="Comunicar" severity="contrast" @click="contactarEspecialista" class="px-6 bg-[#FF4929] hover:bg-[#e63e29] border-0" />
+          <Button label="Comunicar" severity="contrast" @click="contactarEspecialista"
+            class="px-6 bg-[#FF4929] hover:bg-[#e63e29] border-0" />
         </div>
       </div>
     </Dialog>

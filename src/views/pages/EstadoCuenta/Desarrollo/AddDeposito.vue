@@ -3,7 +3,7 @@
     :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
     <!-- Título centrado -->
     <template #header>
-      <div class="w-full text-center text-xl font-bold" style="color: #000;">
+      <div class="w-full text-center font-gilroy text-xl !font-bold" style="color: #000;">
         Realizar un depósito
       </div>
     </template>
@@ -14,17 +14,18 @@
 
       <!-- Selección a cuenta bancaria (solo si es depósito personal) -->
       <div>
-        <label class="block    mb-2 " style="color:#000">
+        <label class="block font-gilroy mb-2 " style="color:#000">
           ¿A qué cuenta bancaria nos envías el dinero?
         </label>
         <Select v-model="selectedBankDestino" :options="bankDestinoOptions" optionLabel="name" optionValue="value"
-          placeholder="Seleccionar cuenta" class="w-full">
+          placeholder="Seleccionar cuenta" class="w-full font-gilroy">
           <!-- Opción del dropdown -->
           <template #option="slotProps">
-            <div class="" :class="{ 'opacity-50 cursor-not-allowed': slotProps.option.status === 'approved' }">
+            <div class="font-gilroy"
+              :class="{ 'opacity-50 cursor-not-allowed': slotProps.option.status === 'approved' }">
               <!-- Fila superior: Alias + Estado -->
               <div class="flex justify-between items-center">
-                <span class="  ">
+                <span class="font-gilroy">
                   {{ slotProps.option.alias }}
                 </span>
               </div>
@@ -60,13 +61,13 @@
       <!-- Información de la cuenta destino seleccionada -->
       <div v-if="selectedBankDestino" class="bg-gray-50 p-4 rounded-lg">
         <div class="flex justify-between items-center mb-2">
-          <span class="">Cuenta seleccionada:</span>
+          <span class="font-gilroy">Cuenta seleccionada:</span>
           <Button icon="pi pi-copy" size="small" text
             @click="copyToClipboard(getBankDestinoNumber(selectedBankDestino))"
             v-tooltip.top="'Copiar número de cuenta'" />
         </div>
 
-        <div class=" text-gray-600 mb-3">
+        <div class=" text-gray-600 font-gilroy mb-3">
           <span class="block">Banco: <b>{{ getBankDestinoField(selectedBankDestino, 'bank') }}</b></span>
           <span class="block">Moneda: <b>{{ getBankDestinoField(selectedBankDestino, 'currency') }}</b></span>
           <span class="block">Tipo: <b>{{ getBankDestinoField(selectedBankDestino, 'type') }}</b></span>
@@ -74,7 +75,7 @@
           <span class="block">CCI: <b>{{ getBankDestinoField(selectedBankDestino, 'cci') }}</b></span>
         </div>
 
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between font-gilroy items-center">
           <span class="font-bold text-gray-800">
             {{ getBankDestinoField(selectedBankDestino, 'alias') }}
           </span>
@@ -83,50 +84,50 @@
       </div>
 
       <!-- Mensaje si no hay cuenta seleccionada -->
-      <div v-else class="bg-gray-50 p-4 rounded-lg text-gray-500  text-center">
+      <div v-else class="font-gilroy bg-gray-50 p-4 rounded-lg text-gray-500  text-center">
         Selecciona una cuenta destino para ver los detalles.
       </div>
 
 
       <!-- Radio buttons para seleccionar tipo de depósito -->
-      <div>
-        <label class="block mb-3" style="color: #000;">
+      <!-- <div>
+        <label class="block font-gilroy mb-3" style="color: #000;">
           Tipo de depósito
         </label>
-        <div class="flex flex-col gap-3" style="color: #000;">
-          <div class="flex items-center">
+        <div class="flex font-gilroy flex-col gap-3" style="color: #000;">
+          <div class="flex items-center font-gilroy">
             <RadioButton v-model="depositType" inputId="deposit1" name="depositType" value="personal" />
-            <label for="deposit1" class="ml-2 ">Depósito a mi billetera</label>
+            <label for="deposit1" class="ml-2 font-gilroy">Depósito a mi billetera</label>
           </div>
           <div class="flex items-center">
             <RadioButton v-model="depositType" inputId="deposit2" name="depositType" value="mortgage" />
-            <label for="deposit2" class="ml-2 ">Hipotecas con depósitos pendientes</label>
+            <label for="deposit2" class="ml-2 font-gilroy">Hipotecas con depósitos pendientes</label>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- Selección de cooperativa con inversiones pendientes (solo si es hipoteca) -->
       <div v-if="depositType === 'mortgage'">
-        <label class="block   mb-2 text-gray-900">
+        <label class="block font-gilroy mb-2 text-gray-900">
           Hipotecas con depósitos pendientes
         </label>
         <Select v-model="selectedPendingInvestment" :options="pendingCooperatives" optionLabel="propiedad"
           optionValue="id" placeholder="Seleccionar cooperativa" class="w-full">
           <!-- Cómo se muestran las opciones -->
           <template #option="slotProps">
-            <div class="flex items-center justify-between">
-              <span class=" text-gray-800">{{ slotProps.option.propiedad }}</span>
+            <div class="flex font-gilroy items-center justify-between">
+              <span class="font-gilroy text-gray-800">{{ slotProps.option.propiedad }}</span>
               <Tag value="Pendiente" severity="warn" />
             </div>
           </template>
 
           <!-- Valor seleccionado -->
           <template #value="slotProps">
-            <div class="flex items-center justify-between w-full">
-              <span class="" :class="slotProps.value ? 'text-gray-800' : 'text-gray-400'">
+            <div class="flex items-center font-gilroy justify-between w-full">
+              <span class="font-gilroy" :class="slotProps.value ? 'text-gray-800' : 'text-gray-400'">
                 {{ slotProps.value ? getCooperativeName(slotProps.value) : 'Seleccionar cooperativa' }}
               </span>
-              <Tag v-if="slotProps.value" value="Pendiente" severity="warn" />
+              <Tag v-if="slotProps.value" value="Pendiente" class="font-gilroy" severity="warn" />
             </div>
           </template>
         </Select>
@@ -137,16 +138,16 @@
 
       <!-- Selección de cuenta bancaria (solo si es depósito personal) -->
       <div v-if="depositType === 'personal'">
-        <label class="block  mb-2 ">
+        <label class="block font-gilroy mb-2 ">
           ¿De qué cuenta bancaria nos envías el dinero?
         </label>
         <Select v-model="selectedBank" :options="bankOptions" optionLabel="name" optionValue="value"
           placeholder="Seleccionar cuenta" class="w-full" :optionDisabled="isOptionDisabled">
           <!-- Opción del dropdown -->
           <template #option="slotProps">
-            <div :class="{ 'opacity-50 cursor-not-allowed': slotProps.option.status === 'invalid' }">
+            <div :class="{ 'opacity-50 font-gilroy cursor-not-allowed': slotProps.option.status === 'invalid' }">
               <!-- Fila superior: Alias + Estado -->
-              <div class="flex justify-between items-center">
+              <div class="flex font-gilroy justify-between items-center">
                 <span class="  ">
                   {{ slotProps.option.alias }}
                 </span>
@@ -155,17 +156,17 @@
               </div>
 
               <!-- Fila inferior: Banco | Moneda | Tipo -->
-              <div class=" text-gray-600">
+              <div class=" text-gray-600 font-gilroy">
                 Banco: {{ slotProps.option.bank }} | Moneda: {{ slotProps.option.currency }} | Tipo: {{
                   slotProps.option.type }}
               </div>
 
               <!-- Mensaje adicional según estado -->
-              <div v-if="slotProps.option.status === 'approved'" class=" text-green-500 mt-1">
+              <div v-if="slotProps.option.status === 'approved'" class=" text-green-500 font-gilroy mt-1 font-gilroy">
 
                 ✅ Esta cuenta fue validada correctamente.
               </div>
-              <div v-else class=" text-red-600 mt-1">
+              <div v-else class=" text-red-600 mt-1 font-gilroy">
                 ⚠️ Esta cuenta aún no ha sido validada.
 
               </div>
@@ -174,14 +175,14 @@
 
           <!-- Visualización de la cuenta seleccionada -->
           <template #value="slotProps">
-            <div v-if="slotProps.value" class=" text-gray-800">
+            <div v-if="slotProps.value" class=" text-gray-800 font-gilroy">
               {{ getSelectedBankName(slotProps.value) }}
             </div>
-            <span v-else class="text-gray-400 ">Seleccionar cuenta</span>
+            <span v-else class="text-gray-400 font-gilroy">Seleccionar cuenta</span>
           </template>
 
           <template #empty>
-            <div class="text-gray-500 text-center py-2">
+            <div class="text-gray-500 text-center py-2 font-gilroy">
               {{ isLoadingBanks ? 'Cargando cuentas...' : 'No hay cuentas disponibles' }}
             </div>
           </template>
@@ -193,46 +194,48 @@
 
       <!-- Selección del medio de pago (solo para hipotecas) -->
       <div v-if="depositType === 'mortgage'">
-        <label class="block   mb-2 text-gray-700">
+        <label class="block font-gilroy  mb-2 text-gray-700">
           ¿Desde qué medio realizaste el depósito?
         </label>
         <Select v-model="selectedPaymentSource" :options="paymentSources" optionLabel="name" optionValue="id"
-          placeholder="Seleccionar medio" class="w-full">
+          placeholder="Seleccionar medio" class="w-full font-gilroy">
           <!-- Opciones del dropdown -->
           <template #option="slotProps">
-            <span class=" text-gray-800">{{ slotProps.option.name }}</span>
+            <span class=" text-gray-800 font-gilroy">{{ slotProps.option.name }}</span>
           </template>
 
           <!-- Valor seleccionado -->
           <template #value="slotProps">
-            <span v-if="slotProps.value" class=" text-gray-800">
+            <span v-if="slotProps.value" class=" text-gray-800 font-gilroy">
               {{ getPaymentSourceName(slotProps.value) }}
             </span>
-            <span v-else class="text-gray-400 ">Seleccionar medio</span>
+            <span v-else class="text-gray-400 font-gilroy">Seleccionar medio</span>
           </template>
         </Select>
       </div>
 
       <!-- Subir voucher -->
       <div>
-        <label class="block  font-medium mb-2">Subir voucher</label>
-        <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-          <input ref="fileInput" type="file" accept="image/*,.pdf" @change="handleFileUpload" class="hidden" />
+        <label class="block font-gilroy  font-medium mb-2">Subir voucher</label>
+        <div class="border-2 border-dashed font-gilroy border-gray-300 rounded-lg p-4 text-center">
+          <input ref="fileInput" type="file" accept="image/*,.pdf" @change="handleFileUpload"
+            class="hidden font-gilroy" />
 
           <!-- Mostrar voucher si existe -->
           <div v-if="voucherFile" class="space-y-3">
             <!-- Preview de imagen -->
             <div v-if="isImage(voucherFile)" class="relative">
               <img :src="voucherPreview" alt="Voucher preview"
-                class="max-w-full h-32 object-contain mx-auto rounded cursor-pointer" @click="openImageModal" />
+                class="max-w-full font-gilroy h-32 object-contain mx-auto rounded cursor-pointer"
+                @click="openImageModal" />
               <Button icon="pi pi-times" size="small" severity="danger" rounded class="absolute -top-2 -right-2"
                 @click="removeVoucher" />
             </div>
 
             <!-- Preview de PDF -->
-            <div v-else class="flex items-center justify-center space-x-2">
+            <div v-else class="flex font-gilroy items-center justify-center space-x-2">
               <i class="pi pi-file-pdf text-red-500 text-2xl"></i>
-              <span class="">{{ voucherFile.name }}</span>
+              <span class="font-gilroy">{{ voucherFile.name }}</span>
               <Button icon="pi pi-eye" size="small" @click="openPdfModal" v-tooltip.top="'Ver PDF'" />
               <Button icon="pi pi-times" size="small" severity="danger" @click="removeVoucher" />
             </div>
@@ -240,8 +243,8 @@
 
           <!-- Botón para subir si no hay archivo -->
           <div v-else>
-            <Button icon="pi pi-cloud-upload" severity="info" rounded label="Voucher" @click="$refs.fileInput.click()"
-               />
+            <Button icon="pi pi-cloud-upload" severity="info" rounded label="Voucher"
+              @click="$refs.fileInput.click()" />
             <p class=" text-gray-500 mt-2">Formatos: JPG, PNG, PDF (Max. 5MB)</p>
           </div>
         </div>
@@ -303,7 +306,7 @@
           @click="enableEditing" />
       </div>
 
-      <div class=" space-y-2">
+      <div class="font-gilroy space-y-2">
         <p>
           Declaración jurada de origen de fondos
         </p>
@@ -328,23 +331,16 @@
       <!-- Checkbox de declaración -->
       <div class="flex items-start space-x-2">
         <Checkbox v-model="agreeTerms" inputId="terms" binary />
-        <label for="terms">Firmar declaración</label>
+        <label for="terms font-gilroy">Firmar declaración</label>
       </div>
     </div>
 
     <!-- Footer del modal -->
     <template #footer>
       <div class="flex w-full">
-      
-        <Button
-      label="Registrar depósito"
-      icon="pi pi-save"  
-      rounded
-      outlined
-      @click="handleSubmit"
-      
-      class="flex-1 !bg-transparent !text-black !border-black hover:!bg-slate-100 transition-colors duration-200 !font-semibold !tracking-wide !border-2"
-    />
+
+        <Button label="Registrar depósito" icon="pi pi-save" rounded outlined @click="handleSubmit"
+          class="flex-1 !bg-transparent font-gilroy !text-black !border-black hover:!bg-slate-100 transition-colors duration-200 !font-semibold !tracking-wide !border-2" />
       </div>
     </template>
 

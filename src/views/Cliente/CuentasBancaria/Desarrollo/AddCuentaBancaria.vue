@@ -111,14 +111,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
-import { useToast } from 'primevue/usetoast';
-import Dialog from 'primevue/dialog';
-import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
-import Select from 'primevue/select';
 import { bankAccountService } from '@/services/bankAccountService.js';
 import { bankService } from '@/services/bankService.js';
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+import InputText from 'primevue/inputtext';
+import Select from 'primevue/select';
+import { useToast } from 'primevue/usetoast';
+import { onMounted, reactive, ref } from 'vue';
 
 const toast = useToast();
 
