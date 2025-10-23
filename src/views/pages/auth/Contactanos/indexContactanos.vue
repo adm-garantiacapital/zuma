@@ -36,7 +36,7 @@
               <span v-if="errors.email" class="text-red-500 text-sm">{{ errors.email[0] }}</span>
             </div>
 
-            <label class="block text-sm font-medium mb-1 text-[#171717]">Producto de Interés</label>
+            <label class="block text-sm font-medium mb-1 text-[#171717]">Producto de Inversión</label>
             <div class="rounded-xl mb-5">
               <Dropdown
                 v-model="form.interested_product"
@@ -103,14 +103,14 @@
         <div class="col-span-12 md:col-span-6 px-5 mb-10 relative">
           <div class="bg-white rounded-xl p-5">
             <h3 class="font-medium text-xl text-center max-w-xl mx-auto m-0">Recibe atención personalizada</h3>
-            <div class="bg-[#23c347] rounded-xl py-3 px-5 text-center mt-6 relative">
+            <a href="https://wa.me/51986351267" class="bg-[#23c347] rounded-xl py-3 px-5 text-center mt-6 relative w-full inline-block">
               <h4 class="m-0 text-white font-normal text-center text-medium text-2xl leading-none ps-16">
-                <a href="https://wa.me/51986351267">
+                <span >
                   <i class="pi pi-whatsapp !text-5xl absolute left-16 top-3"></i>
                   Chatea con<br />nosotros
-                </a>                
+                </span>                
               </h4>
-            </div>
+            </a>
           </div>
 
           <div class="p-2 text-center">

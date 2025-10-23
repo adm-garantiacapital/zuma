@@ -114,7 +114,7 @@
                 <span v-if="errors.email" class="text-red-500 text-sm">{{ errors.email[0] }}</span>
               </div>
 
-              <label class="block text-sm font-medium mb-1 text-[#171717]">Producto de Interés</label>
+              <label class="block text-sm font-medium mb-1 text-[#171717]">Producto de Inversión</label>
               <div class="rounded-xl mb-5">
                 <Select v-model="form.interested_product" :options="productOptions" optionLabel="name"
                   optionValue="value" placeholder="Selecciona un producto" class="w-full"
@@ -200,8 +200,7 @@ const toast = useToast();
 // Opciones para el select de productos
 const productOptions = ref([
   { name: 'Facturas', value: 'Facturas' },
-  { name: 'Préstamos con Garantía', value: 'Prestamos' },
-  { name: 'Depósito a plazo fijo', value: 'tasas' }
+  { name: 'Préstamos con Garantía', value: 'Prestamos' }
 ]);
 
 // Estado reactivo del formulario

@@ -79,14 +79,15 @@
         <h5 class="text-[#FF4929] block m-0 text-center font-bold">Invierte desde $25 o S/. 100</h5>
       </div>
     </div>
-    <p class="text-[#171717] mt-10 px-10 text-justify">¡Bienvenido al mundo del factoring! Esta alternativa de inversión
-      está
-      orientada
-      para aquel inversionista que tiene un horizonte de inversión corto. Las rentabilidades anuales van desde un 10% a
-      un
-      22% anual (TEA). Al invertir en una cuenta por pagar, te conviertes en acreedor indirecto de las empresas más
-      grandes
-      y prestigiosas de tu país. Invierte desde $25. Easy.
+    <p class="text-[#171717] mt-10 px-10 text-justify">
+      Todos los días, empresas o personas requieren de capital de forma rápida.
+      En la actualidad, el sistema financiero tradicional todavía se presenta lento
+      y burocrático en sus procesos de evaluación y aprobación. Por ello en
+      Zuma, recibimos a diario muchas de estas solicitudes, las cuales, después
+      de un filtro y una evaluación integral, las ponemos a disposición de nuestra
+      comunidad de inversionistas. Todas las solicitudes de préstamo cuentan
+      con garantías hipotecarias. Ten presente, que en cada oportunidad de
+      inversión solo hay un ganador
     </p>
     <div class="flex justify-end gap-2">
       <Button label="Quiero Invertir" severity="warn" rounded @click="() => registrarYRedirigir(1, 'https://zuma.com.pe/factoring/registrarme')"
