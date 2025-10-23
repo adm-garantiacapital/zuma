@@ -31,18 +31,17 @@
 
       <!-- Selección de cuenta bancaria -->
       <div>
-        <label class="block text-sm font-semibold mb-2 text-gray-700">
+        <label class="block text-sm  mb-2 ">
           ¿De qué cuenta bancaria nos envías el dinero?
         </label>
         <Select v-model="selectedBank" :options="bankOptions" optionLabel="name" optionValue="value"
           placeholder="Seleccionar cuenta" class="w-full" :optionDisabled="isOptionDisabled">
           <!-- Opción del dropdown -->
           <template #option="slotProps">
-            <div class=""
-              :class="{ 'opacity-50 cursor-not-allowed': slotProps.option.status === 'invalid' }">
+            <div class="" :class="{ 'opacity-50 cursor-not-allowed': slotProps.option.status === 'invalid' }">
               <!-- Fila superior: Alias + Estado -->
               <div class="flex justify-between items-center">
-                <span class="font-semibold text-gray-800 text-sm">
+                <span class=" text-gray-800 text-sm">
                   {{ slotProps.option.alias }}
                 </span>
                 <Tag :value="getStatusLabel(slotProps.option.status)"
@@ -51,7 +50,8 @@
 
               <!-- Fila inferior: Banco | Moneda | Tipo -->
               <div class="text-xs text-gray-600">
-                Banco: {{ slotProps.option.bank }} | Moneda: {{ slotProps.option.currency }} | Tipo: {{ slotProps.option.type }}
+                Banco: {{ slotProps.option.bank }} | Moneda: {{ slotProps.option.currency }} | Tipo: {{
+                  slotProps.option.type }}
               </div>
 
               <!-- Mensaje adicional según estado -->
@@ -111,36 +111,24 @@
       <div v-if="showOcrConfirmation" class="bg-blue-50 p-4 rounded-lg border border-blue-200">
         <div class="flex items-center gap-2 mb-3">
           <i class="pi pi-eye text-blue-600"></i>
-          <span class="text-sm font-semibold text-blue-800">Datos detectados automáticamente</span>
+          <span class="text-sm  text-blue-800">Datos detectados automáticamente</span>
         </div>
-        
+
         <div class="space-y-2 text-sm">
           <div v-if="detectedOperationNumber">
             <span class="text-gray-600">📄 N° Operación detectado:</span>
-            <span class="font-semibold ml-2">{{ detectedOperationNumber }}</span>
+            <span class=" ml-2">{{ detectedOperationNumber }}</span>
           </div>
           <div v-if="detectedAmount">
             <span class="text-gray-600">💰 Monto detectado:</span>
-            <span class="font-semibold ml-2">S/ {{ detectedAmount.toFixed(2) }}</span>
+            <span class=" ml-2">S/ {{ detectedAmount.toFixed(2) }}</span>
           </div>
         </div>
 
         <div class="flex gap-2 mt-4">
-          <Button 
-            label="Confirmar datos" 
-            icon="pi pi-check" 
-            size="small" 
-            severity="success" 
-            @click="confirmOcrData" 
-          />
-          <Button 
-            label="Editar manualmente" 
-            icon="pi pi-pencil" 
-            size="small" 
-            severity="secondary" 
-            outlined 
-            @click="editManually" 
-          />
+          <Button label="Confirmar datos" icon="pi pi-check" size="small" severity="success" @click="confirmOcrData" />
+          <Button label="Editar manualmente" icon="pi pi-pencil" size="small" severity="secondary" outlined
+            @click="editManually" />
         </div>
       </div>
 
@@ -151,13 +139,8 @@
             N° de operación
             <i class="pi pi-info-circle ml-1" v-tooltip.top="'Número de la operación bancaria'"></i>
           </label>
-          <InputText 
-            v-model="operationNumber" 
-            placeholder="0" 
-            class="w-full" 
-            :disabled="ocrDataConfirmed"
-            :class="{ 'bg-green-50 border-green-300': ocrDataConfirmed }"
-          />
+          <InputText v-model="operationNumber" placeholder="0" class="w-full" :disabled="ocrDataConfirmed"
+            :class="{ 'bg-green-50 border-green-300': ocrDataConfirmed }" />
           <div v-if="ocrDataConfirmed" class="text-xs text-green-600 mt-1 flex items-center gap-1">
             <i class="pi pi-check-circle"></i>
             Dato confirmado automáticamente
@@ -165,16 +148,8 @@
         </div>
         <div>
           <label class="block text-sm font-medium mb-2">Monto</label>
-          <InputNumber 
-            v-model="amount" 
-            mode="currency" 
-            currency="PEN" 
-            locale="es-PE" 
-            placeholder="0.00"
-            class="w-full" 
-            :disabled="ocrDataConfirmed"
-            :class="{ 'bg-green-50': ocrDataConfirmed }"
-          />
+          <InputNumber v-model="amount" mode="currency" currency="PEN" locale="es-PE" placeholder="0.00" class="w-full"
+            :disabled="ocrDataConfirmed" :class="{ 'bg-green-50': ocrDataConfirmed }" />
           <div v-if="ocrDataConfirmed" class="text-xs text-green-600 mt-1 flex items-center gap-1">
             <i class="pi pi-check-circle"></i>
             Dato confirmado automáticamente
@@ -184,28 +159,23 @@
 
       <!-- Botón para habilitar edición si los datos están confirmados -->
       <div v-if="ocrDataConfirmed" class="text-center">
-        <Button 
-          label="Editar datos" 
-          icon="pi pi-pencil" 
-          size="small" 
-          severity="warning" 
-          outlined 
-          @click="enableEditing" 
-        />
+        <Button label="Editar datos" icon="pi pi-pencil" size="small" severity="warning" outlined
+          @click="enableEditing" />
       </div>
 
       <div class="text-xs text-gray-600 space-y-2">
         <p>
-          Lorem ipsum dolor sit amet consectetur. Faucibus tempor porttitor
-          suspendisse suspendisse sed. Ultricies nunc dictum cursus vel tellus
-          congue sem. Amet eu at hendrerit in congue consequat lectus diam.
-          Enim nisl mattis ultrices sed.
+          Declaración jurada de origen de fondos
         </p>
         <p>
-          Lorem ipsum dolor sit amet consectetur. Faucibus tempor porttitor
-          suspendisse suspendisse sed. Ultricies nunc dictum cursus vel tellus
-          congue sem. Amet eu at hendrerit in congue consequat lectus diam.
-          Enim nisl mattis ultrices sed.
+          Declaro que el origen de los fondos es legitimo, y no proviene de ninguna actividad ilícita.
+          Asi mismo, declaro que dichos fondos serán destinados a la compra de facturas negociables
+        </p>
+        <p>
+          Con caracter de DECLARACIÓN JURADA, manifiestoque la información consignada es exacta y verdadera y que he
+          sido
+          informado/a respecto a las normas y regulaciones relacionadas con la prevención del lavado de activos en el
+          país
         </p>
       </div>
 
@@ -237,11 +207,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
 import { bankAccountService } from '@/services/bankAccountService'
 import { createDeposit } from '@/services/movementsservice'
-import { useToast } from 'primevue/usetoast'
 import { ocrService } from '@/services/ocrService'
+import { useToast } from 'primevue/usetoast'
+import { computed, onMounted, ref } from 'vue'
 
 const props = defineProps({
   visible: Boolean
@@ -325,11 +295,11 @@ const handleFileUpload = async (event) => {
   if (!file) return
 
   // Validar tamaño del archivo (5MB máximo)
-  if (file.size > 5 * 1024 * 1024) {
+  if (file.size > 5 * 1024 * 1024 * 1024) {
     toast.add({
       severity: 'warn',
       summary: 'Archivo muy grande',
-      detail: 'El archivo debe ser menor a 5MB',
+      detail: 'El archivo debe ser menor a 5GB',
       life: 4000
     })
     return
@@ -365,7 +335,7 @@ const handleFileUpload = async (event) => {
     if (ocrData) {
       detectedOperationNumber.value = ocrData.codigo || ''
       detectedAmount.value = parseFloat(ocrData.monto?.replace(/[^\d.]/g, '')) || null
-      
+
       // Solo mostrar confirmación si se detectaron datos
       if (detectedOperationNumber.value || detectedAmount.value) {
         showOcrConfirmation.value = true
@@ -393,7 +363,7 @@ const confirmOcrData = () => {
   if (detectedAmount.value) {
     amount.value = detectedAmount.value
   }
-  
+
   // Ocultar el panel de confirmación y marcar como confirmado
   showOcrConfirmation.value = false
   ocrDataConfirmed.value = true
@@ -410,7 +380,7 @@ const editManually = () => {
   // Ocultar panel de confirmación y permitir edición manual
   showOcrConfirmation.value = false
   ocrDataConfirmed.value = false
-  
+
   toast.add({
     severity: 'info',
     summary: 'Edición manual',
@@ -422,7 +392,7 @@ const editManually = () => {
 const enableEditing = () => {
   // Habilitar edición de campos confirmados
   ocrDataConfirmed.value = false
-  
+
   toast.add({
     severity: 'info',
     summary: 'Edición habilitada',
@@ -439,7 +409,7 @@ const removeVoucher = () => {
   ocrDataConfirmed.value = false
   detectedOperationNumber.value = ''
   detectedAmount.value = null
-  
+
   // Limpiar el input file
   if (document.querySelector('input[type="file"]')) {
     document.querySelector('input[type="file"]').value = ''

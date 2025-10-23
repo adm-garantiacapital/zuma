@@ -3,52 +3,111 @@
     :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
     <!-- Título centrado -->
     <template #header>
-      <div class="w-full text-center text-xl font-bold" style="color: #FF4929;">
+      <div class="w-full text-center text-xl font-bold" style="color: #000;">
         Realizar un depósito
       </div>
     </template>
 
-    <div class="flex flex-col gap-6">
-      <!-- Información de la cuenta -->
-      <div class="bg-gray-50 p-4 rounded-lg">
-        <div class="flex justify-between items-center mb-2">
-          <span class="font-medium">Nuestra cuenta:</span>
-          <Button icon="pi pi-copy" size="small" text @click="copyToClipboard(accountNumber)"
-            v-tooltip.top="'Copiar'" />
-        </div>
-        <div class="text-sm text-gray-600 mb-3">N°: {{ accountNumber }}</div>
+    <div class="flex flex-col gap-6 " style="color: #000;">
 
+
+
+      <!-- Selección a cuenta bancaria (solo si es depósito personal) -->
+      <div>
+        <label class="block    mb-2 " style="color:#000">
+          ¿A qué cuenta bancaria nos envías el dinero?
+        </label>
+        <Select v-model="selectedBankDestino" :options="bankDestinoOptions" optionLabel="name" optionValue="value"
+          placeholder="Seleccionar cuenta" class="w-full">
+          <!-- Opción del dropdown -->
+          <template #option="slotProps">
+            <div class="" :class="{ 'opacity-50 cursor-not-allowed': slotProps.option.status === 'approved' }">
+              <!-- Fila superior: Alias + Estado -->
+              <div class="flex justify-between items-center">
+                <span class="  ">
+                  {{ slotProps.option.alias }}
+                </span>
+              </div>
+
+              <!-- Fila inferior: Banco | Moneda | Tipo -->
+              <div class=" text-gray-600">
+                Banco: {{ slotProps.option.bank }} | Moneda: {{ slotProps.option.currency }} | Tipo: {{
+                  slotProps.option.type }}
+              </div>
+              <div class=" text-gray-600">
+                CC: {{ slotProps.option.cc }} <br />
+                CCI: {{ slotProps.option.cci }} <br />
+              </div>
+            </div>
+          </template>
+
+          <!-- Visualización de la cuenta seleccionada -->
+          <template #value="slotProps">
+            <div v-if="slotProps.value" class=" ">
+              {{ getSelectedBankDestinoName(slotProps.value) }}
+            </div>
+            <span v-else class="text-gray-400 ">Seleccionar cuenta</span>
+          </template>
+
+
+          <template #empty>
+            <div class="text-gray-500 text-center py-2">
+              {{ isLoadingBankDestino ? 'Cargando cuentas...' : 'No hay cuentas disponibles' }}
+            </div>
+          </template>
+        </Select>
+      </div>
+      <!-- Información de la cuenta destino seleccionada -->
+      <div v-if="selectedBankDestino" class="bg-gray-50 p-4 rounded-lg">
         <div class="flex justify-between items-center mb-2">
-          <span class="font-bold">{{ companyName }}</span>
-          <Button icon="pi pi-copy" size="small" text @click="copyToClipboard(companyName)" v-tooltip.top="'Copiar'" />
+          <span class="">Cuenta seleccionada:</span>
+          <Button icon="pi pi-copy" size="small" text
+            @click="copyToClipboard(getBankDestinoNumber(selectedBankDestino))"
+            v-tooltip.top="'Copiar número de cuenta'" />
+        </div>
+
+        <div class=" text-gray-600 mb-3">
+          <span class="block">Banco: <b>{{ getBankDestinoField(selectedBankDestino, 'bank') }}</b></span>
+          <span class="block">Moneda: <b>{{ getBankDestinoField(selectedBankDestino, 'currency') }}</b></span>
+          <span class="block">Tipo: <b>{{ getBankDestinoField(selectedBankDestino, 'type') }}</b></span>
+          <span class="block">CC: <b>{{ getBankDestinoField(selectedBankDestino, 'cc') }}</b></span>
+          <span class="block">CCI: <b>{{ getBankDestinoField(selectedBankDestino, 'cci') }}</b></span>
         </div>
 
         <div class="flex justify-between items-center">
-          <span class="text-sm">RUC: {{ ruc }}</span>
-          <Button icon="pi pi-copy" size="small" text @click="copyToClipboard(ruc)" v-tooltip.top="'Copiar'" />
+          <span class="font-bold text-gray-800">
+            {{ getBankDestinoField(selectedBankDestino, 'alias') }}
+          </span>
+
         </div>
       </div>
 
+      <!-- Mensaje si no hay cuenta seleccionada -->
+      <div v-else class="bg-gray-50 p-4 rounded-lg text-gray-500  text-center">
+        Selecciona una cuenta destino para ver los detalles.
+      </div>
+
+
       <!-- Radio buttons para seleccionar tipo de depósito -->
       <div>
-        <label class="block text-sm font-semibold mb-3 text-gray-700">
+        <label class="block mb-3" style="color: #000;">
           Tipo de depósito
         </label>
-        <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-3" style="color: #000;">
           <div class="flex items-center">
             <RadioButton v-model="depositType" inputId="deposit1" name="depositType" value="personal" />
-            <label for="deposit1" class="ml-2 text-sm">Depósito a mi billetera</label>
+            <label for="deposit1" class="ml-2 ">Depósito a mi billetera</label>
           </div>
           <div class="flex items-center">
             <RadioButton v-model="depositType" inputId="deposit2" name="depositType" value="mortgage" />
-            <label for="deposit2" class="ml-2 text-sm">Hipotecas con depósitos pendientes</label>
+            <label for="deposit2" class="ml-2 ">Hipotecas con depósitos pendientes</label>
           </div>
         </div>
       </div>
 
       <!-- Selección de cooperativa con inversiones pendientes (solo si es hipoteca) -->
       <div v-if="depositType === 'mortgage'">
-        <label class="block text-sm font-semibold mb-2 text-gray-700">
+        <label class="block   mb-2 text-gray-900">
           Hipotecas con depósitos pendientes
         </label>
         <Select v-model="selectedPendingInvestment" :options="pendingCooperatives" optionLabel="propiedad"
@@ -56,7 +115,7 @@
           <!-- Cómo se muestran las opciones -->
           <template #option="slotProps">
             <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-800">{{ slotProps.option.propiedad }}</span>
+              <span class=" text-gray-800">{{ slotProps.option.propiedad }}</span>
               <Tag value="Pendiente" severity="warn" />
             </div>
           </template>
@@ -64,7 +123,7 @@
           <!-- Valor seleccionado -->
           <template #value="slotProps">
             <div class="flex items-center justify-between w-full">
-              <span class="text-sm" :class="slotProps.value ? 'text-gray-800' : 'text-gray-400'">
+              <span class="" :class="slotProps.value ? 'text-gray-800' : 'text-gray-400'">
                 {{ slotProps.value ? getCooperativeName(slotProps.value) : 'Seleccionar cooperativa' }}
               </span>
               <Tag v-if="slotProps.value" value="Pendiente" severity="warn" />
@@ -73,76 +132,90 @@
         </Select>
       </div>
 
+
+
+
       <!-- Selección de cuenta bancaria (solo si es depósito personal) -->
       <div v-if="depositType === 'personal'">
-        <label class="block text-sm font-semibold mb-2 text-gray-700">
+        <label class="block  mb-2 ">
           ¿De qué cuenta bancaria nos envías el dinero?
         </label>
         <Select v-model="selectedBank" :options="bankOptions" optionLabel="name" optionValue="value"
           placeholder="Seleccionar cuenta" class="w-full" :optionDisabled="isOptionDisabled">
           <!-- Opción del dropdown -->
           <template #option="slotProps">
-            <div class=""
-              :class="{ 'opacity-50 cursor-not-allowed': slotProps.option.status === 'invalid' }">
+            <div :class="{ 'opacity-50 cursor-not-allowed': slotProps.option.status === 'invalid' }">
               <!-- Fila superior: Alias + Estado -->
               <div class="flex justify-between items-center">
-                <span class="font-semibold text-gray-800 text-sm">
+                <span class="  ">
                   {{ slotProps.option.alias }}
                 </span>
                 <Tag :value="getStatusLabel(slotProps.option.status)"
-                  :severity="slotProps.option.status === 'valid' ? 'success' : 'danger'" class="text-xs" />
+                  :severity="slotProps.option.status === 'approved' ? 'success' : 'danger'" class="" />
               </div>
 
               <!-- Fila inferior: Banco | Moneda | Tipo -->
-              <div class="text-xs text-gray-600">
-                Banco: {{ slotProps.option.bank }} | Moneda: {{ slotProps.option.currency }} | Tipo: {{ slotProps.option.type }}
+              <div class=" text-gray-600">
+                Banco: {{ slotProps.option.bank }} | Moneda: {{ slotProps.option.currency }} | Tipo: {{
+                  slotProps.option.type }}
               </div>
 
               <!-- Mensaje adicional según estado -->
-              <div v-if="slotProps.option.status === 'invalid'" class="text-xs text-red-500 mt-1">
-                ⚠️ Esta cuenta aún no ha sido validada.
-              </div>
-              <div v-else class="text-xs text-green-600 mt-1">
+              <div v-if="slotProps.option.status === 'approved'" class=" text-green-500 mt-1">
+
                 ✅ Esta cuenta fue validada correctamente.
+              </div>
+              <div v-else class=" text-red-600 mt-1">
+                ⚠️ Esta cuenta aún no ha sido validada.
+
               </div>
             </div>
           </template>
 
           <!-- Visualización de la cuenta seleccionada -->
           <template #value="slotProps">
-            <div v-if="slotProps.value" class="text-sm text-gray-800">
+            <div v-if="slotProps.value" class=" text-gray-800">
               {{ getSelectedBankName(slotProps.value) }}
             </div>
-            <span v-else class="text-gray-400 text-sm">Seleccionar cuenta</span>
+            <span v-else class="text-gray-400 ">Seleccionar cuenta</span>
+          </template>
+
+          <template #empty>
+            <div class="text-gray-500 text-center py-2">
+              {{ isLoadingBanks ? 'Cargando cuentas...' : 'No hay cuentas disponibles' }}
+            </div>
           </template>
         </Select>
       </div>
 
+
+
+
       <!-- Selección del medio de pago (solo para hipotecas) -->
       <div v-if="depositType === 'mortgage'">
-        <label class="block text-sm font-semibold mb-2 text-gray-700">
+        <label class="block   mb-2 text-gray-700">
           ¿Desde qué medio realizaste el depósito?
         </label>
         <Select v-model="selectedPaymentSource" :options="paymentSources" optionLabel="name" optionValue="id"
           placeholder="Seleccionar medio" class="w-full">
           <!-- Opciones del dropdown -->
           <template #option="slotProps">
-            <span class="text-sm text-gray-800">{{ slotProps.option.name }}</span>
+            <span class=" text-gray-800">{{ slotProps.option.name }}</span>
           </template>
 
           <!-- Valor seleccionado -->
           <template #value="slotProps">
-            <span v-if="slotProps.value" class="text-sm text-gray-800">
+            <span v-if="slotProps.value" class=" text-gray-800">
               {{ getPaymentSourceName(slotProps.value) }}
             </span>
-            <span v-else class="text-gray-400 text-sm">Seleccionar medio</span>
+            <span v-else class="text-gray-400 ">Seleccionar medio</span>
           </template>
         </Select>
       </div>
 
       <!-- Subir voucher -->
       <div>
-        <label class="block text-sm font-medium mb-2">Subir voucher</label>
+        <label class="block  font-medium mb-2">Subir voucher</label>
         <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
           <input ref="fileInput" type="file" accept="image/*,.pdf" @change="handleFileUpload" class="hidden" />
 
@@ -159,7 +232,7 @@
             <!-- Preview de PDF -->
             <div v-else class="flex items-center justify-center space-x-2">
               <i class="pi pi-file-pdf text-red-500 text-2xl"></i>
-              <span class="text-sm">{{ voucherFile.name }}</span>
+              <span class="">{{ voucherFile.name }}</span>
               <Button icon="pi pi-eye" size="small" @click="openPdfModal" v-tooltip.top="'Ver PDF'" />
               <Button icon="pi pi-times" size="small" severity="danger" @click="removeVoucher" />
             </div>
@@ -167,8 +240,9 @@
 
           <!-- Botón para subir si no hay archivo -->
           <div v-else>
-            <Button icon="pi pi-upload" label="Voucher" @click="$refs.fileInput.click()" outlined />
-            <p class="text-xs text-gray-500 mt-2">Formatos: JPG, PNG, PDF (Max. 5MB)</p>
+            <Button icon="pi pi-cloud-upload" severity="info" rounded label="Voucher" @click="$refs.fileInput.click()"
+               />
+            <p class=" text-gray-500 mt-2">Formatos: JPG, PNG, PDF (Max. 5MB)</p>
           </div>
         </div>
       </div>
@@ -177,71 +251,46 @@
       <div v-if="showOcrConfirmation" class="bg-blue-50 p-4 rounded-lg border border-blue-200">
         <div class="flex items-center gap-2 mb-3">
           <i class="pi pi-eye text-blue-600"></i>
-          <span class="text-sm font-semibold text-blue-800">Datos detectados automáticamente</span>
+          <span class="  text-blue-800">Datos detectados automáticamente</span>
         </div>
-        
-        <div class="space-y-2 text-sm">
+
+        <div class="space-y-2 ">
           <div v-if="detectedOperationNumber">
             <span class="text-gray-600">📄 N° Operación detectado:</span>
-            <span class="font-semibold ml-2">{{ detectedOperationNumber }}</span>
+            <span class=" ml-2">{{ detectedOperationNumber }}</span>
           </div>
           <div v-if="detectedAmount">
             <span class="text-gray-600">💰 Monto detectado:</span>
-            <span class="font-semibold ml-2">S/ {{ detectedAmount.toFixed(2) }}</span>
+            <span class=" ml-2">S/ {{ detectedAmount.toFixed(2) }}</span>
           </div>
         </div>
 
         <div class="flex gap-2 mt-4">
-          <Button 
-            label="Confirmar datos" 
-            icon="pi pi-check" 
-            size="small" 
-            severity="success" 
-            @click="confirmOcrData" 
-          />
-          <Button 
-            label="Editar manualmente" 
-            icon="pi pi-pencil" 
-            size="small" 
-            severity="secondary" 
-            outlined 
-            @click="editManually" 
-          />
+          <Button label="Confirmar datos" icon="pi pi-check" size="small" severity="success" @click="confirmOcrData" />
+          <Button label="Editar manualmente" icon="pi pi-pencil" size="small" severity="secondary" outlined
+            @click="editManually" />
         </div>
       </div>
 
       <!-- Número de operación y monto -->
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="block text-sm font-medium mb-2">
+          <label class="block  font-medium mb-2">
             N° de operación
             <i class="pi pi-info-circle ml-1" v-tooltip.top="'Número de la operación bancaria'"></i>
           </label>
-          <InputText 
-            v-model="operationNumber" 
-            placeholder="0" 
-            class="w-full" 
-            :disabled="ocrDataConfirmed"
-            :class="{ 'bg-green-50 border-green-300': ocrDataConfirmed }"
-          />
-          <div v-if="ocrDataConfirmed" class="text-xs text-green-600 mt-1 flex items-center gap-1">
+          <InputText v-model="operationNumber" placeholder="0" class="w-full" :disabled="ocrDataConfirmed"
+            :class="{ 'bg-green-50 border-green-300': ocrDataConfirmed }" />
+          <div v-if="ocrDataConfirmed" class=" text-green-600 mt-1 flex items-center gap-1">
             <i class="pi pi-check-circle"></i>
             Dato confirmado automáticamente
           </div>
         </div>
         <div>
-          <label class="block text-sm font-medium mb-2">Monto</label>
-          <InputNumber 
-            v-model="amount" 
-            mode="currency" 
-            currency="PEN" 
-            locale="es-PE" 
-            placeholder="0.00"
-            class="w-full" 
-            :disabled="ocrDataConfirmed"
-            :class="{ 'bg-green-50': ocrDataConfirmed }"
-          />
-          <div v-if="ocrDataConfirmed" class="text-xs text-green-600 mt-1 flex items-center gap-1">
+          <label class="block  font-medium mb-2">Monto</label>
+          <InputNumber v-model="amount" mode="currency" currency="PEN" locale="es-PE" placeholder="0.00" class="w-full"
+            :disabled="ocrDataConfirmed" :class="{ 'bg-green-50': ocrDataConfirmed }" />
+          <div v-if="ocrDataConfirmed" class=" text-green-600 mt-1 flex items-center gap-1">
             <i class="pi pi-check-circle"></i>
             Dato confirmado automáticamente
           </div>
@@ -250,43 +299,52 @@
 
       <!-- Botón para habilitar edición si los datos están confirmados -->
       <div v-if="ocrDataConfirmed" class="text-center">
-        <Button 
-          label="Editar datos" 
-          icon="pi pi-pencil" 
-          size="small" 
-          severity="warning" 
-          outlined 
-          @click="enableEditing" 
-        />
+        <Button label="Editar datos" icon="pi pi-pencil" size="small" severity="warning" outlined
+          @click="enableEditing" />
       </div>
 
-      <div class="text-xs text-gray-600 space-y-2">
+      <div class=" space-y-2">
         <p>
-          Lorem ipsum dolor sit amet consectetur. Faucibus tempor porttitor
-          suspendisse suspendisse sed. Ultricies nunc dictum cursus vel tellus
-          congue sem. Amet eu at hendrerit in congue consequat lectus diam.
-          Enim nisl mattis ultrices sed.
+          Declaración jurada de origen de fondos
         </p>
         <p>
-          Lorem ipsum dolor sit amet consectetur. Faucibus tempor porttitor
-          suspendisse suspendisse sed. Ultricies nunc dictum cursus vel tellus
-          congue sem. Amet eu at hendrerit in congue consequat lectus diam.
-          Enim nisl mattis ultrices sed.
+          Declaro que el origen de los fondos es legitimo, y no proviene de ninguna actividad ilícita.
+
+        </p>
+        <p>
+          Asi mismo, declaro que dichos fondos serán destinados a la compra de facturas negociables
+
+        </p>
+        <p>
+          Con caracter de DECLARACIÓN JURADA, manifiestoque la información consignada es exacta y verdadera y que he
+          sido
+          informado/a respecto a las normas y regulaciones relacionadas con la prevención del lavado de activos en el
+          país
+
+
         </p>
       </div>
 
       <!-- Checkbox de declaración -->
       <div class="flex items-start space-x-2">
         <Checkbox v-model="agreeTerms" inputId="terms" binary />
-        <label for="terms" class="text-sm">Firmar declaración</label>
+        <label for="terms">Firmar declaración</label>
       </div>
     </div>
 
     <!-- Footer del modal -->
     <template #footer>
-      <div class="flex justify-end gap-2">
-        <Button label="Cancelar" severity="secondary" @click="updateVisible(false)" rounded />
-        <Button label="Registrar depósito" severity="info" rounded @click="handleSubmit" :disabled="!isFormValid" />
+      <div class="flex w-full">
+      
+        <Button
+      label="Registrar depósito"
+      icon="pi pi-save"  
+      rounded
+      outlined
+      @click="handleSubmit"
+      
+      class="flex-1 !bg-transparent !text-black !border-black hover:!bg-slate-100 transition-colors duration-200 !font-semibold !tracking-wide !border-2"
+    />
       </div>
     </template>
 
@@ -303,12 +361,18 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { bankAccountDestinoService } from '@/services/bankAccountDestinoService'
 import { bankAccountService } from '@/services/bankAccountService'
-import { useToast } from 'primevue/usetoast'
-import { ocrService } from '@/services/ocrService'
 import { fixedTermInvestmentService } from '@/services/fixedTermInvestmentService'
-import { createMortgageDeposit, createDeposit } from '@/services/movementsservice'
+import { createDeposit, createMortgageDeposit } from '@/services/movementsservice'
+import { ocrService } from '@/services/ocrService'
+import { useToast } from 'primevue/usetoast'
+import { computed, onMounted, ref, watch } from 'vue'
+
+
+const isLoadingBankDestino = ref(true)
+const isLoadingBanks = ref(true)
+
 
 const props = defineProps({
   visible: Boolean
@@ -346,6 +410,9 @@ const paymentSources = ref([
 const bankOptions = ref([])
 const selectedBank = ref(null)
 
+const bankDestinoOptions = ref([])
+const selectedBankDestino = ref(null)
+
 // Formulario común
 const operationNumber = ref('')
 const amount = ref(null)
@@ -377,7 +444,7 @@ const isFormValid = computed(() => {
   } else if (depositType.value === 'mortgage') {
     return commonValid && selectedPendingInvestment.value && selectedPaymentSource.value
   }
-  
+
   return false
 })
 
@@ -419,16 +486,21 @@ const getPaymentSourceName = (id) => {
 }
 
 const isOptionDisabled = (option) => {
-  return option.status === 'invalid'
+  return option.status !== 'approved'
 }
 
 const getStatusLabel = (status) => {
-  return status === 'valid' ? 'Validada' : 'No validada'
+  return status === 'approved' ? 'Aprobada' : 'No aprobada'
 }
 
 const getSelectedBankName = (selectedValue) => {
   const bank = bankOptions.value.find(option => option.value === selectedValue)
   return bank ? bank.bank : ''
+}
+
+const getSelectedBankDestinoName = (selectedValue) => {
+  const bankDestino = bankDestinoOptions.value.find(option => option.value === selectedValue)
+  return bankDestino ? bankDestino.bank : ''
 }
 
 const isImage = (file) => {
@@ -440,11 +512,11 @@ const handleFileUpload = async (event) => {
   if (!file) return
 
   // Validar tamaño del archivo (5MB máximo)
-  if (file.size > 5 * 1024 * 1024) {
+  if (file.size > 5 * 1024 * 1024 * 1024) {
     toast.add({
       severity: 'warn',
       summary: 'Archivo muy grande',
-      detail: 'El archivo debe ser menor a 5MB',
+      detail: 'El archivo debe ser menor a 5GB',
       life: 4000
     })
     return
@@ -480,7 +552,7 @@ const handleFileUpload = async (event) => {
     if (ocrData) {
       detectedOperationNumber.value = ocrData.codigo || ''
       detectedAmount.value = parseFloat(ocrData.monto?.replace(/[^\d.]/g, '')) || null
-      
+
       // Solo mostrar confirmación si se detectaron datos
       if (detectedOperationNumber.value || detectedAmount.value) {
         showOcrConfirmation.value = true
@@ -508,7 +580,7 @@ const confirmOcrData = () => {
   if (detectedAmount.value) {
     amount.value = detectedAmount.value
   }
-  
+
   // Ocultar el panel de confirmación y marcar como confirmado
   showOcrConfirmation.value = false
   ocrDataConfirmed.value = true
@@ -525,7 +597,7 @@ const editManually = () => {
   // Ocultar panel de confirmación y permitir edición manual
   showOcrConfirmation.value = false
   ocrDataConfirmed.value = false
-  
+
   toast.add({
     severity: 'info',
     summary: 'Edición manual',
@@ -537,7 +609,7 @@ const editManually = () => {
 const enableEditing = () => {
   // Habilitar edición de campos confirmados
   ocrDataConfirmed.value = false
-  
+
   toast.add({
     severity: 'info',
     summary: 'Edición habilitada',
@@ -554,7 +626,7 @@ const removeVoucher = () => {
   ocrDataConfirmed.value = false
   detectedOperationNumber.value = ''
   detectedAmount.value = null
-  
+
   // Limpiar el input file
   if (document.querySelector('input[type="file"]')) {
     document.querySelector('input[type="file"]').value = ''
@@ -588,13 +660,14 @@ onMounted(async () => {
 
   // Cargar cuentas bancarias
   try {
+    isLoadingBanks.value = true
     const response = await bankAccountService.getBankAccounts()
     const accounts = response.data.data
 
     bankOptions.value = accounts.map(account => ({
       name: `${account.bank} - ${account.alias} (${account.currency})`,
       value: account.id,
-      status: account.status,
+      status: account.status_conclusion,
       alias: account.alias,
       bank: account.bank,
       currency: account.currency,
@@ -603,7 +676,34 @@ onMounted(async () => {
     }))
   } catch (error) {
     console.error('Error al obtener cuentas bancarias:', error)
+  } finally {
+    isLoadingBanks.value = false
   }
+
+  try {
+
+    isLoadingBankDestino.value = true
+
+    const responsedestino = await bankAccountDestinoService.getBankAccountsDestinos()
+    const accountsdestino = responsedestino.data.data
+
+    bankDestinoOptions.value = accountsdestino.map(account => ({
+      name: `${account.bank} - ${account.alias} (${account.currency})`,
+      value: account.id,
+
+      alias: account.alias,
+      bank: account.bank,
+      currency: account.currency,
+      type: account.type,
+      cci: account.cci,
+      cc: account.cc
+    }))
+  } catch (error) {
+    console.error('Error al obtener cuentas bancarias:', error)
+  } finally {
+    isLoadingBankDestino.value = false
+  }
+
 })
 
 const handleSubmit = async () => {
@@ -628,6 +728,7 @@ const handleSubmit = async () => {
     if (depositType.value === 'personal') {
       // Depósito personal
       formData.append('bank', selectedBank.value)
+      formData.append('bank_destino', selectedBankDestino.value)
       response = await createDeposit(formData)
     } else {
       // Depósito de hipoteca
@@ -661,6 +762,7 @@ const resetForm = () => {
   selectedPendingInvestment.value = null
   selectedPaymentSource.value = null
   selectedBank.value = null
+  selectedBankDestino.value = null
   operationNumber.value = ''
   amount.value = null
   agreeTerms.value = false
@@ -672,4 +774,16 @@ const resetForm = () => {
   detectedOperationNumber.value = ''
   detectedAmount.value = null
 }
+
+
+const getBankDestinoField = (id, field) => {
+  const bank = bankDestinoOptions.value.find(b => b.value === id)
+  return bank ? bank[field] ?? '' : ''
+}
+
+const getBankDestinoNumber = (id) => {
+  const bank = bankDestinoOptions.value.find(b => b.value === id)
+  return bank ? (bank.cc || bank.cci || '') : ''
+}
+
 </script>

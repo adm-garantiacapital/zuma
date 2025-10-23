@@ -17,3 +17,18 @@ import TopbarWidget from '@/components/landing/TopbarWidget.vue';
         </div>
     </div>
 </template>
+
+<!---
+
+1.	Código para la colocar lo más arriba posible en la sección <head> de la página:
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NX69X7KL');</script>
+
+2.	Código justo después para la etiqueta de apertura <body> de la página:
+
+
+
+-->

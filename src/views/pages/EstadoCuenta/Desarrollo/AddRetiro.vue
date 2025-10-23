@@ -8,7 +8,7 @@
   >
     <!-- Título centrado -->
     <template #header>
-      <div class="w-full text-center text-xl font-bold" style="color: #FF4929;">
+      <div class="w-full text-center text-xl font-bold" style="color: #000;">
         Solicitar retiro
       </div>
     </template>
@@ -30,7 +30,7 @@
         >
           <!-- Renderizado de cada opción -->
           <template #option="slotProps">
-            <div class="flex justify-between items-center" :class="{ 'opacity-50 cursor-not-allowed': slotProps.option.status === 'invalid' }">
+            <div class="flex justify-between items-center" :class="{ 'opacity-50 cursor-not-allowed': slotProps.option.status !== 'approved' }">
               <div>
                 <div class="font-medium">
                   {{ slotProps.option.bank }}
@@ -44,9 +44,9 @@
               <div class="flex flex-col items-end space-y-1">
                 <Tag 
                   :value="getStatusLabel(slotProps.option.status)"
-                  :severity="slotProps.option.status === 'valid' ? 'success' : 'danger'"
+                  :severity="slotProps.option.status === 'approved' ? 'success' : 'danger'"
                 />
-                <span v-if="slotProps.option.status === 'invalid'" class="text-xs text-red-500">
+                <span v-if="slotProps.option.status !== 'approved'" class="text-xs text-red-500">
                   No seleccionable
                 </span>
               </div>
@@ -146,7 +146,7 @@
       </div>
 
       <!-- Términos y condiciones texto -->
-      <div class="text-xs text-gray-600 space-y-2">
+      <!-- <div class="text-xs text-gray-600 space-y-2">
         <p>
           Lorem ipsum dolor sit amet consectetur. Faucibus tempor porttitor 
           suspendisse suspendisse sed. Ultricies nunc dictum cursus vel tellus 
@@ -159,7 +159,7 @@
           congue sem. Amet eu at hendrerit in congue consequat lectus diam. 
           Enim nisl mattis ultrices sed.
         </p>
-      </div>
+      </div> -->
     </div>
 
     <!-- Footer del modal -->
@@ -167,8 +167,9 @@
       <div class="flex justify-center w-full">
         <Button 
           label="Solicitar retiro" 
-          class="w-full max-w-md"
-          style="background: #4A90E2; border-color: #4A90E2;"
+          class="flex-1 !border-black !bg-transparent !text-black hover:!bg-slate-100 !border-2" color="#000"
+          icon="pi pi-save"
+          rounded
           @click="handleSubmit"
           :disabled="!isFormValid"
         />
@@ -267,7 +268,7 @@ const isOptionDisabled = (option) => {
 }
 
 const getStatusLabel = (status) => {
-  return status === 'valid' ? 'Validada' : 'No validada'
+  return status === 'approved' ? 'Aprobada' : 'No Aprobada'
 }
 
 const getSelectedBankName = (selectedValue) => {
