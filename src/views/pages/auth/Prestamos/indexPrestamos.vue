@@ -365,7 +365,7 @@
                   <span v-if="errors.email" class="text-red-500 text-sm">{{ errors.email[0] }}</span>
                 </div>
 
-                <label class="block text-sm font-medium mb-1 text-[#171717]">Producto de Interés<span
+                <label class="block text-sm font-medium mb-1 text-[#171717]">Producto de Inversión<span
                     class="text-red-500">*</span></label>
                 <div class="rounded-xl mb-5">
                   <Select v-model="form.interested_product" :options="productOptions" optionLabel="name"

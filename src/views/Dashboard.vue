@@ -68,14 +68,14 @@
         <!-- Depósito -->
         <button
           class="bg-black text-white rounded-full px-5 py-2 text-sm hidden md:flex items-center gap-2 hover:bg-zinc-800"
-          @click="showDepositoDialog = true">
+          @click="handleOpenDeposito">
           + Depósito
         </button>
 
         <!-- Retiro -->
         <button
           class="border border-black rounded-full px-5 py-2 text-sm hidden md:flex items-center gap-2 hover:bg-blue-400 hover:text-white hover:border-blue-400 hover:underline"
-          @click="showRetiroDialog = true">
+          @click="handleOpenRetiro">
           - Retiro
         </button>
       </div>
@@ -246,7 +246,10 @@ import { Icon } from "@iconify/vue";
 import { onMounted, ref } from "vue";
 import AddDeposito from "./pages/EstadoCuenta/Desarrollo/AddDeposito.vue";
 import AddRetiro from "./pages/EstadoCuenta/Desarrollo/AddRetiro.vue";
+import { useToast } from 'primevue/usetoast'
 
+
+const toast = useToast()
 
 const home = ref({ icon: 'pi pi-home' });
 const items = ref([{ label: 'Subasta hipotecas' }, { label: 'Mi billetera' }]);
@@ -291,10 +294,41 @@ const loadProfile = async () => {
     const response = await profileService.getProfile();
     profile.value = response.data.data;
     fullName.value = `${profile.value.alias}`;
+    console.log('profile.value:',profile.value);
+    console.log('fullName.value:',fullName.value);
+    console.log('profile.value.bank_approved_accounts_count:',profile.value.bank_approved_accounts_count);
+    showDepositoDialog.value = profile.value.bank_approved_accounts_count > 0;
   } catch (error) {
     console.error('Error cargando el perfil:', error);
   }
 };
+
+const handleOpenDeposito = () => {
+  if (profile.value?.bank_approved_accounts_count > 0) {
+    showDepositoDialog.value = true
+  } else {
+    toast.add({
+      severity: 'warn',
+      summary: 'Acción no permitida',
+      detail: 'Debes tener al menos una cuenta bancaria aprobada antes de hacer un depósito.',
+      life: 4000
+    })
+  }
+}
+
+const handleOpenRetiro = () => {
+  if (profile.value?.bank_approved_accounts_count > 0) {
+    showRetiroDialog.value = true
+  } else {
+    toast.add({
+      severity: 'warn',
+      summary: 'Acción no permitida',
+      detail: 'Debes tener al menos una cuenta bancaria aprobada antes de hacer un retiro.',
+      life: 4000
+    })
+  }
+}
+
 
 // Cargar balances
 const loadBalances = async () => {

@@ -45,7 +45,7 @@
       >
         <div class="flex items-baseline gap-1">
           <span class="text-4xl font-extrabold text-[#FF4929]">+</span>
-          <p class="text-3xl font-extrabold text-[#171717]">$110</p>
+          <p class="text-3xl font-extrabold text-[#171717]">$110M</p>
         </div>
         <p class="mt-2 text-lg text-[#171717] font-semibold">Millones en hipotecas</p>
       </div>
