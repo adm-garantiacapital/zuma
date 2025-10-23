@@ -1,10 +1,10 @@
 <template>
   <Toast />
   <br>
-  <div class="card p-6 space-y-6 border p-3 rounded-lg">
+  <div class="card p-6 space-y-6 border  rounded-lg">
     <!-- Título con Nombre -->
     <div class="text-center">
-      <h2 class="text-2xl font-bold text-gray-800">
+      <h2 class="text-2xl font-bold" style="color:#000">
         {{ perfil.name }} {{ perfil.first_last_name }} {{ perfil.second_last_name }}
       </h2>
       <p class="text-gray-500">{{ perfil.email }}</p>
@@ -12,13 +12,19 @@
 
     <!-- Preguntas PEP -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="border p-3 rounded-lg">
-        <label class="block font-medium mb-2">¿Eres o has sido Persona Expuesta Políticamente (PEP)?<span class="text-red-500">*</span></label>
-        <ToggleSwitch v-model="form.is_pep" />
+      <div class="flex justify-between items-center  border p-4 rounded-lg">
+        <label class="block font-medium mb-2 mt-2">¿Eres o has sido Persona Expuesta Políticamente (PEP)?<span
+            class="text-red-500">*</span></label>
+        <CustomToggle v-model="form.is_pep" />
       </div>
-      <div class="border p-3 rounded-lg">
-        <label class="block font-medium mb-2">¿Eres pariente, cónyuge o conviviente de alguna persona PEP?<span class="text-red-500">*</span></label>
-        <ToggleSwitch v-model="form.has_relationship_pep" />
+      <div class="flex justify-between items-center border p-4 rounded-lg">
+        <label class="block font-medium mb-2 mt-2">Eres pariente, conyuge o conviviente de alguna persona que califique
+          como
+          PEP hasta el segundo grado de consanguinidad y segundo de afinidad?
+
+          <span class="text-red-500">*</span></label>
+        <CustomToggle v-model="form.has_relationship_pep" />
+
       </div>
     </div>
 
@@ -32,8 +38,7 @@
       <div>
         <label class="block font-medium mb-2">Provincia<span class="text-red-500">*</span></label>
         <Select v-model="form.province" :options="provincias" optionLabel="ubigeo_name" dataKey="ubigeo_id"
-          placeholder="Seleccione provincia" class="w-full" :disabled="!form.department"
-          @change="onProvinciaChange" />
+          placeholder="Seleccione provincia" class="w-full" :disabled="!form.department" @change="onProvinciaChange" />
       </div>
       <div>
         <label class="block font-medium mb-2">Distrito<span class="text-red-500">*</span></label>
@@ -48,135 +53,98 @@
       <InputText v-model="form.address" class="w-full" placeholder="Ingrese su dirección" />
     </div>
 
-    <!-- DNI (adelante y atrás) con upload elegante -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- FOTO y DNI (adelante y atrás) con upload elegante -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Foto del Inversor (Opcional) con cámara real -->
+      <div>
+        <label class="block font-medium mb-3 text-gray-700">
+          Foto del Inversor <span class="text-gray-400">(Opcional)</span>
+        </label>
+
+        <div
+          class="border-2 border-dashed border-gray-300 rounded-lg p-5 text-center hover:border-green-400 transition-colors duration-300  hover:bg-green-50">
+          <!-- Sin foto -->
+          <div v-if="!investorPhotoPreview">
+            <i class="pi pi-camera text-3xl text-gray-400" style="font-size: 1.75rem;"></i>
+            <p class="text-gray-600">Captura tu foto</p>
+
+            <Button label="Abrir Cámara" icon="pi pi-camera" rounded
+              class="!bg-[#FF4929] !border-[#FF4929] hover:!bg-[#e64324] text-white" @click="startCamera" />
+          </div>
+
+          <!-- Con foto -->
+          <div v-else class="relative">
+            <img :src="investorPhotoPreview" alt="Foto del Inversor"
+              class="max-w-full h-40 object-cover mx-auto rounded-lg shadow-md" />
+            <div class="mt-3 flex justify-center gap-2">
+              <Button icon="pi pi-refresh" label="Cambiar" outlined rounded size="small" @click="startCamera" />
+              <Button icon="pi pi-times" label="Eliminar" outlined rounded size="small" severity="danger"
+                @click="removeInvestorPhoto" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
       <!-- DNI Parte Delantera -->
       <div>
-        <label class="block font-medium mb-3 text-gray-700">DNI - Parte Delantera<span class="text-red-500">*</span></label>
-        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-400 transition-colors duration-300 bg-gray-50 hover:bg-green-50">
-          <input 
-            type="file" 
-            ref="frontFileInput"
-            @change="onUploadFront" 
-            accept="image/jpeg,image/jpg,image/png,image/svg+xml,.jpg,.jpeg,.png,.svg" 
-            class="hidden"
-          />
-          
+        <label class="block font-medium mb-3 text-gray-700">DNI - Parte Delantera<span
+            class="text-red-500">*</span></label>
+        <div
+          class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-400 transition-colors duration-300  hover:bg-green-50">
+          <input type="file" ref="frontFileInput" @change="onUploadFront"
+            accept="image/jpeg,image/jpg,image/png,image/svg+xml,.jpg,.jpeg,.png,.svg" class="hidden" />
+
           <!-- Vista cuando no hay imagen -->
-          <div v-if="!frontImagePreview" @click="$refs.frontFileInput.click()" class="cursor-pointer">
-            <i class="pi pi-cloud-upload text-4xl text-gray-400 mb-4 block"></i>
-            <p class="text-gray-600 mb-2">Haz clic para subir imagen</p>
+          <div v-if="!frontImagePreview" @click="$refs.frontFileInput.click()" class="cursor-pointer mb-2">
+            <i class="pi pi-cloud-upload text-gray-400 mb-4 block" style="font-size: 1.75rem;"></i>
+            <p class="text-gray-600 mb-2">Subir imagen</p>
             <p class="text-sm text-gray-400">o arrastra y suelta aquí</p>
-            <p class="text-xs text-gray-400 mt-2">Formatos: JPG, PNG, SVG (máx. 5MB)</p>
           </div>
-          
+
           <!-- Vista previa de la imagen -->
           <div v-else class="relative">
-            <img 
-              :src="frontImagePreview" 
-              alt="DNI Frontal" 
-              class="max-w-full h-32 object-cover mx-auto rounded-lg shadow-md"
-            />
+            <img :src="frontImagePreview" alt="DNI Frontal"
+              class="max-w-full h-32 object-cover mx-auto rounded-lg shadow-md" />
             <div class="mt-3 flex justify-center gap-2">
-              <Button 
-                icon="pi pi-refresh" 
-                @click="$refs.frontFileInput.click()" 
-                outlined 
-                rounded 
-                size="small"
-                severity="secondary"
-                title="Cambiar imagen"
-              />
-              <Button 
-                icon="pi pi-times" 
-                @click="removeFrontImage" 
-                outlined 
-                rounded 
-                size="small"
-                severity="danger"
-                title="Eliminar imagen"
-              />
+              <Button icon="pi pi-refresh" @click="$refs.frontFileInput.click()" outlined rounded size="small"
+                severity="secondary" title="Cambiar imagen" />
+              <Button icon="pi pi-times" @click="removeFrontImage" outlined rounded size="small" severity="danger"
+                title="Eliminar imagen" />
             </div>
+
             
-            <!-- Estado de validación -->
-            <div class="mt-2">
-              <Badge 
-                v-if="frontValidation.status === 'valid'" 
-                value="DNI Validado" 
-                severity="success" 
-              />
-              <Badge 
-                v-else-if="frontValidation.status === 'invalid'" 
-                value="DNI Inválido" 
-                severity="danger" 
-              />
-              <Badge 
-                v-else-if="frontValidation.status === 'processing'" 
-                value="Validando..." 
-                severity="secondary" 
-              />
-              <Badge 
-                v-else 
-                value="Subida - Sin validar" 
-                severity="warning" 
-              />
-            </div>
-            
-            <!-- Mensaje de error -->
-            <div v-if="frontValidation.message && frontValidation.status === 'invalid'" 
-                 class="mt-2 text-xs text-red-600 bg-red-50 p-2 rounded">
-              {{ frontValidation.message }}
-            </div>
           </div>
         </div>
       </div>
 
       <!-- DNI Parte Trasera -->
       <div>
-        <label class="block font-medium mb-3 text-gray-700">DNI - Parte Trasera<span class="text-red-500">*</span></label>
-        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-400 transition-colors duration-300 bg-gray-50 hover:bg-green-50">
-          <input 
-            type="file" 
-            ref="backFileInput"
-            @change="onUploadBack" 
-            accept="image/jpeg,image/jpg,image/png,image/svg+xml,.jpg,.jpeg,.png,.svg" 
-            class="hidden"
-          />
-          
+        <label class="block font-medium mb-3 text-gray-700">DNI - Parte Trasera<span
+            class="text-red-500">*</span></label>
+        <div
+          class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-400 transition-colors duration-300  hover:bg-green-50">
+          <input type="file" ref="backFileInput" @change="onUploadBack"
+            accept="image/jpeg,image/jpg,image/png,image/svg+xml,.jpg,.jpeg,.png,.svg" class="hidden" />
+
           <!-- Vista cuando no hay imagen -->
-          <div v-if="!backImagePreview" @click="$refs.backFileInput.click()" class="cursor-pointer">
-            <i class="pi pi-cloud-upload text-4xl text-gray-400 mb-4 block"></i>
-            <p class="text-gray-600 mb-2">Haz clic para subir imagen</p>
+          <div v-if="!backImagePreview" @click="$refs.backFileInput.click()" class="mb-2 cursor-pointer">
+            <i class="pi pi-cloud-upload  text-gray-400 mb-4 block" style="font-size: 1.75rem;"></i>
+            <p class="text-gray-600 mb-2">Subir imagen</p>
             <p class="text-sm text-gray-400">o arrastra y suelta aquí</p>
-            <p class="text-xs text-gray-400 mt-2">Formatos: JPG, PNG, SVG (máx. 5MB)</p>
           </div>
-          
+
           <!-- Vista previa de la imagen -->
           <div v-else class="relative">
-            <img 
-              :src="backImagePreview" 
-              alt="DNI Trasero" 
-              class="max-w-full h-32 object-cover mx-auto rounded-lg shadow-md"
-            />
+            <img :src="backImagePreview" alt="DNI Trasero"
+              class="max-w-full h-32 object-cover mx-auto rounded-lg shadow-md" />
             <div class="mt-3 flex justify-center gap-2">
-              <Button 
-                icon="pi pi-refresh" 
-                @click="$refs.backFileInput.click()" 
-                outlined 
-                rounded 
-                size="small"
-                severity="secondary"
-                title="Cambiar imagen"
-              />
-              <Button 
-                icon="pi pi-times" 
-                @click="removeBackImage" 
-                outlined 
-                rounded 
-                size="small"
-                severity="danger"
-                title="Eliminar imagen"
-              />
+              <Button icon="pi pi-refresh" @click="$refs.backFileInput.click()" outlined rounded size="small"
+                severity="secondary" title="Cambiar imagen" />
+              <Button icon="pi pi-times" @click="removeBackImage" outlined rounded size="small" severity="danger"
+                title="Eliminar imagen" />
             </div>
             <Badge value="Subido" severity="success" class="mt-2" />
           </div>
@@ -187,33 +155,52 @@
     <!-- Contrato y botón -->
     <div class="flex items-center space-x-4">
       <Checkbox v-model="form.contractAccepted" :binary="true" inputId="contract" />
-      <label for="contract" class="text-sm">He leído y acepto el <span class="text-[#FF4929] font-semibold">contrato de Inversionista</span></label>
+      <label for="contract" class="text-sm">He leído y acepto el <span class="text-[#FF4929] font-semibold">contrato de
+          Inversionista</span></label>
     </div>
 
     <div class="text-center">
-      <Button 
-        label="Guardar" 
-        icon="pi pi-save" 
-        rounded  
-        severity="contrast" 
-        variant="outlined" 
-        fluid 
-        @click="guardarPerfil"
-        :disabled="!canSave"
-        :loading="isSaving"
-      />
+      <Button label="Guardar" icon="pi pi-save" rounded severity="contrast" variant="outlined" fluid
+        @click="guardarPerfil" :disabled="!canSave" :loading="isSaving" />
     </div>
   </div>
+
+  <!-- Modal de cámara -->
+  <Dialog v-model:visible="isCameraOpen" modal header="Capturar foto del inversor" :style="{ width: '500px' }"
+    @hide="stopCamera">
+
+    <div class="space-y-4">
+      <video ref="videoRef" autoplay playsinline muted class="w-full h-64 object-cover rounded-lg bg-black"
+        style="transform: scaleX(-1);"></video>
+
+      <canvas ref="canvasRef" class="hidden"></canvas>
+
+      <div class="flex justify-center gap-3">
+        <Button icon="pi pi-refresh" label="Cambiar cámara" outlined @click="switchCamera" />
+        <Button icon="pi pi-camera" label="Capturar" class="bg-green-600 hover:bg-green-700 border-none"
+          @click="capturePhoto" />
+        <Button icon="pi pi-times" label="Cerrar" severity="danger" outlined @click="stopCamera" />
+      </div>
+    </div>
+  </Dialog>
+
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import profileService from '@/services/profileService'
 import axios from 'axios'
 import { useToast } from 'primevue/usetoast'
-import profileService from '@/services/profileService'
-import { ocrService } from '@/services/ocrService'
+import { computed, onMounted, ref } from 'vue'
+
+import CustomToggle from '@/components/CustomToggle.vue'
+import { watch } from 'vue'
+import { useRouter } from 'vue-router'
+
+
 
 const toast = useToast()
+const router = useRouter()
+
 const debugMode = ref(true) // Cambia a false en producción
 
 const perfil = ref({})
@@ -226,6 +213,7 @@ const form = ref({
   district: null,
   address: '',
   contractAccepted: false,
+
   document_front: null,
   document_back: null
 })
@@ -237,22 +225,130 @@ const File = window.File
 const frontImagePreview = ref('')
 const backImagePreview = ref('')
 
-const frontValidation = ref({
-  status: null,
-  message: ''
-})
+const frontValidation = ref(null)
 
 const isSaving = ref(false)
 
+
+const investorPhotoPreview = ref('')
+const investorPhotoFile = ref(null)
+
+const onInvestorPhotoCapture = (event) => {
+  const file = event.target.files[0]
+  if (!file) return
+
+  // Crear preview
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    investorPhotoPreview.value = e.target.result
+  }
+  reader.readAsDataURL(file)
+
+  investorPhotoFile.value = file
+}
+
+const removeInvestorPhoto = () => {
+  investorPhotoPreview.value = ''
+  investorPhotoFile.value = null
+}
+
+// --- Cámara en vivo ---
+const isCameraOpen = ref(false)
+const videoRef = ref(null)
+const canvasRef = ref(null)
+let mediaStream = null
+const facingMode = ref('user')
+watch(isCameraOpen, (open) => {
+  if (!open) stopCamera()
+})
+
+const startCamera = async () => {
+  try {
+    const constraints = {
+      video: {
+        facingMode: facingMode.value,
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      }
+    }
+
+    // Ensure modal is open first
+    isCameraOpen.value = true
+
+    // Wait for next DOM tick so <video> exists
+    await new Promise(resolve => setTimeout(resolve, 250))
+
+    mediaStream = await navigator.mediaDevices.getUserMedia(constraints)
+
+    if (videoRef.value) {
+      videoRef.value.srcObject = mediaStream
+      await videoRef.value.play() // 👈 force playback
+    } else {
+      console.warn('videoRef not ready')
+    }
+  } catch (error) {
+    console.error('Camera error:', error)
+    toast.add({
+      severity: 'error',
+      summary: 'Error de cámara',
+      detail: 'No se pudo acceder a la cámara. Verifica los permisos o recarga la página.',
+      life: 4000
+    })
+  }
+}
+
+
+
+const stopCamera = () => {
+  if (mediaStream) {
+    mediaStream.getTracks().forEach(track => track.stop())
+    mediaStream = null
+  }
+  isCameraOpen.value = false
+}
+
+const switchCamera = async () => {
+  stopCamera()
+  facingMode.value = facingMode.value === 'user' ? 'environment' : 'user'
+  setTimeout(() => startCamera(), 300)
+}
+
+const capturePhoto = () => {
+  if (!videoRef.value || !canvasRef.value) return
+  const canvas = canvasRef.value
+  const video = videoRef.value
+  const ctx = canvas.getContext('2d')
+
+  const size = Math.min(video.videoWidth, video.videoHeight)
+  const x = (video.videoWidth - size) / 2
+  const y = (video.videoHeight - size) / 2
+  canvas.width = size
+  canvas.height = size
+  ctx.drawImage(video, x, y, size, size, 0, 0, size, size)
+
+
+  const dataUrl = canvas.toDataURL('image/jpeg')
+  investorPhotoPreview.value = dataUrl
+
+  fetch(dataUrl)
+    .then(res => res.blob())
+    .then(blob => {
+      investorPhotoFile.value = new File([blob], `investor_photo_${Date.now()}.jpg`, { type: 'image/jpeg' })
+    })
+
+  stopCamera()
+}
+
+
+
 const canSave = computed(() => {
   return form.value.department &&
-         form.value.province &&
-         form.value.district &&
-         form.value.address &&
-         form.value.document_front &&
-         form.value.document_back &&
-         form.value.contractAccepted &&
-         frontValidation.value.status === 'valid'
+    form.value.province &&
+    form.value.district &&
+    form.value.address &&
+    form.value.document_front &&
+    form.value.document_back &&
+    form.value.contractAccepted 
 })
 
 onMounted(async () => {
@@ -281,14 +377,14 @@ const onProvinciaChange = () => {
 
 // Validar tamaño de archivo
 const validateFileSize = (file, maxSizeMB = 5) => {
-  const maxSize = maxSizeMB * 1024 * 1024 // Convertir MB a bytes
+  const maxSize = maxSizeMB * 1024 * 1024 *1024// Convertir MB a bytes
   console.log(`Validando tamaño: ${file.size} bytes vs ${maxSize} bytes máx`)
-  
+
   if (file.size > maxSize) {
     toast.add({
       severity: 'warn',
       summary: 'Archivo muy grande',
-      detail: `El archivo debe ser menor a ${maxSizeMB}MB. Archivo actual: ${(file.size / 1024 / 1024).toFixed(2)}MB`,
+      detail: `El archivo debe ser menor a ${maxSizeMB}GB. Archivo actual: ${(file.size / 1024 / 1024).toFixed(2)}MB`,
       life: 4000
     })
     return false
@@ -299,7 +395,7 @@ const validateFileSize = (file, maxSizeMB = 5) => {
 // Validar tipo de archivo
 const validateFileType = (file) => {
   const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml']
-  
+
   if (!allowedTypes.includes(file.type)) {
     toast.add({
       severity: 'warn',
@@ -312,30 +408,11 @@ const validateFileType = (file) => {
   return true
 }
 
-const validateDniWithOCR = async (file) => {
-  try {
-    frontValidation.value = { status: 'processing', message: 'Validando DNI...' }
-    
-    const response = await ocrService.extractDni(file)
-    const { validation } = response.data
 
-    if (validation.is_valid) {
-      frontValidation.value = { status: 'valid', message: validation.message }
-    } else {
-      frontValidation.value = { status: 'invalid', message: validation.message }
-    }
-  } catch (error) {
-    console.error('Error en OCR:', error)
-    frontValidation.value = {
-      status: 'invalid',
-      message: 'Error al validar el DNI. Intenta con una imagen más clara.'
-    }
-  }
-}
 
 const onUploadFront = async (event) => {
   const file = event.target.files[0]
-  
+
   if (!file) {
     console.log('No file selected')
     return
@@ -364,7 +441,7 @@ const onUploadFront = async (event) => {
 
   // CRÍTICO: Asignar directamente el archivo File original
   form.value.document_front = file
-  
+
   console.log('File assigned to form.document_front:', {
     file: form.value.document_front,
     isFile: form.value.document_front instanceof File,
@@ -392,8 +469,8 @@ const onUploadFront = async (event) => {
   reader.readAsDataURL(file)
 
   // Validar con OCR
-  await validateDniWithOCR(file)
-  
+
+
   // Limpiar el input
   event.target.value = ''
   console.log('=== End Front File Upload Debug ===')
@@ -401,7 +478,7 @@ const onUploadFront = async (event) => {
 
 const onUploadBack = (event) => {
   const file = event.target.files[0]
-  
+
   if (!file) {
     console.log('No back file selected')
     return
@@ -430,7 +507,7 @@ const onUploadBack = (event) => {
 
   // CRÍTICO: Asignar directamente el archivo File original
   form.value.document_back = file
-  
+
   console.log('File assigned to form.document_back:', {
     file: form.value.document_back,
     isFile: form.value.document_back instanceof File,
@@ -456,11 +533,11 @@ const onUploadBack = (event) => {
     })
   }
   reader.readAsDataURL(file)
-  
+
   // Limpiar el input
   event.target.value = ''
   console.log('=== End Back File Upload Debug ===')
-} 
+}
 
 const removeFrontImage = () => {
   form.value.document_front = null
@@ -477,70 +554,13 @@ const removeBackImage = () => {
 
 const guardarPerfil = async () => {
   console.log('=== INICIO VALIDACIÓN GUARDAR PERFIL ===')
-  
-  // Validación básica de canSave
+
   if (!canSave.value) {
-    console.log('canSave validation failed:', {
-      department: !!form.value.department,
-      province: !!form.value.province,
-      district: !!form.value.district,
-      address: !!form.value.address,
-      document_front: !!form.value.document_front,
-      document_back: !!form.value.document_back,
-      contractAccepted: form.value.contractAccepted,
-      frontValidationStatus: frontValidation.value.status
-    })
-    
     toast.add({
       severity: 'warn',
-      summary: 'Validación requerida',
-      detail: 'Debes completar todos los campos y validar el DNI.',
-      life: 5000
-    })
-    return
-  }
-
-  // Validación específica de archivos
-  console.log('Validando archivos antes del envío:')
-  console.log('document_front:', {
-    exists: !!form.value.document_front,
-    isFile: form.value.document_front instanceof File,
-    name: form.value.document_front?.name,
-    size: form.value.document_front?.size,
-    type: form.value.document_front?.type
-  })
-  console.log('document_back:', {
-    exists: !!form.value.document_back,
-    isFile: form.value.document_back instanceof File,
-    name: form.value.document_back?.name,
-    size: form.value.document_back?.size,
-    type: form.value.document_back?.type
-  })
-
-  // Verificación robusta de archivos
-  if (!form.value.document_front || !form.value.document_back) {
-    toast.add({
-      severity: 'warn',
-      summary: 'Imágenes requeridas',
-      detail: 'Debes subir ambas fotos del DNI (delantera y trasera).',
-      life: 5000
-    })
-    return
-  }
-
-  if (!(form.value.document_front instanceof File) || !(form.value.document_back instanceof File)) {
-    console.error('Los archivos no son instancias válidas de File:', {
-      front: form.value.document_front,
-      back: form.value.document_back,
-      frontType: typeof form.value.document_front,
-      backType: typeof form.value.document_back
-    })
-    
-    toast.add({
-      severity: 'error',
-      summary: 'Error en archivos',
-      detail: 'Los archivos no son válidos. Por favor, vuelve a subirlos.',
-      life: 5000
+      summary: 'Campos requeridos',
+      detail: 'Debes completar todos los campos obligatorios.',
+      life: 4000
     })
     return
   }
@@ -548,140 +568,83 @@ const guardarPerfil = async () => {
   isSaving.value = true
 
   try {
-    // Crear FormData con validación paso a paso
+    // 📦 Crear FormData
     const payload = new FormData()
-    
-    console.log('=== CONSTRUYENDO FORM DATA ===')
-    
-    // Datos booleanos (convertir exactamente como espera Laravel)
-    const isPep = form.value.is_pep ? '1' : '0'
-    const hasRelationshipPep = form.value.has_relationship_pep ? '1' : '0'
-    
-    payload.append('is_pep', isPep)
-    payload.append('has_relationship_pep', hasRelationshipPep)
-    
-    console.log('Booleanos agregados:', { isPep, hasRelationshipPep })
-    
-    // Ubigeo - formatear correctamente
-    const formatUbigeoId = (id) => {
+
+    // ✅ Booleanos: convertir a "1"/"0"
+    payload.append('is_pep', form.value.is_pep ? '1' : '0')
+    payload.append('has_relationship_pep', form.value.has_relationship_pep ? '1' : '0')
+
+    // ✅ Ubigeo: enviar últimos 2 dígitos
+    const formatUbigeo = (id) => {
       if (!id) return ''
-      const idStr = String(id)
-      return idStr.length >= 2 ? idStr.slice(-2) : idStr.padStart(2, '0')
+      const str = String(id)
+      return str.length >= 2 ? str.slice(-2) : str.padStart(2, '0')
     }
-    
-    const department = formatUbigeoId(form.value.department?.ubigeo_id)
-    const province = formatUbigeoId(form.value.province?.ubigeo_id)
-    const district = formatUbigeoId(form.value.district?.ubigeo_id)
-    const address = form.value.address || ''
-    
+
+    const department = formatUbigeo(form.value.department?.ubigeo_id)
+    const province = formatUbigeo(form.value.province?.ubigeo_id)
+    const district = formatUbigeo(form.value.district?.ubigeo_id)
+    const address = form.value.address?.trim() || ''
+
     payload.append('department', department)
     payload.append('province', province)
     payload.append('district', district)
     payload.append('address', address)
-    
-    console.log('Ubigeo agregado:', { department, province, district, address })
 
-    // CRÍTICO: Agregar archivos - VALIDAR ANTES DE AGREGAR
-    console.log('Agregando archivo frontal...')
-    console.log('Archivo frontal antes de append:', {
-      file: form.value.document_front,
-      name: form.value.document_front.name,
-      size: form.value.document_front.size,
-      type: form.value.document_front.type,
-      constructor: form.value.document_front.constructor.name
-    })
-    
-    // Usar exactamente los nombres que espera el servidor
-    payload.append('document_front', form.value.document_front, form.value.document_front.name)
-    
-    console.log('Agregando archivo trasero...')
-    console.log('Archivo trasero antes de append:', {
-      file: form.value.document_back,
-      name: form.value.document_back.name,
-      size: form.value.document_back.size,
-      type: form.value.document_back.type,
-      constructor: form.value.document_back.constructor.name
-    })
-    
-    payload.append('document_back', form.value.document_back, form.value.document_back.name)
-
-    // Verificación final del FormData
-    console.log('=== VERIFICACIÓN FINAL FORMDATA ===')
-    for (let [key, value] of payload.entries()) {
-      if (value instanceof File) {
-        console.log(`${key}:`, {
-          name: value.name,
-          size: value.size,
-          type: value.type,
-          lastModified: value.lastModified,
-          constructor: value.constructor.name
-        })
-      } else {
-        console.log(`${key}:`, value)
-      }
+    // ✅ Archivos (solo si existen)
+    if (form.value.document_front instanceof File) {
+      payload.append('document_front', form.value.document_front, form.value.document_front.name)
+    }
+    if (form.value.document_back instanceof File) {
+      payload.append('document_back', form.value.document_back, form.value.document_back.name)
+    }
+    if (investorPhotoFile.value instanceof File) {
+      payload.append('investor_photo_path', investorPhotoFile.value, investorPhotoFile.value.name)
     }
 
-    // Verificar que los archivos están realmente en el FormData
-    const frontFileFromFormData = payload.get('document_front')
-    const backFileFromFormData = payload.get('document_back')
-    
-    console.log('=== VERIFICACIÓN ARCHIVOS EN FORMDATA ===')
-    console.log('Front file from FormData:', {
-      exists: !!frontFileFromFormData,
-      isFile: frontFileFromFormData instanceof File,
-      name: frontFileFromFormData?.name,
-      size: frontFileFromFormData?.size
-    })
-    console.log('Back file from FormData:', {
-      exists: !!backFileFromFormData,
-      isFile: backFileFromFormData instanceof File,
-      name: backFileFromFormData?.name,
-      size: backFileFromFormData?.size
-    })
-    
-    if (!frontFileFromFormData || !backFileFromFormData || 
-        !(frontFileFromFormData instanceof File) || !(backFileFromFormData instanceof File)) {
-      throw new Error('Los archivos no se agregaron correctamente al FormData')
+    // 🧠 Debug simple
+    console.log('=== FINAL FORM DATA ===')
+    for (const [key, val] of payload.entries()) {
+      console.log(key, val instanceof File ? `(File: ${val.name})` : val)
     }
 
-    console.log('=== ENVIANDO REQUEST ===')
+    // 🚀 Enviar al servidor
     const response = await profileService.updateConfirmAccount(payload)
-    console.log('Profile updated successfully:', response)
-    
+    console.log('✅ Perfil actualizado:', response)
+
     toast.add({
       severity: 'success',
       summary: 'Perfil actualizado',
       detail: 'Tu información se guardó correctamente.',
-      life: 4000
+      life: 1000
     })
-    
+
+
+    setTimeout(()=>{
+      router.push('/hipotecas/Cuenta-Bancaria')
+    },1000)
   } catch (error) {
-    console.error('=== ERROR AL GUARDAR ===')
-    console.error('Error completo:', error)
-    console.error('Error response:', error.response?.data)
-    console.error('Error status:', error.response?.status)
-    console.error('Error headers:', error.response?.headers)
-    
-    let errorMessage = 'Ocurrió un error al enviar los datos.'
-    
-    if (error.response?.data?.message) {
-      errorMessage = error.response.data.message
-    } else if (error.response?.data?.errors) {
-      const errors = error.response.data.errors
-      const errorList = Object.values(errors).flat()
-      errorMessage = errorList.join(', ')
+    console.error('❌ Error al guardar:', error)
+
+    let message = 'Ocurrió un error al enviar los datos.'
+    if (error.response?.data?.message) message = error.response.data.message
+    if (error.response?.data?.errors) {
+      const errors = Object.values(error.response.data.errors).flat()
+      message = errors.join(', ')
     }
-    
+
     toast.add({
       severity: 'error',
       summary: 'Error al guardar',
-      detail: errorMessage,
+      detail: message,
       life: 5000
     })
   } finally {
     isSaving.value = false
   }
-  
+
   console.log('=== FIN VALIDACIÓN GUARDAR PERFIL ===')
 }
+
 </script>

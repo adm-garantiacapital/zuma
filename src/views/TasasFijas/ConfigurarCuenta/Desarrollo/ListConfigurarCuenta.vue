@@ -281,14 +281,14 @@ const onProvinciaChange = () => {
 
 // Validar tamaño de archivo
 const validateFileSize = (file, maxSizeMB = 5) => {
-  const maxSize = maxSizeMB * 1024 * 1024 // Convertir MB a bytes
+  const maxSize = maxSizeMB * 1024 * 1024 * 1024 // Convertir MB a bytes
   console.log(`Validando tamaño: ${file.size} bytes vs ${maxSize} bytes máx`)
   
   if (file.size > maxSize) {
     toast.add({
       severity: 'warn',
       summary: 'Archivo muy grande',
-      detail: `El archivo debe ser menor a ${maxSizeMB}MB. Archivo actual: ${(file.size / 1024 / 1024).toFixed(2)}MB`,
+      detail: `El archivo debe ser menor a ${maxSizeMB}GB. Archivo actual: ${(file.size / 1024 / 1024).toFixed(2)}MB`,
       life: 4000
     })
     return false

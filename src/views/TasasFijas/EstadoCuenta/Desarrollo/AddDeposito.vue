@@ -4,7 +4,7 @@
     <!-- Título centrado -->
     <template #header>
       <div class="w-full text-center text-xl font-bold" style="color: #FF4929;">
-        Realizar un depósito
+        Realizar un depósit
       </div>
     </template>
 
@@ -170,16 +170,16 @@
 
       <div class="text-xs text-gray-600 space-y-2">
         <p>
-          Lorem ipsum dolor sit amet consectetur. Faucibus tempor porttitor
-          suspendisse suspendisse sed. Ultricies nunc dictum cursus vel tellus
-          congue sem. Amet eu at hendrerit in congue consequat lectus diam.
-          Enim nisl mattis ultrices sed.
+          Declaración jurada de origen de fondos
         </p>
         <p>
-          Lorem ipsum dolor sit amet consectetur. Faucibus tempor porttitor
-          suspendisse suspendisse sed. Ultricies nunc dictum cursus vel tellus
-          congue sem. Amet eu at hendrerit in congue consequat lectus diam.
-          Enim nisl mattis ultrices sed.
+          Declaro que el origen de los fondos es legitimo, y no proviene de ninguna actividad ilícita.
+        </p>
+        <p>
+          Asi mismo, declaro que dichos fondos serán destinados a la compra de facturas negociables
+        </p>
+        <p>
+          Con caracter de DECLARACIÓN JURADA, manifiestoque la información consignada es exacta y verdadera y que he sido informado/a respecto a las normas y regulaciones relacionadas con la prevención del lavado de activos en el país
         </p>
       </div>
 
@@ -211,12 +211,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
 import { bankAccountService } from '@/services/bankAccountService'
-import { useToast } from 'primevue/usetoast'
-import { ocrService } from '@/services/ocrService'
 import { fixedTermInvestmentService } from '@/services/fixedTermInvestmentService'
 import { createFixedRateDeposit } from '@/services/movementsservice'
+import { ocrService } from '@/services/ocrService'
+import { useToast } from 'primevue/usetoast'
+import { computed, onMounted, ref } from 'vue'
 
 const selectedPaymentSource = ref(null)
 
@@ -314,11 +314,11 @@ const handleFileUpload = async (event) => {
   if (!file) return
 
   // Validar tamaño del archivo (5MB máximo)
-  if (file.size > 5 * 1024 * 1024) {
+  if (file.size > 5 * 1024 * 1024 * 1024) {
     toast.add({
       severity: 'warn',
       summary: 'Archivo muy grande',
-      detail: 'El archivo debe ser menor a 5MB',
+      detail: 'El archivo debe ser menor a 5GB',
       life: 4000
     })
     return

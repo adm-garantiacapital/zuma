@@ -258,11 +258,11 @@ const handleFileUpload = async (event) => {
   if (!file) return
 
   // Validar tamaño del archivo (5MB máximo)
-  if (file.size > 5 * 1024 * 1024) {
+  if (file.size > 5 * 1024 * 1024 *1024) {
     toast.add({
       severity: 'warn',
       summary: 'Archivo muy grande',
-      detail: 'El archivo debe ser menor a 5MB',
+      detail: 'El archivo debe ser menor a 5GB',
       life: 4000
     })
     return
