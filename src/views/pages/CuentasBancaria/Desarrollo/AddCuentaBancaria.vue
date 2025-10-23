@@ -17,14 +17,21 @@
             :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <!-- Título centrado con color personalizado -->
             <template #header>
-                <div class="w-full text-center text-xl font-bold" style="color: #FF4929;">
-                    Detalle de cuenta bancaria
+                <div class="w-full text-center text-2xl font-bold" style="color: #000;">
+                    <p> Detalle de cuenta bancaria</p>
+                    <p class="w-full text-center text-base font-light text-gray-500" style="margin-top: -10px;">Titular de la cuenta</p>
+                    <p class="w-full text-center text-base font-light text-gray-500" style="margin-top: -10px;">{{ investorName }}</p>
+                   
                 </div>
+               
             </template>
 
             <div class="flex flex-col gap-6">
                 <!-- Subtítulo -->
                 <!-- Formulario -->
+
+
+            
                 <div>
                     <label class="block font-bold mb-1">Banco <span class="text-red-500">*</span></label>
                     <Select id="banco" v-model="form.banco" :options="bancos" optionLabel="name"
@@ -71,11 +78,11 @@
 
             <!-- Footer -->
             <template #footer>
-                <div class="flex justify-end gap-3">
-                    <Button label="Cancelar" icon="pi pi-times" @click="closeDialog" text severity="secondary"
-                        rounded />
-                    <Button label="Enviar" icon="pi pi-check" @click="enviarNotificacion" :loading="loading"
-                        severity="contrast" rounded />
+                <div class="flex w-full gap-3">
+                    
+                    <Button label="Guardar" icon="pi pi-save" @click="enviarNotificacion" :loading="loading"
+                        severity="contrast" rounded
+                        class="flex-1 !bg-transparent !text-black hover:!bg-slate-100 !border-2" color="#000" />
                 </div>
             </template>
         </Dialog>
@@ -119,9 +126,10 @@ import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, reactive, ref } from 'vue';
+import profileService from '@/services/profileService.js'
 
 const toast = useToast();
-
+const investorName = ref('')
 const visible = ref(false);
 const loading = ref(false);
 const showConfirmDialog = ref(false);
@@ -165,8 +173,15 @@ onMounted(async () => {
             name: bank.name,
             code: bank.id // el ID real del banco
         }));
+
+
+        const profileRes = await profileService.getProfile()
+        const data = profileRes.data.data
+        investorName.value = `${data.name} ${data.first_last_name} ${data.second_last_name}`
+
+
     } catch (error) {
-        console.error('Error al cargar bancos:', error);
+        console.error('Error al cargar bancos o perfil:', error);
     }
 });
 
