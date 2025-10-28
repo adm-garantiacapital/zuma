@@ -118,14 +118,16 @@
     </div> -->
 
     <!-- CONTENT -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+     
+    <div class="grid gap-4 justify-center grid-cols-[repeat(auto-fit,_minmax(30rem,_max-content))]">
+
       <div class="bg-white rounded-3xl p-8 max-h-40 ">
         <div class="flex gap-4 items-center justify-center" s>
           <img src="/icons/amount-available.svg" alt="" class="w-10  md:w-12">
 
           <div>
             <div>
-              <div class="scroll-m-20 text-md md:text-lg font-semibold tracking-tight">Saldo disponible
+              <div class="scroll-m-20 text-md md:text-lg font-semibold tracking-tight">Saldo disponible 
               </div>
               <div class="text-xl font-bold">
                 {{ showAmounts
@@ -156,7 +158,7 @@
           <img src="/icons/investment-amount.svg" alt="" class="w-10 md:w-16">
 
           <div>
-            <div class="scroll-m-20 text-md md:text-lg font-semibold tracking-tight">Total invertido</div>
+            <div class="scroll-m-20 text-md md:text-lg font-semibold tracking-tight">Total subastado</div>
             <div class="text-2xl font-bold">
               {{ showAmounts
                 ? (activeTab === 'PEN'
@@ -182,7 +184,7 @@
         </div>
 
       </div>
-      <div class="bg-white rounded-3xl p-8 max-h-40">
+      <div class="hidden bg-white rounded-3xl p-8 max-h-40">
         <div class="flex gap-4 items-center justify-center">
           <img src="/icons/money-in-hands.svg" alt="" class="w-10 md:w-16">
           <div>
@@ -232,8 +234,10 @@
     </router-link>
   </div>
 
+  <ModalInicial />
   <AddDeposito v-model:visible="showDepositoDialog" @success="handleDepositSuccess" />
   <AddRetiro v-model:visible="showRetiroDialog" @success="handleWithdrawSuccess" />
+  
 </template>
 
 <script setup>
@@ -246,7 +250,8 @@ import { Icon } from "@iconify/vue";
 import { onMounted, ref } from "vue";
 import AddDeposito from "./pages/EstadoCuenta/Desarrollo/AddDeposito.vue";
 import AddRetiro from "./pages/EstadoCuenta/Desarrollo/AddRetiro.vue";
-import { useToast } from 'primevue/usetoast'
+import { useToast } from 'primevue/usetoast';
+import ModalInicial from '@/views/pages/dialog/ModalInicial.vue';
 
 
 const toast = useToast()
