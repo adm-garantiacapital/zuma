@@ -23,7 +23,7 @@
           <!-- Columna IZQUIERDA (6 columnas): Carrusel + Métricas + Botones -->
           <div class="col-span-12 lg:col-span-6">
             <!-- Selector de Propiedades -->
-            <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
+            <div class="flex gap-2 mb-4 overflow-x-auto pb-2 hidden">
               <Button 
                 v-for="property in solicitud.properties" 
                 :key="property.id"
