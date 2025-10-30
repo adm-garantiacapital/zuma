@@ -208,21 +208,21 @@ const model = computed(() => {
                 <img src="/imagenes/landing/logo-zuma.svg" alt="Logo Zuma" class="inline-block w-14" />
                 <h3 class="text-center my-3 text-[#171717] font-noto">¿Tienes alguna duda?</h3>
                 <p class="text-[#171717] mb-3">Tenemos especialistas que te podrán ayudar.</p>
-                <button type="button"
-                    class="w-full text-[#171717] border-button-black focus:outline-none hover:bg-[#6790FF] focus:bg-[#FF4929] font-bold rounded-3xl px-5 py-3 mb-3 transition duration-100 ease-in">
+                <a href="https://wa.me/51941582596"
+                    class="w-full inline-block text-[#171717] border-button-black focus:outline-none hover:bg-[#6790FF] focus:bg-[#FF4929] font-bold rounded-3xl px-5 py-3 mb-3 transition duration-100 ease-in">
                     <span class="inline-block align-middle">Contactar especialista</span>
-                </button>
+                </a>
                 <img src="/imagenes/zuma/alguna-duda.svg" alt="Imagen alguna duda" class="w-1/2 mx-auto" />
             </div>
 
             <button type="button"
-                class="w-full text-white bg-[#171717] focus:outline-none hover:bg-[#6790FF] focus:bg-[#FF4929] font-bold rounded-3xl px-5 py-3 mt-3 transition duration-100 ease-in"
+                class="hidden w-full text-white bg-[#171717] focus:outline-none hover:bg-[#6790FF] focus:bg-[#FF4929] font-bold rounded-3xl px-5 py-3 mt-3 transition duration-100 ease-in"
                 :class="{ 'hidden': isSidebarCollapsed }">
                 <span class="inline-block align-middle">¿Por qué invertir con nosotros?</span>
             </button>
 
             <button type="button"
-                class="w-full text-white bg-[#171717] focus:outline-none hover:bg-[#6790FF] focus:bg-[#FF4929] font-bold rounded-3xl px-5 py-3 my-3 transition duration-100 ease-in"
+                class="hidden w-full text-white bg-[#171717] focus:outline-none hover:bg-[#6790FF] focus:bg-[#FF4929] font-bold rounded-3xl px-5 py-3 my-3 transition duration-100 ease-in"
                 :class="{ 'hidden': isSidebarCollapsed }">
                 <span class="inline-block align-middle">Preguntas frecuentes</span>
             </button>

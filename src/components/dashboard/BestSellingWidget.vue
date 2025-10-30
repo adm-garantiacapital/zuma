@@ -172,22 +172,22 @@
                       </div>
                     </div>
                   </div>
-                  <div class="text-xs text-emerald-700">Monto solicitado por el deudor</div>
+                  <div class="text-xs text-emerald-700">Monto solicitado por el deudor {{ solicitud.solicitud_bids[0].id }}</div>
                 </div>
 
                 <!-- Inversionistas que han ofertado -->
-                <div v-if="solicitudBids[solicitud.id] && solicitudBids[solicitud.id].length > 0" 
+                <div v-if="solicitudBids[solicitud.solicitud_bids[0].id] && solicitudBids[solicitud.solicitud_bids[0].id].length > 0" 
                      class="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
                   <div class="flex items-center justify-between mb-3">
                     <h3 class="text-sm font-semibold text-yellow-700">
                       <i class="pi pi-users mr-2"></i>
                       Inversionistas Participando
                     </h3>
-                    <Tag :value="solicitudBids[solicitud.id].length" severity="warning" />
+                    <Tag :value="solicitudBids[solicitud.solicitud_bids[0].id].length" severity="warning" />
                   </div>
                   <div class="space-y-2 max-h-60 overflow-y-auto">
                     <div 
-                      v-for="(bid, index) in solicitudBids[solicitud.id]" 
+                      v-for="(bid, index) in solicitudBids[solicitud.solicitud_bids[0].id]" 
                       :key="bid.id"
                       class="bg-white rounded-lg p-3 border border-yellow-100"
                       :class="{ 'border-green-400 bg-green-50': bid.investors_id === currentUserId }"
@@ -411,11 +411,18 @@
                             </div>
                             <div class="flex justify-between">
                                 <span class="font-medium">Tipo Cronograma:</span>
-                                <span class="capitalize">{{ selectedSolicitud.configuracion_subasta?.tipo_cronograma }}</span>
+                                <span class="capitalize">{{ selectedSolicitud.configuracion_subasta?.tipo_cronograma == 'frances' ? 'Cuota Fija' : 'Libre amortización' }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="font-medium">Riesgo:</span>
-                                <Tag :value="selectedSolicitud.configuracion_subasta?.riesgo" severity="success" />
+                                <Tag :value="selectedSolicitud.configuracion_subasta?.riesgo" severity="success" 
+                                v-tooltip="{
+                                  value: tooltipLabel,
+                                  pt: {
+                                    root: { class: tooltipColorClass }
+                                  }
+                                }"
+                                />
                             </div>
                         </div>
                     </template>
@@ -426,11 +433,11 @@
                     <template #content>
                         <div class="space-y-3 text-sm">
                             <div class="flex justify-between">
-                                <span class="font-medium">Valor General:</span>
+                                <span class="font-medium">Valor del inmueble:</span>
                                 <span class="font-bold text-blue-600">{{ formatCurrency(selectedSolicitud.valor_general?.amount, selectedSolicitud.valor_general?.currency) }}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="font-medium">Valor Requerido:</span>
+                                <span class="font-medium">Monto de inversión:</span>
                                 <span class="font-bold text-purple-600">{{ formatCurrency(selectedSolicitud.valor_requerido?.amount, selectedSolicitud.valor_requerido?.currency) }}</span>
                             </div>
                             <div class="flex justify-between">
@@ -440,6 +447,10 @@
                             <div class="flex justify-between">
                                 <span class="font-medium">TEM:</span>
                                 <span class="font-bold text-orange-600">{{ formatPercentage(selectedSolicitud.configuracion_subasta?.tem) }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">LTV:</span>
+                                <span class="font-bold text-orange-600">{{ formatPercentage(selectedSolicitud.property_loan_details?.[0].porcentaje_prestamo) }}</span>
                             </div>
                         </div>
                     </template>
@@ -453,8 +464,8 @@
                     <div class="space-y-4">
                         <div v-for="property in selectedSolicitud.properties" :key="property.id"
                              class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                            <div class="flex items-center justify-between mb-2">
-                                <h4 class="font-semibold text-gray-800">{{ property.nombre }}</h4>
+                            <div class="hidden flex items-center justify-between mb-2">
+                                <h4 class="hidden font-semibold text-gray-800">{{ property.nombre }}</h4>
                                 <Tag :value="property.estado" 
                                      :severity="property.estado === 'activo' ? 'success' : 'secondary'" />
                             </div>
@@ -468,7 +479,7 @@
                                     <p class="font-bold text-green-600">{{ formatCurrency(property.valor_estimado?.amount, property.valor_estimado?.currency) }}</p>
                                 </div>
                             </div>
-                            <div class="mt-2">
+                            <div class="hidden mt-2">
                                 <span class="text-gray-600">Dirección:</span>
                                 <p class="font-medium">{{ property.direccion }}</p>
                             </div>
@@ -520,7 +531,7 @@
             <div v-if="selectedSolicitud.property_investors && selectedSolicitud.property_investors.length > 1" 
                  class="flex gap-2 mb-4">
                 <Button 
-                  v-for="(investor, index) in selectedSolicitud.property_investors" 
+                  v-for="(investor, index) in propertyInvestors" 
                   :key="investor.id"
                   :label="`Cronograma ${index + 1}`" 
                   :severity="selectedScheduleIndex === index ? 'primary' : 'secondary'"
@@ -616,6 +627,9 @@ import Column from 'primevue/column';
 import { auctionService } from '@/services/auctionService.js';
 import { bidService } from '@/services/bid.js';
 import * as XLSX from 'xlsx';
+import Tooltip from 'primevue/tooltip'
+
+defineExpose({ directives: { tooltip: Tooltip } })
 
 const toast = useToast();
 
@@ -649,6 +663,59 @@ const currentUserId = computed(() => {
   } catch {
     return null;
   }
+});
+
+const riesgos = ref([
+  {
+    value:'A+',
+    label:'Bajo'
+  },
+  {
+    value:'A',
+    label:'Bajo-Medio'
+  },
+  {
+    value:'B',
+    label:'Moderado'
+  },
+  {
+    value:'C',
+    label:'Moderado-Medio'
+  },
+  {
+    value:'D',
+    label:'Medio'
+  },
+  {
+    value:'E',
+    label:'Alto'
+  }
+
+])
+
+const tooltipLabel = computed(() => {
+  const riesgoActual = selectedSolicitud.value.configuracion_subasta?.riesgo
+  const match = riesgos.value.find(r => r.value === riesgoActual)
+  return match ? match.label : 'Sin riesgo definido '
+})
+
+const tooltipColorClass = computed(() => {
+  const riesgo = selectedSolicitud.value.configuracion_subasta?.riesgo
+  switch (riesgo) {
+    case 'A+': return 'tooltip-bajo'
+    case 'A': return 'tooltip-bajo-medio'
+    case 'B': return 'tooltip-moderado'
+    case 'C': return 'tooltip-moderado-medio'
+    case 'D': return 'tooltip-medio'
+    case 'E': return 'tooltip-alto'
+    default: return ''
+  }
+})
+
+const propertyInvestors = computed(() => {
+  return (selectedSolicitud?.value.property_investors || []).filter(
+    (pi) => pi.configuracion?.estado === 1
+  );
 });
 
 const responsiveOptions = ref([
@@ -969,6 +1036,7 @@ const loadBidsForSolicitud = async (solicitudId) => {
       // Ordenar por fecha de creación (primero el más antiguo)
       bids.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
       solicitudBids.value[solicitudId] = bids;
+      console.log('solicitudBids.value[solicitudId]:',solicitudBids.value[solicitudId])
       
       // Debug: mostrar información de las ofertas
       console.log(`📊 Ofertas para solicitud ${solicitudId}:`, bids);
@@ -990,6 +1058,9 @@ const loadSolicitudes = async (page = 1) => {
     const response = await auctionService.getAuctions(page);
     
     if (response.data && response.data.success) {
+
+      console.log('response.data:',response.data);
+
       solicitudes.value = Array.isArray(response.data.data) ? response.data.data : [];
       currentPage.value = response.data.meta?.current_page || 1;
       totalPages.value = response.data.meta?.last_page || 1;
@@ -999,7 +1070,11 @@ const loadSolicitudes = async (page = 1) => {
       // Cargar ofertas para cada solicitud
       solicitudes.value.forEach(solicitud => {
         if (solicitud.id) {
-          loadBidsForSolicitud(solicitud.id);
+          console.log('solicitud.id:',solicitud.id);
+          console.log('solicitud.solicitud_bids:',solicitud.solicitud_bids);
+          solicitud.solicitud_bids.forEach(solicitud_bids => {
+            loadBidsForSolicitud(solicitud_bids.id);
+          })            
         }
       });
     } else {
@@ -1037,12 +1112,13 @@ const mostrarYaParticipoDialog = (solicitud) => {
 const confirmarParticipacion = async () => {
   if (!selectedSolicitud.value) return;
   
-  await participarEnSubasta(selectedSolicitud.value);
+  console.log('selectedSolicitud.value.solicitud_bids:',selectedSolicitud.value.solicitud_bids)
+  await participarEnSubasta(selectedSolicitud.value,selectedSolicitud.value.solicitud_bids[0]);
   confirmDialog.value = false;
 };
 
 // Participar en subasta
-const participarEnSubasta = async (solicitud) => {
+const participarEnSubasta = async (solicitud,solicitudBid) => {
   if (!solicitud.id) {
     toast.add({ 
       severity: 'error', 
@@ -1060,9 +1136,9 @@ const participarEnSubasta = async (solicitud) => {
   }
 
   participatingSolicitudId.value = solicitud.id;
-  
+  console.log('solicitudBid',solicitudBid)
   try {
-    const response = await bidService.createSubasta(solicitud.id);
+    const response = await bidService.createSubasta(solicitudBid.id);
     
     if (response.data && response.data.success) {
       toast.add({ 
@@ -1255,6 +1331,20 @@ onUnmounted(() => {
   stopCountdownTimer();
 });
 </script>
+
+<style>
+.tooltip-bajo .p-tooltip-text { background-color: #22c55e !important; color: white; }
+.tooltip-bajo-medio .p-tooltip-text { background-color: #86efac; color: black; }
+.tooltip-moderado .p-tooltip-text { background-color: #facc15; color: black; }
+.tooltip-moderado-medio .p-tooltip-text { background-color: #fcd34d; color: black; }
+.tooltip-medio .p-tooltip-text { background-color: #f97316; color: white; }
+.tooltip-alto .p-tooltip-text { background-color: #ef4444; color: white; }
+
+.p-tooltip-text {
+  font-weight: 600;
+  border-radius: 6px;
+}
+</style>
 
 <style scoped>
 @keyframes pulse {
