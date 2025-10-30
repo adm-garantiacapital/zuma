@@ -2,8 +2,7 @@
 
 <template>
     <footer class="bg-[#171717] text-white pt-10">
-        <div
-            class="px-10 lg:px-20 grid grid-cols-1 xs:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-2 lg:gap-10 justify-center">
+        <div class="px-10 lg:px-20 grid grid-cols-1 xs:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-2 lg:gap-10 justify-center">
             <div class=" text-sm">
                 <div class="mb-6">
                     <h1>
@@ -45,9 +44,9 @@
                         <strong>info@zuma.com.pe</strong>
                     </p>                    
                     <p class="flex items-center gap-3">
-                        <a href="https://wa.me/51986351267" class="flex items-center gap-3">
+                        <a href="https://wa.me/51951160037" class="flex items-center gap-3">
                             <i class="pi pi-whatsapp text-white text-lg"></i>
-                            <strong>+51 986 351 267</strong>
+                            <strong>+51 951 160 037</strong>
                         </a>
                     </p>
                     <p class="flex items-start gap-3">
@@ -76,7 +75,7 @@
                     </a>
                     </li>
                 </ul>
-                </div>
+            </div>
 
             <div class=" text-sm text-[#EDEAE4] py-4">
                 <h4 class="font-bold text-white mb-2">Productos</h4>

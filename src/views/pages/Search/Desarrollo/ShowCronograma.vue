@@ -231,9 +231,13 @@ const dialogTitle = computed(() => {
     : 'Cronograma de Pagos';
 });
 
+
 const property_investors = computed(() => {
-  return props.solicitud?.property_investors || [];
+  return (props.solicitud?.property_investors || []).filter(
+    (pi) => pi.configuracion?.estado === 1
+  );
 });
+
 
 const getTabHeader = (pi, index) => {
   const tipo = pi.configuracion.estado === 1 ? 'Inversionista' : 'Cliente';

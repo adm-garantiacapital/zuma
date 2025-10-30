@@ -292,11 +292,18 @@
                             </div>
                             <div class="flex justify-between">
                                 <span class="font-medium">Tipo Cronograma:</span>
-                                <span class="capitalize">{{ solicitud.configuracion_subasta?.tipo_cronograma }}</span>
+                                <span class="capitalize">{{ solicitud.configuracion_subasta?.tipo_cronograma == 'frances' ? 'Cuota Fija' : 'Libre amortización' }}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="font-medium">Riesgo:</span>
-                                <Tag :value="solicitud.configuracion_subasta?.riesgo" severity="success" />
+                                <Tag :value="solicitud.configuracion_subasta?.riesgo" severity="success" 
+                                   v-tooltip="{
+                                  value: tooltipLabel,
+                                  pt: {
+                                    root: { class: tooltipColorClass }
+                                  }
+                                }"
+                                />
                             </div>
                         </div>
                     </template>
@@ -307,11 +314,11 @@
                     <template #content>
                         <div class="space-y-3 text-sm">
                             <div class="flex justify-between">
-                                <span class="font-medium">Valor General:</span>
+                                <span class="font-medium">Valor del inmueble:</span>
                                 <span class="font-bold text-blue-600">{{ formatCurrency(solicitud.valor_general?.amount, solicitud.valor_general?.currency) }}</span>
                             </div>
                             <div class="flex justify-between">
-                                <span class="font-medium">Valor Requerido:</span>
+                                <span class="font-medium">Monto de inversión:</span>
                                 <span class="font-bold text-purple-600">{{ formatCurrency(solicitud.valor_requerido?.amount, solicitud.valor_requerido?.currency) }}</span>
                             </div>
                             <div class="flex justify-between">
@@ -321,6 +328,10 @@
                             <div class="flex justify-between">
                                 <span class="font-medium">TEM:</span>
                                 <span class="font-bold text-orange-600">{{ formatPercentage(solicitud.configuracion_subasta?.tem) }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium">LTV:</span>
+                                <span class="font-bold text-orange-600">{{ formatPercentage(solicitud.property_loan_details?.[0].porcentaje_prestamo) }}</span>
                             </div>
                         </div>
                     </template>
@@ -334,7 +345,7 @@
                     <div class="space-y-4">
                         <div v-for="property in solicitud.properties" :key="property.id"
                              class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                            <div class="flex items-center justify-between mb-2">
+                            <div class="hidden flex items-center justify-between mb-2">
                                 <h4 class="font-semibold text-gray-800">{{ property.nombre }}</h4>
                                 <Tag :value="property.estado" 
                                      :severity="property.estado === 'activo' ? 'success' : 'secondary'" />
@@ -468,6 +479,9 @@ import ProgressSpinner from 'primevue/progressspinner';
 import ShowCronograma from './ShowCronograma.vue';
 import { solicitudService } from '@/services/solicitud.js';
 import { bidService } from '@/services/bid.js';
+import Tooltip from 'primevue/tooltip'
+
+defineExpose({ directives: { tooltip: Tooltip } })
 
 const props = defineProps({
   solicitudId: {
@@ -475,6 +489,11 @@ const props = defineProps({
     default: null
   }
 });
+
+
+
+
+
 
 const emit = defineEmits(['ver-detalle', 'ver-cronograma', 'ofertar']);
 
@@ -693,8 +712,9 @@ const realizarOferta = async () => {
   ofertando.value = true;
 
   try {
-    console.log('📡 Realizando oferta para solicitud_bid_id:', solicitud.value.id);
-    const response = await bidService.create(solicitud.value.id);
+    console.log('📡 Realizando oferta para solicitud_bid_id:', solicitud.value.solicitud_bids[0].id);
+
+    const response = await bidService.create(solicitud.value.solicitud_bids[0].id);
     
     if (response.data && response.data.success) {
       toast.add({
@@ -809,6 +829,62 @@ const mostrarDetalle = () => {
   showDetalleDialog.value = true;
 };
 
+
+
+const riesgos = ref([
+  {
+    value:'A+',
+    label:'Bajo'
+  },
+  {
+    value:'A',
+    label:'Bajo-Medio'
+  },
+  {
+    value:'B',
+    label:'Moderado'
+  },
+  {
+    value:'C',
+    label:'Moderado-Medio'
+  },
+  {
+    value:'D',
+    label:'Medio'
+  },
+  {
+    value:'E',
+    label:'Alto'
+  }
+
+])
+
+const tooltipLabel = computed(() => {
+  const riesgoActual = solicitud.value?.configuracion_subasta?.riesgo
+  if (!riesgoActual) return 'Sin riesgo definido'
+
+  const match = riesgos.value.find(r => r.value === riesgoActual)
+  return match ? match.label : 'Sin riesgo definido ' + riesgoActual
+})
+
+const tooltipColorClass = computed(() => {
+  const riesgo = solicitud.value?.configuracion_subasta?.riesgo
+  if (!riesgo) return ''
+
+  switch (riesgo) {
+    case 'A+': return 'tooltip-bajo'
+    case 'A': return 'tooltip-bajo-medio'
+    case 'B': return 'tooltip-moderado'
+    case 'C': return 'tooltip-moderado-medio'
+    case 'D': return 'tooltip-medio'
+    case 'E': return 'tooltip-alto'
+    default: return ''
+  }
+})
+
+
+
+
 // Cargar datos al montar el componente
 onMounted(() => {
   const id = getSolicitudId();
@@ -831,3 +907,17 @@ watch(() => route.params.id, (newId) => {
   }
 });
 </script>
+<style>
+.tooltip-bajo .p-tooltip-text { background-color: #22c55e !important; color: white; }
+.tooltip-bajo-medio .p-tooltip-text { background-color: #86efac; color: black; }
+.tooltip-moderado .p-tooltip-text { background-color: #facc15; color: black; }
+.tooltip-moderado-medio .p-tooltip-text { background-color: #fcd34d; color: black; }
+.tooltip-medio .p-tooltip-text { background-color: #f97316; color: white; }
+.tooltip-alto .p-tooltip-text { background-color: #ef4444; color: white; }
+
+.p-tooltip-text {
+  font-weight: 600;
+  border-radius: 6px;
+}
+</style>
+

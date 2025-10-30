@@ -103,7 +103,7 @@
         <div class="col-span-12 md:col-span-6 px-5 mb-10 relative">
           <div class="bg-white rounded-xl p-5">
             <h3 class="font-medium text-xl text-center max-w-xl mx-auto m-0">Recibe atención personalizada</h3>
-            <a href="https://wa.me/51986351267" class="bg-[#23c347] rounded-xl py-3 px-5 text-center mt-6 relative w-full inline-block">
+            <a href="https://wa.me/51951160037" class="bg-[#23c347] rounded-xl py-3 px-5 text-center mt-6 relative w-full inline-block">
               <h4 class="m-0 text-white font-normal text-center text-medium text-2xl leading-none ps-16">
                 <span >
                   <i class="pi pi-whatsapp !text-5xl absolute left-16 top-3"></i>
