@@ -642,7 +642,8 @@ const loadOfertas = async () => {
   }
 
   try {
-    const solicitudId = solicitud.value.id;
+    const solicitudId = solicitud.value.solicitud_bids[0].id;
+
     console.log('📡 Cargando ofertas para solicitud_id:', solicitudId);
     console.log('🔍 Solicitud completa:', solicitud.value);
     const response = await bidService.getBySolicitudBid(solicitudId);
